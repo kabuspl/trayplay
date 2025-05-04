@@ -8,7 +8,7 @@ license=('MIT')
 depends=('gcc-libs', 'glibc', 'gpu-screen-recorder', 'xdg-desktop-portal-impl')
 makedepends=('cargo')
 source=("${pkgname}-${pkgver}.tar.gz::https://github.com/kabuspl/instantreplay/archive/v${pkgver}.tar.gz")
-sha256sums=('')
+sha256sums=('2ee006027c5ccb46ffca5de2d310f92a9e8fb19e0b3b6892e2cdc29890b2e3f5')
 
 prepare() {
     export RUSTUP_TOOLCHAIN=stable
