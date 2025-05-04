@@ -1,0 +1,45 @@
+use std::{path::PathBuf, str::FromStr};
+
+pub fn get_app_name(desktop_file: &str) -> Result<Option<String>, std::io::Error> {
+    let user_applications_path = format!("{}/applications/", dirs::data_dir().unwrap().display());
+    let search_paths = vec![
+        "/usr/share/applications/",
+        &user_applications_path,
+        "/var/lib/flatpak/exports/share/applications/",
+        "",
+    ];
+    let desktop_file_path = search_paths.iter().fold(None, |acc, search_path| {
+        let path = format!("{}{}.desktop", search_path, desktop_file);
+        if std::fs::exists(&path).unwrap() {
+            Some(path)
+        } else {
+            acc
+        }
+    });
+
+    Ok(if let Some(desktop_file_path) = desktop_file_path {
+        let parsed = freedesktop_entry_parser::parse_entry(desktop_file_path)?;
+        parsed
+            .section("Desktop Entry")
+            .attr("Name")
+            .map(|v| v.to_string())
+    } else {
+        None
+    })
+}
+
+pub fn get_script_path() -> Option<PathBuf> {
+    let local_path = std::env::current_dir().unwrap().join("dist/kwin_script.js");
+    let search_paths = vec![
+        "/usr/share/instantreplay/kwin_script.js",
+        local_path.to_str().unwrap(),
+    ];
+
+    search_paths.iter().fold(None, |acc, search_path| {
+        if std::fs::exists(search_path).unwrap() {
+            Some(PathBuf::from_str(search_path).unwrap())
+        } else {
+            acc
+        }
+    })
+}
