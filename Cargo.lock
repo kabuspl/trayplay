@@ -79,6 +79,7 @@ dependencies = [
 [[package]]
 name = "ashpd"
 version = "0.11.0"
+source = "git+https://github.com/kabuspl/ashpd.git#d480cc0f8c7f37265b9f6128a7bd2c2314348b2e"
 dependencies = [
  "enumflags2",
  "futures-channel",
