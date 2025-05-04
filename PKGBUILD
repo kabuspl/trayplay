@@ -12,6 +12,8 @@ sha256sums=('SKIP')
 
 prepare() {
     export RUSTUP_TOOLCHAIN=stable
+
+    cd "$srcdir/$pkgname-$pkgver"
     cargo fetch --locked --target "$(rustc -vV | sed -n 's/host: //p')"
 }
 
@@ -25,10 +27,14 @@ build() {
 
 check() {
     export RUSTUP_TOOLCHAIN=stable
+
+    cd "$srcdir/$pkgname-$pkgver"
     cargo test --frozen --all-features
 }
 
 package() {
+    cd "$srcdir/$pkgname-$pkgver"
+
     install -Dm0755 -t "$pkgdir/usr/bin/" "target/release/$pkgname"
     install -Dm0644 -t "$pkgdir/usr/share/instantreplay" "dist/kwin_script.js"
     install -Dm0644 -t "$pkgdir/usr/share/applications" "dist/ovh.kabus.instantreplay.desktop"
