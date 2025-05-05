@@ -22,6 +22,7 @@ pub struct MessageBox {
     title: Option<String>,
 }
 
+#[allow(dead_code)]
 impl MessageBox {
     pub fn new(label: impl Into<String>) -> Self {
         Self {
@@ -81,6 +82,7 @@ impl MessageBox {
     }
 }
 
+#[allow(dead_code)]
 pub enum InputBoxType {
     Text,
     Password,
