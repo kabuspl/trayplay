@@ -78,6 +78,7 @@ async fn main() -> Result<(), Box<dyn Error>> {
         .arg("qp")
         .arg("-q")
         .arg(config.quality.to_string())
+        .args(config.audio_tracks.iter().flat_map(|track| ["-a", track]))
         .arg("-o")
         .arg(config.replay_directory)
         .stdout(Stdio::piped())
