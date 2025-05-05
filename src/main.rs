@@ -194,11 +194,8 @@ async fn main() -> Result<(), Box<dyn Error>> {
                         match request {
                             Ok(directory) => {
                                 let directory = directory.uris()[0].to_file_path().unwrap();
-                                DialogBuilder::message()
-                                    .set_text(directory.display().to_string())
-                                    .alert()
-                                    .show()
-                                    .unwrap();
+                                config.replay_directory = directory;
+                                config.save();
                             }
                             Err(_) => todo!(),
                         }
