@@ -7,12 +7,12 @@ use std::{
     sync::Arc,
 };
 
-use ashpd::desktop::registry::Registry;
+use ashpd::desktop::{file_chooser::OpenFileRequest, registry::Registry};
 use config::Config;
 use kdialog::{InputBox, MessageBox};
 use ksni::TrayMethods;
 use kwin::KWinScriptManager;
-use log::{debug, info};
+use log::{debug, error, info};
 use nix::{
     sys::signal::{self, Signal},
     unistd::Pid,
@@ -60,7 +60,7 @@ trait OsdService {
 async fn main() -> Result<(), Box<dyn Error>> {
     env_logger::init();
 
-    let config = Config::load();
+    let mut config = Config::load();
 
     let connection = Connection::session().await?;
     let service_name = "ovh.kabus.instantreplay";
@@ -95,7 +95,7 @@ async fn main() -> Result<(), Box<dyn Error>> {
 
     let mut gpu_screen_recorder = Command::new("gpu-screen-recorder")
         .arg("-w")
-        .arg(config.screen)
+        .arg(&config.screen)
         .arg("-c")
         .arg(config.container.to_string())
         .arg("-f")
@@ -114,7 +114,7 @@ async fn main() -> Result<(), Box<dyn Error>> {
         .arg(config.quality.to_string())
         .args(config.audio_tracks.iter().flat_map(|track| ["-a", track]))
         .arg("-o")
-        .arg(config.replay_directory)
+        .arg(&config.replay_directory)
         .stdout(Stdio::piped())
         .stderr(Stdio::piped())
         .spawn()?;
@@ -182,9 +182,79 @@ async fn main() -> Result<(), Box<dyn Error>> {
                     )?;
                     std::process::exit(0);
                 }
-                other => {
-                    info!("Received unknown action event: {}", other);
-                }
+                ActionEvent::Config(config_event) => match config_event {
+                    ConfigActionEvent::ChangeReplayPath => {
+                        let request = OpenFileRequest::default()
+                            .directory(true)
+                            .current_folder(&config.replay_directory)?
+                            .send()
+                            .await
+                            .and_then(|r| r.response());
+
+                        match request {
+                            Ok(directory) => {
+                                let directory = directory.uris()[0].to_file_path().unwrap();
+                                DialogBuilder::message()
+                                    .set_text(directory.display().to_string())
+                                    .alert()
+                                    .show()
+                                    .unwrap();
+                            }
+                            Err(_) => todo!(),
+                        }
+                    }
+                    ConfigActionEvent::CustomReplayDuration => {
+                        let result = InputBox::new(
+                            "Replay duration (in seconds):",
+                            kdialog::InputBoxType::Text,
+                        )
+                        .initial(config.replay_duration_secs.to_string())
+                        .title("Instant Replay Settings")
+                        .show()?;
+
+                        if let Some(result) = result {
+                            let number = result.replace("\n", "").parse::<u16>();
+                            if let Ok(number) = number {
+                                config.replay_duration_secs = number;
+                                config.save();
+                            } else {
+                                MessageBox::new("You need to input an integer.")
+                                    .title("Error")
+                                    .show()?;
+                            }
+                        }
+                    }
+                    ConfigActionEvent::SetReplayDuration(duration) => {
+                        config.replay_duration_secs = duration;
+                        config.save();
+                    }
+                    ConfigActionEvent::CustomFramerate => {
+                        let result = InputBox::new(
+                            "Framerate (in frames per seconds):",
+                            kdialog::InputBoxType::Text,
+                        )
+                        .initial(config.framerate.to_string())
+                        .title("Instant Replay Settings")
+                        .show()?;
+
+                        if let Some(result) = result {
+                            let number = result.replace("\n", "").parse::<u16>();
+                            if let Ok(number) = number {
+                                config.framerate = number;
+                                config.save();
+                            } else {
+                                MessageBox::new("You need to input an integer.")
+                                    .title("Error")
+                                    .show()?;
+                            }
+                        }
+                    }
+                    ConfigActionEvent::SetFramerate(framerate) => {
+                        config.framerate = framerate;
+                        config.save();
+                    }
+                },
+                other => todo!("Unhandled action event: {:?}", other),
             }
         }
     }

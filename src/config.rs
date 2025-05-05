@@ -23,6 +23,13 @@ impl Config {
             Err(_) => Config::default(),
         }
     }
+
+    pub fn save(&self) {
+        let mut path = dirs::config_dir().unwrap();
+        path.push("instantreplay.toml");
+
+        std::fs::write(path, toml::to_string(&self).unwrap()).expect("Failed to write config file");
+    }
 }
 
 impl Default for Config {
