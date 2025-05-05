@@ -29,6 +29,23 @@ mod shortcuts;
 mod tray;
 mod utils;
 
+#[derive(Debug)]
+pub enum ActionEvent {
+    SaveReplay,
+    Quit,
+    Config(ConfigActionEvent),
+    Unknown,
+}
+
+#[derive(Debug)]
+pub enum ConfigActionEvent {
+    ChangeReplayPath,
+    SetFramerate(u16),
+    CustomFramerate,
+    SetReplayDuration(u16),
+    CustomReplayDuration,
+}
+
 #[proxy(
     interface = "org.kde.osdService",
     default_service = "org.kde.plasmashell",
@@ -142,8 +159,8 @@ async fn main() -> Result<(), Box<dyn Error>> {
 
     loop {
         if let Some(action) = action_rx.recv().await {
-            match action.as_str() {
-                "save-replay" => {
+            match action {
+                ActionEvent::SaveReplay => {
                     info!("Saving replay from {}", app_name.read().await);
                     signal::kill(
                         Pid::from_raw(gpu_screen_recorder.id() as i32),
@@ -157,7 +174,7 @@ async fn main() -> Result<(), Box<dyn Error>> {
                         )
                         .await?;
                 }
-                "quit" => {
+                ActionEvent::Quit => {
                     kwin_script_manager.unload().await;
                     signal::kill(
                         Pid::from_raw(gpu_screen_recorder.id() as i32),

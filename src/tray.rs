@@ -1,12 +1,16 @@
 use tokio::sync::mpsc::Sender;
 
+use crate::{ActionEvent, ConfigActionEvent};
+
 pub struct TrayIcon {
     _enabled: bool,
-    tray_event_tx: Sender<String>,
+    tray_event_tx: Sender<ActionEvent>,
+    replay_duration: usize,
+    framerate: usize,
 }
 
 impl TrayIcon {
-    pub fn new(tray_event_tx: Sender<String>) -> Self {
+    pub fn new(tray_event_tx: Sender<ActionEvent>) -> Self {
         Self {
             tray_event_tx,
             _enabled: true,
@@ -31,8 +35,7 @@ impl ksni::Tray for TrayIcon {
 
     fn menu(&self) -> Vec<ksni::MenuItem<Self>> {
         // let sender_clone1 = self.tray_event_tx.clone();
-        let sender_clone2 = self.tray_event_tx.clone();
-        let sender_clone3 = self.tray_event_tx.clone();
+        let tx_clone = self.tray_event_tx.clone();
         use ksni::menu::*;
         vec![
             // TODO: implement toggling replays on and off
@@ -52,10 +55,13 @@ impl ksni::Tray for TrayIcon {
             StandardItem {
                 label: "Save replay".into(),
                 icon_name: "document-save".into(),
-                activate: Box::new(move |_| {
-                    futures::executor::block_on(async {
-                        sender_clone2.send("save-replay".into()).await.unwrap();
-                    });
+                activate: Box::new({
+                    let tx_clone = tx_clone.clone();
+                    move |_| {
+                        futures::executor::block_on(async {
+                            tx_clone.send(ActionEvent::SaveReplay).await.unwrap();
+                        });
+                    }
                 }),
                 ..Default::default()
             }
@@ -64,10 +70,13 @@ impl ksni::Tray for TrayIcon {
             StandardItem {
                 label: "Quit".into(),
                 icon_name: "gtk-quit".into(),
-                activate: Box::new(move |_| {
-                    futures::executor::block_on(async {
-                        sender_clone3.send("quit".into()).await.unwrap();
-                    });
+                activate: Box::new({
+                    let tx_clone = tx_clone.clone();
+                    move |_| {
+                        futures::executor::block_on(async {
+                            tx_clone.send(ActionEvent::Quit).await.unwrap();
+                        });
+                    }
                 }),
                 ..Default::default()
             }

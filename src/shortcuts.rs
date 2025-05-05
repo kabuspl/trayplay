@@ -8,6 +8,8 @@ use lazy_static::lazy_static;
 use log::info;
 use tokio::sync::mpsc::Sender;
 
+use crate::ActionEvent;
+
 lazy_static! {
     static ref SHORTCUTS: Vec<(&'static str, &'static str, &'static str)> = vec![
         // id, description, trigger
@@ -20,11 +22,11 @@ lazy_static! {
 pub struct GlobalShortcutManager<'a> {
     global_shortcuts_wrapper: GlobalShortcuts<'a>,
     global_shortcuts_session: Session<'a, GlobalShortcuts<'a>>,
-    shortcut_tx: Sender<String>,
+    shortcut_tx: Sender<ActionEvent>,
 }
 
 impl<'a> GlobalShortcutManager<'a> {
-    pub async fn new(shortcut_tx: Sender<String>) -> Result<Self, GlobalShortcutManagerError> {
+    pub async fn new(shortcut_tx: Sender<ActionEvent>) -> Result<Self, GlobalShortcutManagerError> {
         let wrapper = GlobalShortcuts::new().await?;
         Ok(Self {
             global_shortcuts_session: wrapper.create_session().await?,
@@ -79,7 +81,11 @@ impl<'a> GlobalShortcutManager<'a> {
             if let Ok(mut activated) = self.global_shortcuts_wrapper.receive_activated().await {
                 while let Some(activation) = activated.next().await {
                     self.shortcut_tx
-                        .send(activation.shortcut_id().to_string())
+                        .send(match activation.shortcut_id() {
+                            "save-replay" => ActionEvent::SaveReplay,
+                            "quit" => ActionEvent::Quit,
+                            _ => ActionEvent::Unknown,
+                        })
                         .await?;
                 }
             }
@@ -91,7 +97,7 @@ impl<'a> GlobalShortcutManager<'a> {
 #[allow(dead_code)]
 pub enum GlobalShortcutManagerError {
     AshpdError(ashpd::Error),
-    MpscError(tokio::sync::mpsc::error::SendError<String>),
+    MpscError(tokio::sync::mpsc::error::SendError<ActionEvent>),
 }
 
 impl From<ashpd::Error> for GlobalShortcutManagerError {
@@ -100,13 +106,13 @@ impl From<ashpd::Error> for GlobalShortcutManagerError {
     }
 }
 
-impl From<tokio::sync::mpsc::error::SendError<String>> for GlobalShortcutManagerError {
-    fn from(value: tokio::sync::mpsc::error::SendError<String>) -> Self {
+impl From<tokio::sync::mpsc::error::SendError<ActionEvent>> for GlobalShortcutManagerError {
+    fn from(value: tokio::sync::mpsc::error::SendError<ActionEvent>) -> Self {
         Self::MpscError(value)
     }
 }
 
-pub fn setup_global_shortcuts(shortcut_tx: Sender<String>) {
+pub fn setup_global_shortcuts(shortcut_tx: Sender<ActionEvent>) {
     tokio::spawn(async move {
         let global_shortcuts_manager = GlobalShortcutManager::new(shortcut_tx)
             .await
