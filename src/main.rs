@@ -9,6 +9,7 @@ use std::{
 
 use ashpd::desktop::registry::Registry;
 use config::Config;
+use kdialog::{InputBox, MessageBox};
 use ksni::TrayMethods;
 use kwin::KWinScriptManager;
 use log::{debug, info};
@@ -18,10 +19,11 @@ use nix::{
 };
 use tokio::sync::{RwLock, mpsc};
 use tray::TrayIcon;
-use zbus::{Connection, proxy};
+use zbus::{Connection, names::BusName, proxy};
 
 mod active_window;
 mod config;
+mod kdialog;
 mod kwin;
 mod shortcuts;
 mod tray;
@@ -42,6 +44,21 @@ async fn main() -> Result<(), Box<dyn Error>> {
     env_logger::init();
 
     let config = Config::load();
+
+    let connection = Connection::session().await?;
+    let service_name = "ovh.kabus.instantreplay";
+    let proxy = zbus::fdo::DBusProxy::new(&connection).await?;
+    let exists = proxy
+        .name_has_owner(BusName::try_from(service_name)?)
+        .await?;
+
+    if exists {
+        error!("Cannot start more than one instance of Instant Replay!");
+        MessageBox::new("Cannot start more than one instance of Instant Replay!")
+            .title("Error")
+            .show()?;
+        std::process::exit(1);
+    }
 
     let kwin_script_manager = KWinScriptManager::new().await?;
     kwin_script_manager.load().await;
