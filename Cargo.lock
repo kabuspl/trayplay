@@ -775,7 +775,7 @@ dependencies = [
 
 [[package]]
 name = "instantreplay"
-version = "0.1.0"
+version = "0.1.1"
 dependencies = [
  "ashpd",
  "ctrlc",
