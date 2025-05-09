@@ -12,7 +12,7 @@ use config::Config;
 use kdialog::{InputBox, MessageBox};
 use ksni::TrayMethods;
 use kwin::KWinScriptManager;
-use log::{debug, error, info};
+use log::{debug, error, info, warn};
 use nix::{
     sys::signal::{self, Signal},
     unistd::Pid,
@@ -251,7 +251,9 @@ async fn main() -> Result<(), Box<dyn Error>> {
                         config.save();
                     }
                 },
-                other => todo!("Unhandled action event: {:?}", other),
+                other => {
+                    warn!("Unhandled action event: {:?}", other)
+                }
             }
         }
     }
