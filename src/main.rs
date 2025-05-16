@@ -124,13 +124,14 @@ async fn main() -> Result<(), Box<dyn Error>> {
     let stdout = gpu_screen_recorder.stdout.take().unwrap();
 
     let app_name_clone = app_name.clone();
+    let config_clone = config.clone();
     tokio::spawn(async move {
         let reader = BufReader::new(stdout);
         for line in reader.lines().filter_map(|line| line.ok()) {
             let path = PathBuf::from_str(&line)
                 .expect("gpu-screen-recorder stdout must only contain file paths");
 
-            let mut target_path = PathBuf::from_str("/media/HDD2/Powtórki/").unwrap();
+            let mut target_path = config_clone.read().await.replay_directory.clone();
             target_path.push(app_name_clone.read().await.clone());
             if !std::fs::exists(&target_path).unwrap() {
                 std::fs::create_dir(&target_path).unwrap()
