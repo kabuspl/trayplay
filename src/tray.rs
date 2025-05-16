@@ -9,7 +9,7 @@ use tokio::sync::{RwLock, mpsc::Sender};
 
 use crate::{
     ActionEvent,
-    config::{Config, Quality},
+    config::{Config, Container, Quality},
     utils::ask_custom_number,
 };
 
@@ -247,6 +247,20 @@ impl ksni::Tray for TrayIcon {
                     TrayMultipleOption("High".into(), Quality::High),
                     TrayMultipleOption("Very high".into(), Quality::VeryHigh),
                     TrayMultipleOption("Ultra".into(), Quality::Ultra),
+                ],
+                nocustom
+            )
+            .into(),
+            tray_config_item_radio!(
+                container,
+                &config,
+                "Container",
+                "archive-extract",
+                vec![
+                    TrayMultipleOption("MKV".into(), Container::MKV),
+                    TrayMultipleOption("MP4".into(), Container::MP4),
+                    TrayMultipleOption("WEBM".into(), Container::WEBM),
+                    TrayMultipleOption("FLV".into(), Container::FLV),
                 ],
                 nocustom
             )
