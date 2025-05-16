@@ -45,6 +45,7 @@ where
         icon: String,
         options: Vec<TrayMultipleOption<O>>,
         initial_state: usize,
+        show_custom: bool,
         action: Box<dyn Fn(&mut T, usize) + Send + 'static>,
     },
     Toggle {
@@ -71,6 +72,7 @@ where
                 options,
                 action,
                 initial_state,
+                show_custom,
             } => SubMenu {
                 label,
                 icon_name: icon,
@@ -78,14 +80,20 @@ where
                     RadioGroup {
                         selected: initial_state,
                         select: action,
-                        options: options
-                            .iter()
-                            .map(|option| option.into())
-                            .chain(once(RadioItem {
-                                label: "Custom...".into(),
-                                ..Default::default()
-                            }))
-                            .collect(),
+                        options: {
+                            let options = options.iter().map(|option| option.into());
+
+                            if show_custom {
+                                options
+                                    .chain(once(RadioItem {
+                                        label: "Custom...".into(),
+                                        ..Default::default()
+                                    }))
+                                    .collect()
+                            } else {
+                                options.collect()
+                            }
+                        },
                     }
                     .into(),
                 ],
@@ -113,17 +121,37 @@ where
 }
 
 macro_rules! tray_config_item_radio {
-    ($config_key:ident, $config:expr, $label:expr, $icon:expr, $values:expr) => {{
+    (@custombool nocustom) => { false };
+    (@custombool) => { true };
+
+    (@customhandler $config:expr, $config_key:ident, $label:expr, nocustom) => {};
+
+    (@customhandler $config:expr, $config_key:ident, $label:expr,) => {
+        match ask_custom_number("Instant Replay Settings", $label, 0) {
+            Ok(number) => {
+                if let Some(number) = number {
+                    $config.$config_key = number;
+                    $config.save();
+                }
+            }
+            Err(err) => {
+                error!("Error when asking for custom config value: {}", err);
+            }
+        }
+    };
+
+    ($config_key:ident, $config:expr, $label:expr, $icon:expr, $values:expr $(, $nocustom:tt)?) => {{
         let config = $config;
 
         TrayConfigItem::Multiple::<TrayIcon, _> {
             label: $label.into(),
             icon: $icon.into(),
             options: $values,
+            show_custom: tray_config_item_radio!(@custombool $($nocustom)?),
             initial_state: $values
                 .iter()
                 .position(|element: &TrayMultipleOption<_>| {
-                    let a: i64 = element.1;
+                    let a = element.1;
                     a == config.$config_key
                 })
                 .unwrap_or($values.len()),
@@ -132,17 +160,7 @@ macro_rules! tray_config_item_radio {
                     let config = item.get_config();
                     let mut config = config.write().await;
                     if selection >= $values.len() {
-                        match ask_custom_number("Instant Replay Settings", $label, 0) {
-                            Ok(number) => {
-                                if let Some(number) = number {
-                                    config.$config_key = number;
-                                    config.save();
-                                }
-                            }
-                            Err(err) => {
-                                error!("Error when asking for custom config value: {}", err);
-                            }
-                        }
+                        tray_config_item_radio!(@customhandler config, $config_key, $label, $($nocustom)?);
                     } else {
                         let values: Vec<TrayMultipleOption<_>> = $values;
                         config.$config_key = values[selection].1;
