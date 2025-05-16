@@ -1,5 +1,5 @@
 use log::error;
-use std::{iter::once, sync::Arc};
+use std::{any::Any, iter::once, sync::Arc};
 
 use ksni::{
     MenuItem,
@@ -25,77 +25,25 @@ impl TrayIcon {
     }
 }
 
-#[derive(Clone)]
-enum TrayMultipleOption {
-    String(String, String),
-    Number(String, i64),
-}
+struct TrayMultipleOption<T>(String, T);
 
-impl Into<RadioItem> for &TrayMultipleOption {
+impl<T> Into<RadioItem> for &TrayMultipleOption<T> {
     fn into(self) -> RadioItem {
         RadioItem {
-            label: match self {
-                TrayMultipleOption::String(label, _) | TrayMultipleOption::Number(label, _) => {
-                    label.to_string()
-                }
-            },
+            label: self.0.clone(),
             ..Default::default()
         }
     }
 }
 
-#[derive(Debug)]
-struct NotNumberOptionError;
-
-impl TryInto<i64> for &TrayMultipleOption {
-    type Error = NotNumberOptionError;
-
-    fn try_into(self) -> Result<i64, Self::Error> {
-        if let TrayMultipleOption::Number(_, number) = self {
-            Ok(*number)
-        } else {
-            Err(NotNumberOptionError)
-        }
-    }
-}
-impl TryInto<i64> for TrayMultipleOption {
-    type Error = NotNumberOptionError;
-
-    fn try_into(self) -> Result<i64, Self::Error> {
-        (&self).try_into()
-    }
-}
-
-#[derive(Debug)]
-struct NotStringOptionError;
-
-impl TryInto<String> for &TrayMultipleOption {
-    type Error = NotStringOptionError;
-
-    fn try_into(self) -> Result<String, Self::Error> {
-        if let TrayMultipleOption::String(_, string) = self {
-            Ok(string.to_string())
-        } else {
-            Err(NotStringOptionError)
-        }
-    }
-}
-impl TryInto<String> for TrayMultipleOption {
-    type Error = NotStringOptionError;
-
-    fn try_into(self) -> Result<String, Self::Error> {
-        (&self).try_into()
-    }
-}
-
-enum TrayConfigItem<T>
+enum TrayConfigItem<T, O>
 where
     T: ksni::Tray + CommunicationProvider,
 {
     Multiple {
         label: String,
         icon: String,
-        options: Vec<TrayMultipleOption>,
+        options: Vec<TrayMultipleOption<O>>,
         initial_state: usize,
         action: Box<dyn Fn(&mut T, usize) + Send + 'static>,
     },
@@ -111,7 +59,7 @@ where
     },
 }
 
-impl<T> Into<MenuItem<T>> for TrayConfigItem<T>
+impl<T, O> Into<MenuItem<T>> for TrayConfigItem<T, O>
 where
     T: ksni::Tray + CommunicationProvider,
 {
@@ -168,14 +116,14 @@ macro_rules! tray_config_item_radio {
     ($config_key:ident, $config:expr, $label:expr, $icon:expr, $values:expr) => {{
         let config = $config;
 
-        TrayConfigItem::Multiple::<TrayIcon> {
+        TrayConfigItem::Multiple::<TrayIcon, _> {
             label: $label.into(),
             icon: $icon.into(),
             options: $values,
             initial_state: $values
                 .iter()
-                .position(|element| {
-                    let a: i64 = element.try_into().unwrap();
+                .position(|element: &TrayMultipleOption<_>| {
+                    let a: i64 = element.1;
                     a == config.$config_key
                 })
                 .unwrap_or($values.len()),
@@ -196,7 +144,8 @@ macro_rules! tray_config_item_radio {
                             }
                         }
                     } else {
-                        config.$config_key = $values[selection].clone().try_into().unwrap();
+                        let values: Vec<TrayMultipleOption<_>> = $values;
+                        config.$config_key = values[selection].1;
                         config.save();
                     }
                 });
@@ -207,7 +156,7 @@ macro_rules! tray_config_item_radio {
 
 macro_rules! tray_config_item_custom {
     ($config_key:ident, $label:expr, $icon:expr, $action:expr) => {
-        TrayConfigItem::Custom::<TrayIcon> {
+        TrayConfigItem::Custom::<TrayIcon, u8> {
             label: $label.into(),
             icon: $icon.into(),
             action: Box::new(|item| {
@@ -247,8 +196,8 @@ impl ksni::Tray for TrayIcon {
                 "Framerate",
                 "speedometer",
                 vec![
-                    TrayMultipleOption::Number("30".into(), 30),
-                    TrayMultipleOption::Number("60".into(), 60)
+                    TrayMultipleOption("30".into(), 30),
+                    TrayMultipleOption("60".into(), 60),
                 ]
             )
             .into(),
@@ -258,11 +207,11 @@ impl ksni::Tray for TrayIcon {
                 "Duration",
                 "clock",
                 vec![
-                    TrayMultipleOption::Number("30s".into(), 30),
-                    TrayMultipleOption::Number("1min".into(), 60),
-                    TrayMultipleOption::Number("2min".into(), 120),
-                    TrayMultipleOption::Number("3min".into(), 180),
-                    TrayMultipleOption::Number("5min".into(), 300),
+                    TrayMultipleOption("30s".into(), 30),
+                    TrayMultipleOption("1min".into(), 60),
+                    TrayMultipleOption("2min".into(), 120),
+                    TrayMultipleOption("3min".into(), 180),
+                    TrayMultipleOption("5min".into(), 300),
                 ]
             )
             .into(),
