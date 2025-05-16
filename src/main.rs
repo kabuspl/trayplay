@@ -7,9 +7,9 @@ use std::{
     sync::Arc,
 };
 
-use ashpd::desktop::{file_chooser::OpenFileRequest, registry::Registry};
+use ashpd::desktop::registry::Registry;
 use config::Config;
-use kdialog::{InputBox, MessageBox};
+use kdialog::MessageBox;
 use ksni::TrayMethods;
 use kwin::KWinScriptManager;
 use log::{debug, error, info, warn};
@@ -19,6 +19,7 @@ use nix::{
 };
 use tokio::sync::{RwLock, mpsc};
 use tray::TrayIcon;
+use utils::ask_path;
 use zbus::{Connection, names::BusName, proxy};
 
 mod active_window;
@@ -35,6 +36,7 @@ pub enum ActionEvent {
     Quit,
     Config(ConfigActionEvent),
     Unknown,
+    ChangeReplayPath,
 }
 
 #[derive(Debug)]
@@ -60,7 +62,7 @@ trait OsdService {
 async fn main() -> Result<(), Box<dyn Error>> {
     env_logger::init();
 
-    let mut config = Config::load();
+    let config = Arc::new(RwLock::new(Config::load()));
 
     let connection = Connection::session().await?;
     let service_name = "ovh.kabus.instantreplay";
@@ -86,38 +88,42 @@ async fn main() -> Result<(), Box<dyn Error>> {
         .await?;
 
     let (action_tx, mut action_rx) = mpsc::channel(8);
-    let tray = TrayIcon::new(action_tx.clone());
+    let tray = TrayIcon::new(action_tx.clone(), &config).await;
     let _tray_handle = tray.spawn().await.unwrap();
     shortcuts::setup_global_shortcuts(action_tx);
 
     let app_name = Arc::new(RwLock::new("unknown".to_string()));
     active_window::setup_active_window_manager(app_name.clone()).await?;
 
-    let mut gpu_screen_recorder = Command::new("gpu-screen-recorder")
-        .arg("-w")
-        .arg(&config.screen)
-        .arg("-c")
-        .arg(config.container.to_string())
-        .arg("-f")
-        .arg(config.framerate.to_string())
-        .arg("-r")
-        .arg(config.replay_duration_secs.to_string())
-        .arg("-restart-replay-on-save")
-        .arg(if config.clear_buffer_on_save {
-            "yes"
-        } else {
-            "no"
-        })
-        .arg("-bm")
-        .arg("qp")
-        .arg("-q")
-        .arg(config.quality.to_string())
-        .args(config.audio_tracks.iter().flat_map(|track| ["-a", track]))
-        .arg("-o")
-        .arg(&config.replay_directory)
-        .stdout(Stdio::piped())
-        .stderr(Stdio::piped())
-        .spawn()?;
+    let mut gpu_screen_recorder = {
+        let config = config.read().await;
+
+        Command::new("gpu-screen-recorder")
+            .arg("-w")
+            .arg(&config.screen)
+            .arg("-c")
+            .arg(config.container.to_string())
+            .arg("-f")
+            .arg(config.framerate.to_string())
+            .arg("-r")
+            .arg(config.replay_duration_secs.to_string())
+            .arg("-restart-replay-on-save")
+            .arg(if config.clear_buffer_on_save {
+                "yes"
+            } else {
+                "no"
+            })
+            .arg("-bm")
+            .arg("qp")
+            .arg("-q")
+            .arg(config.quality.to_string())
+            .args(config.audio_tracks.iter().flat_map(|track| ["-a", track]))
+            .arg("-o")
+            .arg(&config.replay_directory)
+            .stdout(Stdio::piped())
+            .stderr(Stdio::piped())
+            .spawn()?
+    };
 
     let stderr = gpu_screen_recorder.stderr.take().unwrap();
     tokio::spawn(async move {
@@ -182,75 +188,20 @@ async fn main() -> Result<(), Box<dyn Error>> {
                     )?;
                     std::process::exit(0);
                 }
-                ActionEvent::Config(config_event) => match config_event {
-                    ConfigActionEvent::ChangeReplayPath => {
-                        let request = OpenFileRequest::default()
-                            .directory(true)
-                            .current_folder(&config.replay_directory)?
-                            .send()
-                            .await
-                            .and_then(|r| r.response());
-
-                        match request {
-                            Ok(directory) => {
-                                let directory = directory.uris()[0].to_file_path().unwrap();
+                ActionEvent::ChangeReplayPath => {
+                    let mut config = config.write().await;
+                    match ask_path(true, &config.replay_directory).await {
+                        Ok(directory) => {
+                            if let Some(directory) = directory {
                                 config.replay_directory = directory;
                                 config.save();
                             }
-                            Err(_) => todo!(),
                         }
-                    }
-                    ConfigActionEvent::CustomReplayDuration => {
-                        let result = InputBox::new(
-                            "Replay duration (in seconds):",
-                            kdialog::InputBoxType::Text,
-                        )
-                        .initial(config.replay_duration_secs.to_string())
-                        .title("Instant Replay Settings")
-                        .show()?;
-
-                        if let Some(result) = result {
-                            let number = result.replace("\n", "").parse::<u16>();
-                            if let Ok(number) = number {
-                                config.replay_duration_secs = number;
-                                config.save();
-                            } else {
-                                MessageBox::new("You need to input an integer.")
-                                    .title("Error")
-                                    .show()?;
-                            }
+                        Err(err) => {
+                            error!("Error when asking for replay directory: {}", err);
                         }
-                    }
-                    ConfigActionEvent::SetReplayDuration(duration) => {
-                        config.replay_duration_secs = duration;
-                        config.save();
-                    }
-                    ConfigActionEvent::CustomFramerate => {
-                        let result = InputBox::new(
-                            "Framerate (in frames per seconds):",
-                            kdialog::InputBoxType::Text,
-                        )
-                        .initial(config.framerate.to_string())
-                        .title("Instant Replay Settings")
-                        .show()?;
-
-                        if let Some(result) = result {
-                            let number = result.replace("\n", "").parse::<u16>();
-                            if let Ok(number) = number {
-                                config.framerate = number;
-                                config.save();
-                            } else {
-                                MessageBox::new("You need to input an integer.")
-                                    .title("Error")
-                                    .show()?;
-                            }
-                        }
-                    }
-                    ConfigActionEvent::SetFramerate(framerate) => {
-                        config.framerate = framerate;
-                        config.save();
-                    }
-                },
+                    };
+                }
                 other => {
                     warn!("Unhandled action event: {:?}", other)
                 }

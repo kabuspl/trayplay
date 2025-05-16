@@ -6,15 +6,16 @@ pub struct Config {
     pub screen: String,
     pub container: Container,
     pub audio_tracks: Vec<String>,
-    pub framerate: u16,
+    pub framerate: i64,
     pub clear_buffer_on_save: bool,
     pub quality: Quality,
     pub replay_directory: PathBuf,
-    pub replay_duration_secs: u16,
+    pub replay_duration_secs: i64,
 }
 
 impl Config {
     pub fn load() -> Self {
+        // println!("{:#?}", USER_CONFIGURABLE.iter());
         let mut path = dirs::config_dir().unwrap();
         path.push("instantreplay.toml");
 
