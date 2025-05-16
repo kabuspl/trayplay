@@ -34,18 +34,8 @@ mod utils;
 pub enum ActionEvent {
     SaveReplay,
     Quit,
-    Config(ConfigActionEvent),
     Unknown,
     ChangeReplayPath,
-}
-
-#[derive(Debug)]
-pub enum ConfigActionEvent {
-    ChangeReplayPath,
-    SetFramerate(u16),
-    CustomFramerate,
-    SetReplayDuration(u16),
-    CustomReplayDuration,
 }
 
 #[proxy(
