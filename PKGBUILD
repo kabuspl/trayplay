@@ -1,3 +1,5 @@
+# Maintainer: kabuspl <jakubs832 at gmail dot com>
+
 pkgname=trayplay
 pkgver=0.2.0
 pkgrel=1
@@ -8,7 +10,7 @@ license=('MIT')
 depends=('gcc-libs' 'glibc' 'gpu-screen-recorder' 'xdg-desktop-portal-impl' 'kdialog')
 makedepends=('cargo')
 source=("${pkgname}-${pkgver}.tar.gz::https://github.com/kabuspl/trayplay/archive/v${pkgver}.tar.gz")
-sha256sums=('SKIP')
+sha256sums=('83d2009c6c493af3b37a7bbac75f7b38be083e728e3cfe18dfd81268a17822fc')
 
 prepare() {
     export RUSTUP_TOOLCHAIN=stable
