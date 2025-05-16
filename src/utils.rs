@@ -81,8 +81,6 @@ pub async fn ask_path(
     directory: bool,
     initial: &PathBuf,
 ) -> Result<Option<PathBuf>, Box<dyn std::error::Error>> {
-    println!("{}", initial.display());
-
     let request = OpenFileRequest::default()
         .directory(directory)
         .current_folder(initial)?
@@ -95,9 +93,12 @@ pub async fn ask_path(
             let directory = directory.uris()[0].to_file_path().unwrap();
             Ok(Some(directory))
         }
-        Err(err) => {
-            error!("{}", err);
-            Err(err.into())
-        }
+        Err(err) => match err {
+            ashpd::Error::Response(response_error) => match response_error {
+                ashpd::desktop::ResponseError::Cancelled => Ok(None),
+                err => Err(err.into()),
+            },
+            err => Err(err.into()),
+        },
     }
 }
