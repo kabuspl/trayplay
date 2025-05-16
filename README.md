@@ -6,8 +6,7 @@ Simple frontend for [gpu-screen-recorder](https://git.dec05eba.com/gpu-screen-re
 > This app currently ONLY works on KDE Plasma.
 
 ## Installing
-Currently only Arch Linux and derivatives are supported.
-Clone this repo or only download PKGBUILD file. Then in the directory containing it run `makepkg -si`.
+Install the package from AUR: https://aur.archlinux.org/packages/trayplay
 
 ## Configuration
 You can configure TrayPlay through its tray menu or directly with a config file which gets saved after the first start at `/home/username/.config/trayplay.toml` (or other directory set in $XDG_CONFIG_HOME)
