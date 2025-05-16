@@ -1,8 +1,8 @@
 function send(window) {
     callDBus(
-        "ovh.kabus.instantreplay",
-        "/ovh/kabus/instantreplay",
-        "ovh.kabus.instantreplay.ActiveWindowManager",
+        "ovh.kabus.trayplay",
+        "/ovh/kabus/trayplay",
+        "ovh.kabus.trayplay.ActiveWindowManager",
         "SetActiveWindow",
         window.desktopFileName,
         window.caption,

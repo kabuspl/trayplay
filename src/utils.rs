@@ -36,7 +36,7 @@ pub fn get_app_name(desktop_file: &str) -> Result<Option<String>, std::io::Error
 pub fn get_script_path() -> Option<PathBuf> {
     let local_path = std::env::current_dir().unwrap().join("dist/kwin_script.js");
     let search_paths = vec![
-        "/usr/share/instantreplay/kwin_script.js",
+        "/usr/share/trayplay/kwin_script.js",
         local_path.to_str().unwrap(),
     ];
 

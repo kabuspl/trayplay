@@ -55,15 +55,15 @@ async fn main() -> Result<(), Box<dyn Error>> {
     let config = Arc::new(RwLock::new(Config::load()));
 
     let connection = Connection::session().await?;
-    let service_name = "ovh.kabus.instantreplay";
+    let service_name = "ovh.kabus.trayplay";
     let proxy = zbus::fdo::DBusProxy::new(&connection).await?;
     let exists = proxy
         .name_has_owner(BusName::try_from(service_name)?)
         .await?;
 
     if exists {
-        error!("Cannot start more than one instance of Instant Replay!");
-        MessageBox::new("Cannot start more than one instance of Instant Replay!")
+        error!("Cannot start more than one instance of TrayPlay!");
+        MessageBox::new("Cannot start more than one instance of TrayPlay!")
             .title("Error")
             .show()?;
         std::process::exit(1);
@@ -73,9 +73,7 @@ async fn main() -> Result<(), Box<dyn Error>> {
     kwin_script_manager.load().await;
 
     // Let xdg portal know what desktop file are we
-    Registry::default()
-        .register("ovh.kabus.instantreplay")
-        .await?;
+    Registry::default().register("ovh.kabus.trayplay").await?;
 
     let (action_tx, mut action_rx) = mpsc::channel(8);
     let tray = TrayIcon::new(action_tx.clone(), &config).await;

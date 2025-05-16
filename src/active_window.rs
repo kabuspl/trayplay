@@ -10,7 +10,7 @@ struct ActiveWindowManager {
     tx: mpsc::Sender<(String, String, bool)>,
 }
 
-#[interface(name = "ovh.kabus.instantreplay.ActiveWindowManager")]
+#[interface(name = "ovh.kabus.trayplay.ActiveWindowManager")]
 impl ActiveWindowManager {
     async fn set_active_window(&self, desktop_file: &str, title: &str, fullscreen: bool) {
         self.tx
@@ -28,8 +28,8 @@ pub async fn setup_active_window_manager(
     let active_window_manager = ActiveWindowManager { tx: app_name_tx };
 
     let _conn = zbus::connection::Builder::session()?
-        .name("ovh.kabus.instantreplay")?
-        .serve_at("/ovh/kabus/instantreplay", active_window_manager)?
+        .name("ovh.kabus.trayplay")?
+        .serve_at("/ovh/kabus/trayplay", active_window_manager)?
         .build()
         .await?;
 

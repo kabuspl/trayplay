@@ -774,27 +774,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "instantreplay"
-version = "0.1.1"
-dependencies = [
- "ashpd",
- "ctrlc",
- "dirs",
- "env_logger",
- "freedesktop_entry_parser",
- "futures",
- "futures-util",
- "ksni",
- "lazy_static",
- "log",
- "nix 0.30.0",
- "serde",
- "tokio",
- "toml",
- "zbus",
-]
-
-[[package]]
 name = "is_terminal_polyfill"
 version = "1.70.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -1523,6 +1502,27 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "e672c95779cf947c5311f83787af4fa8fffd12fb27e4993211a84bdfd9610f9c"
 dependencies = [
  "once_cell",
+]
+
+[[package]]
+name = "trayplay"
+version = "0.1.1"
+dependencies = [
+ "ashpd",
+ "ctrlc",
+ "dirs",
+ "env_logger",
+ "freedesktop_entry_parser",
+ "futures",
+ "futures-util",
+ "ksni",
+ "lazy_static",
+ "log",
+ "nix 0.30.0",
+ "serde",
+ "tokio",
+ "toml",
+ "zbus",
 ]
 
 [[package]]

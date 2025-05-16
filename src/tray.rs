@@ -131,7 +131,7 @@ macro_rules! tray_config_item_radio {
     (@customhandler $config:expr, $config_key:ident, $label:expr, nocustom) => {};
 
     (@customhandler $config:expr, $config_key:ident, $label:expr,) => {
-        match ask_custom_number("Instant Replay Settings", $label, 0) {
+        match ask_custom_number("TrayPlay Settings", $label, 0) {
             Ok(number) => {
                 if let Some(number) = number {
                     $config.$config_key = number;
@@ -202,7 +202,7 @@ impl ksni::Tray for TrayIcon {
     }
 
     fn title(&self) -> String {
-        "Instant Replay".into()
+        "TrayPlay".into()
     }
 
     fn menu(&self) -> Vec<ksni::MenuItem<Self>> {

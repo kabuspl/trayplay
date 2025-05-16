@@ -1,4 +1,5 @@
-# Instant Replay
+# TrayPlay
+## A simple tray app for recording screen replays on KDE.
 Simple frontend for [gpu-screen-recorder](https://git.dec05eba.com/gpu-screen-recorder/about)'s replay feature running in the background. Smaller alternative for [gpu-screen-recorder-ui](https://git.dec05eba.com/gpu-screen-recorder-ui/about/). Makes use of [Global Shortcuts](https://flatpak.github.io/xdg-desktop-portal/docs/doc-org.freedesktop.portal.GlobalShortcuts.html) and KDE OSDs. Replays are put into directories named after currently focused fullscreen app. If the active window isn't fullscreen videos are put into "unknown" directory.
 
 > [!NOTE]
@@ -9,7 +10,7 @@ Currently only Arch Linux and derivatives are supported.
 Clone this repo or only download PKGBUILD file. Then in the directory containing it run `makepkg -si`.
 
 ## Configuration
-Config file gets saved after the first start at `/home/username/.config/instantreplay.toml` (or other directory set in $XDG_CONFIG_HOME)
+You can configure TrayPlay through its tray menu or directly with a config file which gets saved after the first start at `/home/username/.config/trayplay.toml` (or other directory set in $XDG_CONFIG_HOME)
 
 ```toml
 # directly passed to gpu-screen-recorder as -w option

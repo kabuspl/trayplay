@@ -1,0 +1,12 @@
+[Desktop Entry]
+Version=1.0
+Type=Application
+Name=TrayPlay
+GenericName=Instant Replays
+Comment=A simple tray app for recording screen replays on KDE.
+StartupNotify=true
+Exec=trayplay
+Icon=media-skip-backward
+Categories=Multimedia;
+Keywords=replay;shadowplay;relive;instantreplay;trayplay
+MimeType=

@@ -1,13 +1,13 @@
-pkgname=instantreplay
+pkgname=trayplay
 pkgver=0.1.1
 pkgrel=1
 pkgdesc="Instant Replay (DVR) app for KDE using gpu-screen-recorder in the background"
 arch=('x86_64' 'aarch64')
-url="https://github.com/kabuspl/instantreplay"
+url="https://github.com/kabuspl/trayplay"
 license=('MIT')
 depends=('gcc-libs' 'glibc' 'gpu-screen-recorder' 'xdg-desktop-portal-impl')
 makedepends=('cargo')
-source=("${pkgname}-${pkgver}.tar.gz::https://github.com/kabuspl/instantreplay/archive/v${pkgver}.tar.gz")
+source=("${pkgname}-${pkgver}.tar.gz::https://github.com/kabuspl/trayplay/archive/v${pkgver}.tar.gz")
 sha256sums=('SKIP')
 
 prepare() {
@@ -36,7 +36,7 @@ package() {
     cd "$srcdir/$pkgname-$pkgver"
 
     install -Dm0755 -t "$pkgdir/usr/bin/" "target/release/$pkgname"
-    install -Dm0644 -t "$pkgdir/usr/share/instantreplay" "dist/kwin_script.js"
-    install -Dm0644 -t "$pkgdir/usr/share/applications" "dist/ovh.kabus.instantreplay.desktop"
+    install -Dm0644 -t "$pkgdir/usr/share/trayplay" "dist/kwin_script.js"
+    install -Dm0644 -t "$pkgdir/usr/share/applications" "dist/ovh.kabus.trayplay.desktop"
     install -Dm0644 LICENSE "$pkgdir/usr/share/licenses/${pkgname}/LICENSE"
 }

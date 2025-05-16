@@ -17,7 +17,7 @@ impl Config {
     pub fn load() -> Self {
         // println!("{:#?}", USER_CONFIGURABLE.iter());
         let mut path = dirs::config_dir().unwrap();
-        path.push("instantreplay.toml");
+        path.push("trayplay.toml");
 
         match std::fs::read_to_string(path) {
             Ok(config) => toml::from_str(&config).expect("Cannot parse config file"),
@@ -27,7 +27,7 @@ impl Config {
 
     pub fn save(&self) {
         let mut path = dirs::config_dir().unwrap();
-        path.push("instantreplay.toml");
+        path.push("trayplay.toml");
 
         std::fs::write(path, toml::to_string(&self).unwrap()).expect("Failed to write config file");
     }
@@ -38,7 +38,7 @@ impl Default for Config {
         println!("Config missing or broken. Replacing with defaults");
 
         let mut path = dirs::config_dir().unwrap();
-        path.push("instantreplay.toml");
+        path.push("trayplay.toml");
 
         let instance = Self {
             screen: "screen".to_string(),
