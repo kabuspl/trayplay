@@ -7,7 +7,11 @@ use ksni::{
 };
 use tokio::sync::{RwLock, mpsc::Sender};
 
-use crate::{ActionEvent, config::Config, utils::ask_custom_number};
+use crate::{
+    ActionEvent,
+    config::{Config, Quality},
+    utils::ask_custom_number,
+};
 
 pub struct TrayIcon {
     _enabled: bool,
@@ -231,6 +235,20 @@ impl ksni::Tray for TrayIcon {
                     TrayMultipleOption("3min".into(), 180),
                     TrayMultipleOption("5min".into(), 300),
                 ]
+            )
+            .into(),
+            tray_config_item_radio!(
+                quality,
+                &config,
+                "Quality",
+                "star-new-symbolic",
+                vec![
+                    TrayMultipleOption("Medium".into(), Quality::Medium),
+                    TrayMultipleOption("High".into(), Quality::High),
+                    TrayMultipleOption("Very high".into(), Quality::VeryHigh),
+                    TrayMultipleOption("Ultra".into(), Quality::Ultra),
+                ],
+                nocustom
             )
             .into(),
             tray_config_item_custom!(
