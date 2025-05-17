@@ -1,5 +1,6 @@
 # TrayPlay
 ## A simple tray app for recording screen replays on KDE.
+![Tray menu screenshot](preview.png)
 Simple frontend for [gpu-screen-recorder](https://git.dec05eba.com/gpu-screen-recorder/about)'s replay feature running in the background. Smaller alternative for [gpu-screen-recorder-ui](https://git.dec05eba.com/gpu-screen-recorder-ui/about/). Makes use of [Global Shortcuts](https://flatpak.github.io/xdg-desktop-portal/docs/doc-org.freedesktop.portal.GlobalShortcuts.html) and KDE OSDs. Replays are put into directories named after currently focused fullscreen app. If the active window isn't fullscreen videos are put into "unknown" directory.
 
 > [!NOTE]
