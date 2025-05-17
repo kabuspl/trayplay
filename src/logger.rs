@@ -31,7 +31,7 @@ impl Log for KDialogLogger {
         if record.level() <= Level::Warn {
             match record.level() {
                 log::Level::Error => {
-                    InfoBox::error(record.args().as_str().unwrap_or("No information available"))
+                    InfoBox::error(format!("{}", record.args()))
                         .title(format!(
                             "Error - {} - {}",
                             record.module_path().unwrap_or("unknown module"),
@@ -41,7 +41,7 @@ impl Log for KDialogLogger {
                         .unwrap();
                 }
                 log::Level::Warn => {
-                    InfoBox::warning(record.args().as_str().unwrap_or("No information available"))
+                    InfoBox::warning(format!("{}", record.args()))
                         .title(format!(
                             "Warning - {} - {}",
                             record.module_path().unwrap_or("unknown module"),
@@ -51,7 +51,7 @@ impl Log for KDialogLogger {
                         .unwrap();
                 }
                 other => {
-                    MessageBox::new(record.args().as_str().unwrap_or("No information available"))
+                    MessageBox::new(format!("{}", record.args()))
                         .title(format!(
                             "{} - {} - {}",
                             other.as_str(),
