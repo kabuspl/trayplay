@@ -1,7 +1,7 @@
 # Maintainer: kabuspl <jakubs832 at gmail dot com>
 
 pkgname=trayplay
-pkgver=0.2.0
+pkgver=0.3.0
 pkgrel=1
 pkgdesc="Instant Replay (DVR) app for KDE using gpu-screen-recorder in the background"
 arch=('x86_64' 'aarch64')
