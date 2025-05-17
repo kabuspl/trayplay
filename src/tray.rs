@@ -1,5 +1,5 @@
 use log::error;
-use std::{any::Any, iter::once, sync::Arc};
+use std::{iter::once, sync::Arc};
 
 use ksni::{
     MenuItem,
@@ -40,6 +40,7 @@ impl<T> Into<RadioItem> for &TrayMultipleOption<T> {
     }
 }
 
+#[allow(dead_code)]
 enum TrayConfigItem<T, O>
 where
     T: ksni::Tray + CommunicationProvider,
@@ -105,9 +106,9 @@ where
             }
             .into(),
             TrayConfigItem::Toggle {
-                label,
-                icon,
-                action,
+                label: _,
+                icon: _,
+                action: _,
             } => todo!("Implement toggle config menu item type"),
             TrayConfigItem::Custom {
                 label,

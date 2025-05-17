@@ -1,7 +1,6 @@
 use std::{path::PathBuf, str::FromStr};
 
 use ashpd::desktop::file_chooser::OpenFileRequest;
-use log::error;
 
 use crate::kdialog::{self, InputBox, MessageBox};
 
