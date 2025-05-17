@@ -82,7 +82,7 @@ async fn main() -> Result<(), Box<dyn Error>> {
     active_window::setup_active_window_manager(app_name.clone()).await?;
 
     let mut gpu_screen_recorder = GpuScreenRecorder::new(config.clone(), app_name.clone()).await?;
-    gpu_screen_recorder.start().await?;
+    handle_gsr_start_result(gpu_screen_recorder.start().await);
 
     let conn = Connection::session().await?;
 
@@ -91,14 +91,25 @@ async fn main() -> Result<(), Box<dyn Error>> {
             match action {
                 ActionEvent::SaveReplay => {
                     info!("Saving replay from {}", app_name.read().await);
-                    gpu_screen_recorder.save_replay().await?;
-                    OsdServiceProxy::new(&conn)
-                        .await?
-                        .show_text(
-                            "media-record",
-                            &format!("Replay from \"{}\" saved!", app_name.read().await),
-                        )
-                        .await?;
+                    match gpu_screen_recorder.save_replay().await {
+                        Ok(_) => {
+                            OsdServiceProxy::new(&conn)
+                                .await?
+                                .show_text(
+                                    "media-record",
+                                    &format!("Replay from \"{}\" saved!", app_name.read().await),
+                                )
+                                .await?;
+                        }
+                        Err(err) => match err {
+                            gsr::Error::RecorderNotRunning => {
+                                error!("Replay recording is either turned off or has crashed.")
+                            }
+                            err => {
+                                error!("Failed to save replay: {}", err);
+                            }
+                        },
+                    }
                 }
                 ActionEvent::Quit => {
                     kwin_script_manager.unload().await;
@@ -124,5 +135,18 @@ async fn main() -> Result<(), Box<dyn Error>> {
                 }
             }
         }
+    }
+}
+
+fn handle_gsr_start_result(result: Result<(), gsr::Error>) {
+    match result {
+        Ok(gsr) => gsr,
+        Err(err) => match err {
+            gsr::Error::IoError(err) => match err.kind() {
+                std::io::ErrorKind::NotFound => error!("gpu-screen-recorder is not installed!"),
+                err => error!("Error while starting gpu-screen-recorder: {}", err),
+            },
+            err => error!("Error while starting gpu-screen-recorder: {}", err),
+        },
     }
 }
