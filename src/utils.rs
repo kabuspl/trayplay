@@ -2,7 +2,7 @@ use std::{path::PathBuf, str::FromStr};
 
 use ashpd::desktop::file_chooser::OpenFileRequest;
 
-use crate::kdialog::{self, InputBox, MessageBox};
+use crate::kdialog::{self, InfoBox, InputBox};
 
 pub fn get_app_name(desktop_file: &str) -> Result<Option<String>, std::io::Error> {
     let user_applications_path = format!("{}/applications/", dirs::data_dir().unwrap().display());
@@ -65,8 +65,8 @@ pub fn ask_custom_number(
         if let Ok(number) = number {
             Ok(Some(number))
         } else {
-            MessageBox::new("You need to input an integer.")
-                .title("Error")
+            InfoBox::warning("You need to input an integer.")
+                .title("Wrong input")
                 .show()?;
 
             ask_custom_number(title, label, initial)

@@ -9,10 +9,10 @@ use std::{
 
 use ashpd::desktop::registry::Registry;
 use config::Config;
-use kdialog::MessageBox;
 use ksni::TrayMethods;
 use kwin::KWinScriptManager;
 use log::{debug, error, info, warn};
+use logger::{CombinedLogger, KDialogLogger};
 use nix::{
     sys::signal::{self, Signal},
     unistd::Pid,
@@ -26,6 +26,7 @@ mod active_window;
 mod config;
 mod kdialog;
 mod kwin;
+mod logger;
 mod shortcuts;
 mod tray;
 mod utils;
@@ -50,7 +51,16 @@ trait OsdService {
 
 #[tokio::main]
 async fn main() -> Result<(), Box<dyn Error>> {
-    env_logger::init();
+    let env_logger = env_logger::builder()
+        .parse_env(env_logger::Env::default().default_filter_or("warn"))
+        .build();
+    let kdialog_logger = KDialogLogger {};
+
+    log::set_max_level(env_logger.filter());
+    log::set_boxed_logger(Box::new(CombinedLogger(vec![
+        Box::new(env_logger),
+        Box::new(kdialog_logger),
+    ])))?;
 
     let config = Arc::new(RwLock::new(Config::load()));
 
@@ -63,9 +73,6 @@ async fn main() -> Result<(), Box<dyn Error>> {
 
     if exists {
         error!("Cannot start more than one instance of TrayPlay!");
-        MessageBox::new("Cannot start more than one instance of TrayPlay!")
-            .title("Error")
-            .show()?;
         std::process::exit(1);
     }
 

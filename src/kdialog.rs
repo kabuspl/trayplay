@@ -82,6 +82,84 @@ impl MessageBox {
     }
 }
 
+#[derive(PartialEq)]
+#[allow(dead_code)]
+pub enum InfoBoxKind {
+    Error,
+    Warning,
+}
+
+pub struct InfoBox {
+    kind: InfoBoxKind,
+    label: String,
+    details: Option<String>,
+    title: Option<String>,
+}
+
+#[allow(dead_code)]
+impl InfoBox {
+    pub fn warning(label: impl Into<String>) -> Self {
+        Self {
+            label: label.into(),
+            kind: InfoBoxKind::Warning,
+            title: None,
+            details: None,
+        }
+    }
+
+    pub fn error(label: impl Into<String>) -> Self {
+        Self {
+            label: label.into(),
+            kind: InfoBoxKind::Error,
+            title: None,
+            details: None,
+        }
+    }
+
+    pub fn title(mut self, title: impl Into<String>) -> Self {
+        self.title = Some(title.into());
+        self
+    }
+
+    pub fn details(mut self, details: impl Into<String>) -> Self {
+        self.details = Some(details.into());
+        self
+    }
+
+    pub fn show(&self) -> Result<ClickedButton, std::io::Error> {
+        let mut command = Command::new("kdialog");
+
+        if let Some(title) = &self.title {
+            command.args(["--title", title]);
+        }
+
+        match self.kind {
+            InfoBoxKind::Error => {
+                command.arg("--detailederror");
+            }
+            InfoBoxKind::Warning => {
+                command.arg("--detailedsorry");
+            }
+        }
+
+        command.arg(&self.label);
+
+        if let Some(details) = &self.details {
+            command.arg(details);
+        }
+
+        let mut child = command.spawn()?;
+        Ok(match child.wait()?.code() {
+            Some(code) => match code {
+                0 => ClickedButton::Ok,
+                2 => ClickedButton::Cancel,
+                _ => ClickedButton::None,
+            },
+            None => ClickedButton::None,
+        })
+    }
+}
+
 #[allow(dead_code)]
 pub enum InputBoxType {
     Text,
