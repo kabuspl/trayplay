@@ -1,5 +1,5 @@
 use log::error;
-use std::{iter::once, sync::Arc};
+use std::{iter::once, process::Command, sync::Arc};
 
 use ksni::{
     MenuItem,
@@ -10,6 +10,7 @@ use tokio::sync::{RwLock, mpsc::Sender};
 use crate::{
     ActionEvent,
     config::{Config, Container, Quality},
+    kdialog::MessageBox,
     utils::ask_custom_number,
 };
 
@@ -178,7 +179,7 @@ macro_rules! tray_config_item_radio {
 }
 
 macro_rules! tray_config_item_custom {
-    ($config_key:ident, $label:expr, $icon:expr, $action:expr) => {
+    ($label:expr, $icon:expr, $action:expr) => {
         TrayConfigItem::Custom::<TrayIcon, u8> {
             label: $label.into(),
             icon: $icon.into(),
@@ -267,7 +268,6 @@ impl ksni::Tray for TrayIcon {
             )
             .into(),
             tray_config_item_custom!(
-                replay_directory,
                 "Path",
                 "inode-directory",
                 async move |_, action_event_tx: Sender<ActionEvent>| {
@@ -311,12 +311,28 @@ impl ksni::Tray for TrayIcon {
                 ..Default::default()
             }
             .into(),
+            MenuItem::Separator,
             SubMenu {
                 label: "Settings".into(),
                 icon_name: "configure".into(),
                 submenu: settings_menu,
                 ..Default::default()
             }
+            .into(),
+            tray_config_item_custom!("About", "help-about", async move |_, _| {
+                let gsr_version = Command::new("gpu-screen-recorder")
+                    .arg("--version")
+                    .output()
+                    .unwrap();
+                MessageBox::new(format!(
+                    "TrayPlay version: {}\ngpu-screen-recorder version: {}\nReport issues at: https://github.com/kabuspl/trayplay/issues\nLicense: MIT\n© 2025 kabuspl",
+                    env!("CARGO_PKG_VERSION"),
+                    String::from_utf8(gsr_version.stdout).unwrap()
+                ))
+                .title("About TrayPlay")
+                .show()
+                .unwrap();
+            })
             .into(),
             MenuItem::Separator,
             StandardItem {
