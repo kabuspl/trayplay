@@ -136,7 +136,7 @@ macro_rules! tray_config_item_radio {
             Ok(number) => {
                 if let Some(number) = number {
                     $config.$config_key = number;
-                    $config.save();
+                    $config.save().await;
                 }
             }
             Err(err) => {
@@ -169,7 +169,7 @@ macro_rules! tray_config_item_radio {
                     } else {
                         let values: Vec<TrayMultipleOption<_>> = $values;
                         config.$config_key = values[selection].1;
-                        config.save();
+                        config.save().await;
                     }
                 });
             }),

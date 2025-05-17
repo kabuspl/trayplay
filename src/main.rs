@@ -28,6 +28,7 @@ pub enum ActionEvent {
     Quit,
     Unknown,
     ChangeReplayPath,
+    ConfigSaved,
 }
 
 #[proxy(
@@ -53,7 +54,9 @@ async fn main() -> Result<(), Box<dyn Error>> {
         Box::new(kdialog_logger),
     ])))?;
 
-    let config = Arc::new(RwLock::new(Config::load()));
+    let (action_tx, mut action_rx) = mpsc::channel(8);
+
+    let config = Arc::new(RwLock::new(Config::load(action_tx.clone()).await));
 
     let connection = Connection::session().await?;
     let service_name = "ovh.kabus.trayplay";
@@ -73,7 +76,6 @@ async fn main() -> Result<(), Box<dyn Error>> {
     // Let xdg portal know what desktop file are we
     Registry::default().register("ovh.kabus.trayplay").await?;
 
-    let (action_tx, mut action_rx) = mpsc::channel(8);
     let tray = TrayIcon::new(action_tx.clone(), &config).await;
     let _tray_handle = tray.spawn().await.unwrap();
     shortcuts::setup_global_shortcuts(action_tx);
@@ -122,13 +124,17 @@ async fn main() -> Result<(), Box<dyn Error>> {
                         Ok(directory) => {
                             if let Some(directory) = directory {
                                 config.replay_directory = directory;
-                                config.save();
+                                config.save().await;
                             }
                         }
                         Err(err) => {
                             error!("Error when asking for replay directory: {}", err);
                         }
                     };
+                }
+                ActionEvent::ConfigSaved => {
+                    gpu_screen_recorder.stop().await?;
+                    handle_gsr_start_result(gpu_screen_recorder.start().await);
                 }
                 other => {
                     warn!("Unhandled action event: {:?}", other)
