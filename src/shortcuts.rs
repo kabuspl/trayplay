@@ -5,7 +5,6 @@ use ashpd::desktop::{
     global_shortcuts::{GlobalShortcuts, NewShortcut},
 };
 use lazy_static::lazy_static;
-use log::info;
 use tokio::sync::mpsc::Sender;
 
 use crate::ActionEvent;
@@ -35,25 +34,6 @@ impl<'a> GlobalShortcutManager<'a> {
         })
     }
 
-    async fn register(
-        &self,
-        id: &str,
-        description: &str,
-        trigger: &str,
-    ) -> Result<(), GlobalShortcutManagerError> {
-        info!("Registering new shortcut with id {}", id);
-
-        let shortcut = NewShortcut::new(id, description).preferred_trigger(trigger);
-        let shortcuts = [shortcut];
-        let request = self
-            .global_shortcuts_wrapper
-            .bind_shortcuts(&self.global_shortcuts_session, &shortcuts, None)
-            .await?;
-        request.response()?;
-
-        Ok(())
-    }
-
     pub async fn register_all(&self) -> Result<(), GlobalShortcutManagerError> {
         let request = self
             .global_shortcuts_wrapper
@@ -67,9 +47,28 @@ impl<'a> GlobalShortcutManager<'a> {
             .map(|shortcut| shortcut.id().to_string())
             .collect::<Vec<String>>();
 
-        for shortcut in SHORTCUTS.iter() {
-            if !shortcut_ids.contains(&shortcut.0.to_string()) {
-                self.register(shortcut.0, shortcut.1, shortcut.2).await?;
+        let shortcuts: Vec<NewShortcut> = SHORTCUTS
+            .iter()
+            .filter(|s| !shortcut_ids.contains(&s.0.to_string()))
+            .map(|s| NewShortcut::new(s.0, s.1).preferred_trigger(s.2))
+            .collect();
+
+        if !shortcuts.is_empty() {
+            let request = self
+                .global_shortcuts_wrapper
+                .bind_shortcuts(&self.global_shortcuts_session, &shortcuts, None)
+                .await;
+
+            // Ignore missing field error for now - looks like a bug in ashpd or in KDE 6.4 beta
+            if let Err(error) = &request {
+                if let ashpd::Error::Zbus(zbus::Error::Variant(zbus::zvariant::Error::Message(
+                    message,
+                ))) = error
+                {
+                    if message != "missing field `shortcuts`" {
+                        request?;
+                    }
+                }
             }
         }
 
