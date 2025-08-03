@@ -325,8 +325,6 @@ impl ksni::Tray for TrayIcon {
             .into(),
         ];
 
-        println!("{}", config.recording_enabled);
-
         vec![
             tray_config_item_toggle!("Record replays", "media-record", config.recording_enabled, async |_, action_event_tx: Sender<ActionEvent>| {
                 action_event_tx.send(ActionEvent::ToggleReplay).await.unwrap();
