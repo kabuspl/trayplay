@@ -91,6 +91,8 @@ impl GpuScreenRecorder {
             .args(config.audio_tracks.iter().flat_map(|track| ["-a", track]))
             .arg("-o")
             .arg(&config.replay_directory)
+            .arg("-k")
+            .arg(&config.codec.to_string())
             .stdout(Stdio::piped())
             .stderr(Stdio::piped())
             .spawn()?;

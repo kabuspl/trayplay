@@ -10,6 +10,8 @@ pub struct Config {
     pub recording_enabled: bool,
     pub screen: String,
     pub container: Container,
+    #[serde(default = "Codec::default")]
+    pub codec: Codec,
     pub audio_tracks: Vec<String>,
     pub framerate: i64,
     pub clear_buffer_on_save: bool,
@@ -68,6 +70,7 @@ impl Default for Config {
             quality: Quality::Ultra,
             replay_directory: dirs::video_dir().unwrap(),
             container: Container::MKV,
+            codec: Codec::H264,
             replay_duration_secs: 180,
             action_event_tx: None,
         };
@@ -118,6 +121,43 @@ impl ToString for Container {
             Container::WEBM => "webm",
         }
         .to_string()
+    }
+}
+
+#[derive(Serialize, Deserialize, PartialEq, Clone, Copy)]
+#[serde(rename_all = "lowercase")]
+pub enum Codec {
+    H264,
+    HEVC,
+    HEVCHDR,
+    HEVC10Bit,
+    AV1,
+    AV1HDR,
+    AV110Bit,
+    VP8,
+    VP9,
+}
+
+impl ToString for Codec {
+    fn to_string(&self) -> String {
+        match self {
+            Codec::H264 => "h264",
+            Codec::HEVC => "hevc",
+            Codec::HEVCHDR => "hevc_hdr",
+            Codec::HEVC10Bit => "hevc_10bit",
+            Codec::AV1 => "av1",
+            Codec::AV1HDR => "av1_hdr",
+            Codec::AV110Bit => "av1_10bit",
+            Codec::VP8 => "vp8",
+            Codec::VP9 => "vp9",
+        }
+        .to_string()
+    }
+}
+
+impl Default for Codec {
+    fn default() -> Self {
+        Self::H264
     }
 }
 

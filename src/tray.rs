@@ -9,7 +9,7 @@ use tokio::sync::{RwLock, mpsc::Sender};
 
 use crate::{
     ActionEvent,
-    config::{Config, Container, Quality},
+    config::{Codec, Config, Container, Quality},
     kdialog::MessageBox,
     utils::ask_custom_number,
 };
@@ -287,6 +287,25 @@ impl ksni::Tray for TrayIcon {
                     TrayMultipleOption("MP4".into(), Container::MP4),
                     TrayMultipleOption("WEBM".into(), Container::WEBM),
                     TrayMultipleOption("FLV".into(), Container::FLV),
+                ],
+                nocustom
+            )
+            .into(),
+            tray_config_item_radio!(
+                codec,
+                &config,
+                "Codec",
+                "code-class",
+                vec![
+                    TrayMultipleOption("H.264".into(), Codec::H264),
+                    TrayMultipleOption("H.265 (HEVC)".into(), Codec::HEVC),
+                    TrayMultipleOption("H.265 (HEVC) HDR".into(), Codec::HEVCHDR),
+                    TrayMultipleOption("H.265 (HEVC) 10-bit".into(), Codec::HEVC10Bit),
+                    TrayMultipleOption("AV1".into(), Codec::AV1),
+                    TrayMultipleOption("AV1 HDR".into(), Codec::AV1HDR),
+                    TrayMultipleOption("AV1 10-bit".into(), Codec::AV110Bit),
+                    TrayMultipleOption("VP9".into(), Codec::VP9),
+                    TrayMultipleOption("VP8".into(), Codec::VP8),
                 ],
                 nocustom
             )
