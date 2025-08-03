@@ -79,7 +79,7 @@ async fn main() -> Result<(), Box<dyn Error>> {
 
     let tray = TrayIcon::new(action_tx.clone(), &config).await;
     // let tray = TrayIconClean::new(action_tx.clone(), &config);
-    let _tray_handle = tray.spawn().await.unwrap();
+    let tray_handle = tray.spawn().await.unwrap();
     shortcuts::setup_global_shortcuts(action_tx);
 
     let app_name = Arc::new(RwLock::new("unknown".to_string()));
@@ -157,9 +157,10 @@ async fn main() -> Result<(), Box<dyn Error>> {
                             .show_text("media-playback-playing", "Replay recording started")
                             .await?;
                         let mut config = config.write().await;
-                        config.recording_enabled = false;
+                        config.recording_enabled = true;
                         config.save().await;
                     }
+                    tray_handle.update(|_| {}).await;
                 }
                 other => {
                     warn!("Unhandled action event: {:?}", other)
