@@ -139,6 +139,7 @@ impl GpuScreenRecorder {
     pub async fn stop(&mut self) -> Result<(), Error> {
         if let Some(process) = &self.process {
             signal::kill(Pid::from_raw(process.id() as i32), Signal::SIGTERM)?;
+            self.process = None;
 
             Ok(())
         } else {
@@ -154,5 +155,9 @@ impl GpuScreenRecorder {
         } else {
             Err(Error::RecorderNotRunning)
         }
+    }
+
+    pub fn is_running(&self) -> bool {
+        self.process.is_some()
     }
 }

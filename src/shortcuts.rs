@@ -13,7 +13,7 @@ lazy_static! {
     static ref SHORTCUTS: Vec<(&'static str, &'static str, &'static str)> = vec![
         // id, description, trigger
         ("save-replay", "Save replay", "ALT+F10"),
-        // ("toggle-replay", "Toggle replay", "ALT+SHIFT+F10"), // TODO: implement toggling replays on and off
+        ("toggle-replay", "Toggle replay", "ALT+SHIFT+F10"),
         ("quit", "Quit program", "ALT+SHIFT+F11")
     ];
 }
@@ -83,6 +83,7 @@ impl<'a> GlobalShortcutManager<'a> {
                         .send(match activation.shortcut_id() {
                             "save-replay" => ActionEvent::SaveReplay,
                             "quit" => ActionEvent::Quit,
+                            "toggle-replay" => ActionEvent::ToggleReplay,
                             _ => ActionEvent::Unknown,
                         })
                         .await?;

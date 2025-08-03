@@ -29,6 +29,7 @@ pub enum ActionEvent {
     Unknown,
     ChangeReplayPath,
     ConfigSaved,
+    ToggleReplay,
 }
 
 #[proxy(
@@ -77,6 +78,7 @@ async fn main() -> Result<(), Box<dyn Error>> {
     Registry::default().register("ovh.kabus.trayplay").await?;
 
     let tray = TrayIcon::new(action_tx.clone(), &config).await;
+    // let tray = TrayIconClean::new(action_tx.clone(), &config);
     let _tray_handle = tray.spawn().await.unwrap();
     shortcuts::setup_global_shortcuts(action_tx);
 
@@ -84,9 +86,12 @@ async fn main() -> Result<(), Box<dyn Error>> {
     active_window::setup_active_window_manager(app_name.clone()).await?;
 
     let mut gpu_screen_recorder = GpuScreenRecorder::new(config.clone(), app_name.clone()).await?;
-    handle_gsr_start_result(gpu_screen_recorder.start().await);
+    if config.read().await.recording_enabled {
+        handle_gsr_start_result(gpu_screen_recorder.start().await);
+    }
 
     let conn = Connection::session().await?;
+    let osd_service = OsdServiceProxy::new(&conn).await?;
 
     loop {
         if let Some(action) = action_rx.recv().await {
@@ -95,8 +100,7 @@ async fn main() -> Result<(), Box<dyn Error>> {
                     info!("Saving replay from {}", app_name.read().await);
                     match gpu_screen_recorder.save_replay().await {
                         Ok(_) => {
-                            OsdServiceProxy::new(&conn)
-                                .await?
+                            osd_service
                                 .show_text(
                                     "media-record",
                                     &format!("Replay from \"{}\" saved!", app_name.read().await),
@@ -133,8 +137,29 @@ async fn main() -> Result<(), Box<dyn Error>> {
                     };
                 }
                 ActionEvent::ConfigSaved => {
-                    gpu_screen_recorder.stop().await?;
-                    handle_gsr_start_result(gpu_screen_recorder.start().await);
+                    if gpu_screen_recorder.is_running() {
+                        gpu_screen_recorder.stop().await?;
+                        handle_gsr_start_result(gpu_screen_recorder.start().await);
+                    }
+                }
+                ActionEvent::ToggleReplay => {
+                    if gpu_screen_recorder.is_running() {
+                        gpu_screen_recorder.stop().await?;
+                        osd_service
+                            .show_text("media-playback-stopped", "Replay recording stopped")
+                            .await?;
+                        let mut config = config.write().await;
+                        config.recording_enabled = false;
+                        config.save().await;
+                    } else {
+                        gpu_screen_recorder.start().await?;
+                        osd_service
+                            .show_text("media-playback-playing", "Replay recording started")
+                            .await?;
+                        let mut config = config.write().await;
+                        config.recording_enabled = false;
+                        config.save().await;
+                    }
                 }
                 other => {
                     warn!("Unhandled action event: {:?}", other)

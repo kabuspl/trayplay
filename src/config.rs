@@ -6,6 +6,8 @@ use crate::ActionEvent;
 
 #[derive(Serialize, Deserialize)]
 pub struct Config {
+    #[serde(default = "default_bool_true")]
+    pub recording_enabled: bool,
     pub screen: String,
     pub container: Container,
     pub audio_tracks: Vec<String>,
@@ -58,6 +60,7 @@ impl Default for Config {
         path.push("trayplay.toml");
 
         let instance = Self {
+            recording_enabled: true,
             screen: "screen".to_string(),
             audio_tracks: vec!["default_output".to_string(), "default_input".to_string()],
             framerate: 60,
@@ -116,4 +119,8 @@ impl ToString for Container {
         }
         .to_string()
     }
+}
+
+fn default_bool_true() -> bool {
+    true
 }

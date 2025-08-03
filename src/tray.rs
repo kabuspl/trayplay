@@ -3,7 +3,7 @@ use std::{iter::once, process::Command, sync::Arc};
 
 use ksni::{
     MenuItem,
-    menu::{RadioGroup, RadioItem, StandardItem, SubMenu},
+    menu::{CheckmarkItem, RadioGroup, RadioItem, StandardItem, SubMenu},
 };
 use tokio::sync::{RwLock, mpsc::Sender};
 
@@ -44,7 +44,7 @@ impl<T> Into<RadioItem> for &TrayMultipleOption<T> {
 #[allow(dead_code)]
 enum TrayConfigItem<T, O>
 where
-    T: ksni::Tray + CommunicationProvider,
+    T: ksni::Tray,
 {
     Multiple {
         label: String,
@@ -57,6 +57,7 @@ where
     Toggle {
         label: String,
         icon: String,
+        initial_state: bool,
         action: Box<dyn Fn(&mut T) + Send + 'static>,
     },
     Custom {
@@ -68,7 +69,7 @@ where
 
 impl<T, O> Into<MenuItem<T>> for TrayConfigItem<T, O>
 where
-    T: ksni::Tray + CommunicationProvider,
+    T: ksni::Tray,
 {
     fn into(self) -> MenuItem<T> {
         match self {
@@ -107,10 +108,18 @@ where
             }
             .into(),
             TrayConfigItem::Toggle {
-                label: _,
-                icon: _,
-                action: _,
-            } => todo!("Implement toggle config menu item type"),
+                label,
+                icon,
+                initial_state,
+                action,
+            } => CheckmarkItem {
+                label,
+                icon_name: icon,
+                activate: action,
+                checked: initial_state,
+                ..Default::default()
+            }
+            .into(),
             TrayConfigItem::Custom {
                 label,
                 icon,
@@ -163,7 +172,7 @@ macro_rules! tray_config_item_radio {
                 .unwrap_or($values.len()),
             action: Box::new(|item, selection| {
                 futures::executor::block_on(async {
-                    let config = item.get_config();
+                    let config = item.config.clone();
                     let mut config = config.write().await;
                     if selection >= $values.len() {
                         tray_config_item_radio!(@customhandler config, $config_key, $label, $($nocustom)?);
@@ -185,7 +194,22 @@ macro_rules! tray_config_item_custom {
             icon: $icon.into(),
             action: Box::new(|item| {
                 futures::executor::block_on(async {
-                    $action(item.get_config(), item.get_action_event_tx()).await;
+                    $action(item.config.clone(), item.tray_event_tx.clone()).await;
+                });
+            }),
+        }
+    };
+}
+
+macro_rules! tray_config_item_toggle {
+    ($label:expr, $icon:expr, $initial_state:expr, $action:expr) => {
+        TrayConfigItem::Toggle::<TrayIcon, u8> {
+            label: $label.into(),
+            icon: $icon.into(),
+            initial_state: $initial_state,
+            action: Box::new(|item| {
+                futures::executor::block_on(async {
+                    $action(item.config.clone(), item.tray_event_tx.clone()).await;
                 });
             }),
         }
@@ -282,21 +306,12 @@ impl ksni::Tray for TrayIcon {
             .into(),
         ];
 
+        println!("{}", config.recording_enabled);
+
         vec![
-            // TODO: implement toggling replays on and off
-            // CheckmarkItem {
-            //     label: "Record replays".into(),
-            //     checked: self.enabled,
-            //     icon_name: "media-skip-backward".into(),
-            //     activate: Box::new(move |this: &mut Self| {
-            //         this.enabled = !this.enabled;
-            //         futures::executor::block_on(async {
-            //             sender_clone1.send("toggle-replay".into()).await.unwrap();
-            //         });
-            //     }),
-            //     ..Default::default()
-            // }
-            // .into(),
+            tray_config_item_toggle!("Record replays", "media-record", config.recording_enabled, async |_, action_event_tx: Sender<ActionEvent>| {
+                action_event_tx.send(ActionEvent::ToggleReplay).await.unwrap();
+            }).into(),
             StandardItem {
                 label: "Save replay".into(),
                 icon_name: "document-save".into(),
@@ -351,19 +366,4 @@ impl ksni::Tray for TrayIcon {
             .into(),
         ]
     }
-}
-
-impl CommunicationProvider for TrayIcon {
-    fn get_config(&self) -> Arc<RwLock<Config>> {
-        self.config.clone()
-    }
-
-    fn get_action_event_tx(&self) -> Sender<ActionEvent> {
-        self.tray_event_tx.clone()
-    }
-}
-
-trait CommunicationProvider {
-    fn get_config(&self) -> Arc<RwLock<Config>>;
-    fn get_action_event_tx(&self) -> Sender<ActionEvent>;
 }
