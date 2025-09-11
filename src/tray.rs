@@ -130,58 +130,6 @@ where
     }
 }
 
-macro_rules! tray_config_item_radio {
-    (@custombool nocustom) => { false };
-    (@custombool) => { true };
-
-    (@customhandler $config:expr, $config_key:ident, $label:expr, nocustom) => {};
-
-    (@customhandler $config:expr, $config_key:ident, $label:expr,) => {
-        match ask_custom_number("TrayPlay Settings", $label, 0) {
-            Ok(number) => {
-                if let Some(number) = number {
-                    $config.$config_key = number;
-                    $config.save().await;
-                }
-            }
-            Err(err) => {
-                error!("Error when asking for custom config value: {}", err);
-            }
-        }
-    };
-
-    ($config_key:ident, $config:expr, $label:expr, $icon:expr, $values:expr $(, $nocustom:tt)?) => {{
-        let config = $config;
-
-        TrayConfigItem::Multiple::<TrayIcon, _> {
-            label: $label.into(),
-            icon: $icon.into(),
-            options: $values,
-            show_custom: tray_config_item_radio!(@custombool $($nocustom)?),
-            initial_state: $values
-                .iter()
-                .position(|element: &TrayMultipleOption<_>| {
-                    let a = element.1;
-                    a == config.$config_key
-                })
-                .unwrap_or($values.len()),
-            action: Box::new(|item, selection| {
-                futures::executor::block_on(async {
-                    let config = item.config.clone();
-                    let mut config = config.write().await;
-                    if selection >= $values.len() {
-                        tray_config_item_radio!(@customhandler config, $config_key, $label, $($nocustom)?);
-                    } else {
-                        let values: Vec<TrayMultipleOption<_>> = $values;
-                        config.$config_key = values[selection].1;
-                        config.save().await;
-                    }
-                });
-            }),
-        }
-    }};
-}
-
 macro_rules! tray_config_item_custom {
     ($label:expr, $icon:expr, $action:expr) => {
         TrayConfigItem::Custom::<TrayIcon, u8> {
