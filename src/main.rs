@@ -12,12 +12,15 @@ use tray::TrayIcon;
 use utils::ask_path;
 use zbus::{Connection, names::BusName, proxy};
 
+use crate::settings::open_settings;
+
 mod active_window;
 mod config;
 mod gsr;
 mod kdialog;
 mod kwin;
 mod logger;
+mod settings;
 mod shortcuts;
 mod tray;
 mod utils;
@@ -30,6 +33,7 @@ pub enum ActionEvent {
     ChangeReplayPath,
     ConfigSaved,
     ToggleReplay,
+    OpenSettings,
 }
 
 #[proxy(
@@ -80,7 +84,7 @@ async fn main() -> Result<(), Box<dyn Error>> {
     let tray = TrayIcon::new(action_tx.clone(), &config).await;
     // let tray = TrayIconClean::new(action_tx.clone(), &config);
     let tray_handle = tray.spawn().await.unwrap();
-    shortcuts::setup_global_shortcuts(action_tx);
+    shortcuts::setup_global_shortcuts(action_tx.clone());
 
     let app_name = Arc::new(RwLock::new("unknown".to_string()));
     active_window::setup_active_window_manager(app_name.clone()).await?;
@@ -161,6 +165,9 @@ async fn main() -> Result<(), Box<dyn Error>> {
                         config.save().await;
                     }
                     tray_handle.update(|_| {}).await;
+                }
+                ActionEvent::OpenSettings => {
+                    open_settings(action_tx.clone(), config.clone());
                 }
                 other => {
                     warn!("Unhandled action event: {:?}", other)

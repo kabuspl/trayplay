@@ -1,10 +1,11 @@
+use int_enum::IntEnum;
 use serde::{Deserialize, Serialize};
 use std::path::PathBuf;
 use tokio::sync::mpsc::Sender;
 
 use crate::ActionEvent;
 
-#[derive(Serialize, Deserialize)]
+#[derive(Serialize, Deserialize, Debug)]
 pub struct Config {
     #[serde(default = "default_bool_true")]
     pub recording_enabled: bool,
@@ -13,7 +14,7 @@ pub struct Config {
     #[serde(default = "Codec::default")]
     pub codec: Codec,
     pub audio_tracks: Vec<String>,
-    pub framerate: i64,
+    pub framerate: u32,
     pub clear_buffer_on_save: bool,
     pub quality: Quality,
     pub replay_directory: PathBuf,
@@ -35,7 +36,10 @@ impl Config {
 
                 config
             }
-            Err(_) => Config::default(),
+            Err(err) => {
+                println!("{}", err);
+                Config::default()
+            }
         }
     }
 
@@ -82,11 +86,13 @@ impl Default for Config {
     }
 }
 
-#[derive(Serialize, Deserialize, PartialEq, Clone, Copy)]
+#[repr(usize)]
+#[derive(Serialize, Deserialize, PartialEq, Clone, Copy, Debug, Default, IntEnum)]
 #[serde(rename_all = "snake_case")]
 pub enum Quality {
     Medium,
     High,
+    #[default]
     VeryHigh,
     Ultra,
 }
@@ -103,11 +109,12 @@ impl ToString for Quality {
     }
 }
 
-#[derive(Serialize, Deserialize, PartialEq, Clone, Copy)]
+#[repr(usize)]
+#[derive(Serialize, Deserialize, PartialEq, Clone, Copy, Debug, IntEnum)]
 #[serde(rename_all = "lowercase")]
 pub enum Container {
-    MP4,
     MKV,
+    MP4,
     FLV,
     WEBM,
 }
@@ -124,7 +131,8 @@ impl ToString for Container {
     }
 }
 
-#[derive(Serialize, Deserialize, PartialEq, Clone, Copy)]
+#[repr(usize)]
+#[derive(Serialize, Deserialize, PartialEq, Clone, Copy, Debug, IntEnum)]
 #[serde(rename_all = "lowercase")]
 pub enum Codec {
     H264,
