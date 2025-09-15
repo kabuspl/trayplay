@@ -3,8 +3,8 @@ use std::sync::Arc;
 
 use cstr::cstr;
 use qmetaobject::{
-    QSingletonInit, QString, QmlEngine, prelude::QObject, qml_register_singleton_instance,
-    qt_base_class, qt_method, qt_property, qt_signal,
+    QSingletonInit, QString, QStringList, QVariantList, QmlEngine, prelude::QObject,
+    qml_register_singleton_instance, qt_base_class, qt_method, qt_property, qt_signal,
 };
 use tokio::sync::{RwLock, mpsc::Sender};
 
@@ -33,6 +33,7 @@ macro_rules! setter {
         paste! {
             fn [<set_ $key>](&mut self, value: $type) {
                 self.$key = value;
+                self.change();
             }
         }
     };
@@ -63,7 +64,14 @@ pub struct Settings {
     directory: qt_property!(QString; READ get_directory WRITE set_directory),
     clear_buffer: qt_property!(bool; READ get_clear_buffer WRITE set_clear_buffer),
     record_replays: qt_property!(bool; READ get_record_replays WRITE set_record_replays),
+    audio_tracks_inner: Vec<Vec<String>>,
+    audio_tracks: qt_property!(QVariantList; READ get_audio_tracks NOTIFY change),
     apply_config: qt_method!(fn(&self)),
+    remove_audio_source: qt_method!(fn(&mut self, track: usize, source: usize)),
+    add_audio_source: qt_method!(fn(&mut self, track: usize, source: QString)),
+    remove_audio_track: qt_method!(fn(&mut self, track: usize)),
+    add_audio_track: qt_method!(fn(&mut self)),
+    move_audio_track: qt_method!(fn(&mut self, track: usize, target_index: usize)),
     change: qt_signal!(),
 }
 
@@ -76,6 +84,44 @@ impl Settings {
     property_impl!(directory, QString, cloned);
     property_impl!(clear_buffer, bool);
     property_impl!(record_replays, bool);
+
+    fn get_audio_tracks(&self) -> QVariantList {
+        self.audio_tracks_inner
+            .iter()
+            .map(|track| QStringList::from(track.clone()))
+            .collect()
+    }
+
+    fn remove_audio_source(&mut self, track: usize, source: usize) {
+        self.audio_tracks_inner[track].remove(source);
+        self.change();
+    }
+
+    fn add_audio_source(&mut self, track: usize, source: QString) {
+        self.audio_tracks_inner[track].push(source.into());
+        self.change();
+    }
+
+    fn remove_audio_track(&mut self, track: usize) {
+        self.audio_tracks_inner.remove(track);
+        self.change();
+    }
+
+    fn add_audio_track(&mut self) {
+        self.audio_tracks_inner.push(vec![]);
+        self.change();
+    }
+
+    fn move_audio_track(&mut self, track_index: usize, target_index: usize) {
+        if target_index >= self.audio_tracks_inner.len() {
+            let track = self.audio_tracks_inner[track_index].clone();
+            self.audio_tracks_inner.remove(track_index);
+            self.audio_tracks_inner.push(track);
+        } else {
+            self.audio_tracks_inner.swap(track_index, target_index);
+        }
+        self.change();
+    }
 
     fn apply_config(&self) {
         let mut config = futures::executor::block_on(async { self.config.write().await });
@@ -97,6 +143,11 @@ impl Settings {
         config.codec = self.codec.try_into().unwrap();
         config.container = self.container.try_into().unwrap();
         config.quality = self.quality.try_into().unwrap();
+        config.audio_tracks = self
+            .audio_tracks_inner
+            .iter()
+            .map(|track| track.join("|"))
+            .collect();
         futures::executor::block_on(async { config.save().await });
     }
 
@@ -114,7 +165,22 @@ impl Settings {
             directory: config_values.replay_directory.display().to_string().into(),
             clear_buffer: config_values.clear_buffer_on_save,
             record_replays: config_values.recording_enabled,
+            audio_tracks_inner: config_values
+                .audio_tracks
+                .iter()
+                .map(|track| track.split("|").map(|s| s.to_string()).collect())
+                .collect(),
+            audio_tracks: config_values
+                .audio_tracks
+                .iter()
+                .map(|track| QStringList::from(track.split("|").collect::<Vec<&str>>()))
+                .collect(),
             apply_config: Default::default(),
+            remove_audio_source: Default::default(),
+            add_audio_source: Default::default(),
+            remove_audio_track: Default::default(),
+            add_audio_track: Default::default(),
+            move_audio_track: Default::default(),
             config: config.clone(),
             action_event_tx: Some(action_event_tx),
         }

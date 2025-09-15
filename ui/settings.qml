@@ -11,7 +11,7 @@ Kirigami.ApplicationWindow {
     width: 400
     maximumWidth: 400
     minimumWidth: 400
-    height: mainPage.height - 18
+    height: mainPage.height - 4
     Component.onCompleted: function () {
         window.minimumHeight = mainPage.height;
     }
@@ -151,6 +151,17 @@ Kirigami.ApplicationWindow {
                 }
             }
 
+            Item {}
+
+            Controls.Button {
+                Layout.fillWidth: true
+                text: "Edit audio tracks"
+                icon.name: "view-media-track"
+                onClicked: function () {
+                    window.pageStack.push(audioPage);
+                }
+            }
+
             Row {
                 Layout.columnSpan: 2
                 Layout.alignment: Qt.AlignRight
@@ -168,6 +179,172 @@ Kirigami.ApplicationWindow {
                         Settings.clear_buffer = clearBuffer.checked;
                         Settings.record_replays = recordReplays.checked;
                         Settings.apply_config();
+                    }
+                }
+            }
+        }
+    }
+
+    Component {
+        id: audioPage
+        Kirigami.ScrollablePage {
+            title: "Audio Tracks"
+            actions: [
+                Kirigami.Action {
+                    icon.name: "list-add"
+                    text: "Add"
+                    onTriggered: function () {
+                        Settings.add_audio_track();
+                    }
+                }
+            ]
+
+            Kirigami.CardsListView {
+                model: Settings.audio_tracks
+
+                delegate: Kirigami.AbstractCard {
+                    contentItem: Item {
+                        implicitWidth: delegateLayout.implicitWidth
+                        implicitHeight: delegateLayout.implicitHeight
+
+                        RowLayout {
+                            id: delegateLayout
+                            anchors {
+                                left: parent.left
+                                top: parent.top
+                                right: parent.right
+                            }
+
+                            Controls.Label {
+                                font.pixelSize: 32
+                                text: index + 1
+                                leftPadding: 8
+                                rightPadding: 8
+                            }
+
+                            ColumnLayout {
+                                spacing: 0
+                                Layout.fillWidth: true
+                                Layout.alignment: Qt.AlignTop
+
+                                ListView {
+                                    id: sourcesList
+                                    property int trackIndex: index
+                                    Layout.fillWidth: true
+                                    Layout.alignment: Qt.AlignVCenter
+                                    Layout.preferredHeight: count * 18
+                                    model: Settings.audio_tracks[index]
+                                    delegate: RowLayout {
+                                        id: sourceDelegateLayout
+
+                                        spacing: 0
+                                        Controls.Label {
+                                            Layout.alignment: Qt.AlignVCenter
+                                            text: switch (modelData) {
+                                            case "default_input":
+                                                " - Default Microphone";
+                                                break;
+                                            case "default_output":
+                                                " - System Sound";
+                                                break;
+                                            default:
+                                                " - " + modelData;
+                                                break;
+                                            }
+                                        }
+                                        Controls.ToolButton {
+                                            Layout.alignment: Qt.AlignVCenter
+                                            Layout.preferredWidth: 16
+                                            Layout.preferredHeight: 16
+                                            icon.name: "remove"
+                                            icon.height: 12
+
+                                            onClicked: function () {
+                                                Settings.remove_audio_source(sourcesList.trackIndex, index);
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+
+                            GridLayout {
+                                columns: 3
+                                Layout.alignment: Qt.AlignTop
+
+                                Controls.Button {
+                                    icon.name: "arrow-up"
+                                    enabled: index != 0
+                                    onClicked: function () {
+                                        Settings.move_audio_track(index, index - 1);
+                                    }
+                                }
+
+                                Controls.Button {
+                                    icon.name: "arrow-down"
+                                    enabled: index + 1 != Settings.audio_tracks.length
+                                    onClicked: function () {
+                                        Settings.move_audio_track(index, index + 1);
+                                    }
+                                }
+
+                                Controls.Button {
+                                    icon.name: "delete"
+                                    onClicked: function () {
+                                        Settings.remove_audio_track(index);
+                                    }
+                                }
+
+                                Controls.Button {
+                                    Layout.columnSpan: 3
+                                    Layout.fillWidth: true
+                                    icon.name: "list-add"
+                                    text: "Add source"
+                                    onClicked: function () {
+                                        addDialog.trackIndex = index;
+                                        addDialog.open();
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+
+            Kirigami.Dialog {
+                id: addDialog
+                property int trackIndex: 0
+                title: "Add audio source"
+                padding: Kirigami.Units.largeSpacing
+                standardButtons: Kirigami.Dialog.NoButton
+                customFooterActions: Kirigami.Action {
+                    text: "Add"
+                    icon.name: "list-add"
+                    onTriggered: function () {
+                        var track = "";
+                        if (defaultMicrophoneRadio.checked) {
+                            track = "default_input";
+                        } else if (systemSoundRadio.checked) {
+                            track = "default_output";
+                        } else if (otherDeviceRadio.checked) {
+                            track = otherDevice.currentText;
+                        } else if (applicationRadio.checked) {
+                            track = "app:" + application.currentText;
+                        }
+                        Settings.add_audio_source(addDialog.trackIndex, track);
+                        addDialog.close();
+                    }
+                }
+
+                ColumnLayout {
+                    Controls.RadioButton {
+                        id: defaultMicrophoneRadio
+                        text: "Default microhpone"
+                        checked: true
+                    }
+
+                    Controls.RadioButton {
+                        id: systemSoundRadio
+                        text: "System sound"
                     }
                 }
             }
