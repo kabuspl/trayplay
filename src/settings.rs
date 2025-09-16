@@ -3,8 +3,8 @@ use std::sync::Arc;
 
 use cstr::cstr;
 use qmetaobject::{
-    QSingletonInit, QString, QStringList, QVariantList, QmlEngine, prelude::QObject,
-    qml_register_singleton_instance, qt_base_class, qt_method, qt_property, qt_signal,
+    QSingletonInit, QString, QStringList, QUrl, QVariantList, QmlEngine, prelude::QObject,
+    qml_register_singleton_instance, qrc, qt_base_class, qt_method, qt_property, qt_signal,
 };
 use tokio::sync::{RwLock, mpsc::Sender};
 
@@ -191,6 +191,13 @@ impl QSingletonInit for Settings {
     fn init(&mut self) {}
 }
 
+qrc!(settings_ui, "ui" as "ui" {
+    "settings.qml",
+    "AudioPage.qml",
+    "MainPage.qml",
+    "components/ConfigLabel.qml"
+});
+
 pub fn open_settings(action_event_tx: Sender<ActionEvent>, config: Arc<RwLock<Config>>) {
     tokio::spawn(async move {
         let mut engine = QmlEngine::new();
@@ -199,7 +206,8 @@ pub fn open_settings(action_event_tx: Sender<ActionEvent>, config: Arc<RwLock<Co
 
         qml_register_singleton_instance(cstr!("Settings"), 1, 0, cstr!("Settings"), settings);
 
-        engine.load_data(include_str!("../ui/settings.qml").into());
+        settings_ui(); // Load qrc
+        engine.load_url(QUrl::from_user_input("qrc:/ui/settings.qml".into()));
 
         engine.exec();
     });
