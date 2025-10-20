@@ -1,3 +1,4 @@
+pragma ComponentBehavior: Bound
 import QtQuick
 import QtQuick.Controls as Controls
 import QtQuick.Layouts
@@ -9,86 +10,27 @@ import "components"
 Kirigami.ScrollablePage {
     id: mainPage
     title: "Settings"
+    actions: [
+        Kirigami.Action {
+            id: recordReplays
+            text: "Record replays"
+            checkable: true
+
+            displayComponent: Controls.Switch {
+                action: recordReplays
+            }
+
+            Component.onCompleted: function () {
+                recordReplays.checked = Settings.record_replays;
+            }
+        }
+    ]
 
     GridLayout {
         width: parent.width
         height: parent.height
         columns: 2
-
-        ConfigLabel {
-            text: "Framerate:"
-        }
-
-        RowLayout {
-            Layout.fillWidth: true
-
-            Controls.SpinBox {
-                id: framerate
-                Layout.fillWidth: true
-                from: 1
-                to: 1000
-                stepSize: 5
-                value: Settings.framerate
-            }
-
-            Controls.Label {
-                text: "FPS"
-            }
-        }
-
-        ConfigLabel {
-            text: "Duration:"
-        }
-
-        RowLayout {
-            Layout.fillWidth: true
-
-            Controls.SpinBox {
-                id: duration
-                Layout.fillWidth: true
-                from: 1
-                to: 10000
-                stepSize: 30
-                value: Settings.duration
-            }
-
-            Controls.Label {
-                text: "secs"
-            }
-        }
-
-        ConfigLabel {
-            text: "Quality:"
-        }
-
-        Controls.ComboBox {
-            id: quality
-            Layout.fillWidth: true
-            model: ["Medium", "High", "Very high", "Ultra"]
-            currentIndex: Settings.quality
-        }
-
-        ConfigLabel {
-            text: "Container:"
-        }
-
-        Controls.ComboBox {
-            id: container
-            Layout.fillWidth: true
-            model: ["MKV", "MP4", "WEBM", "FLV"]
-            currentIndex: Settings.container
-        }
-
-        ConfigLabel {
-            text: "Codec:"
-        }
-
-        Controls.ComboBox {
-            id: codec
-            Layout.fillWidth: true
-            model: ["H264", "MP4", "WEBM", "FLV"]
-            currentIndex: Settings.codec
-        }
+        rowSpacing: Kirigami.Units.largeSpacing
 
         ConfigLabel {
             text: "Directory:"
@@ -118,13 +60,78 @@ Kirigami.ScrollablePage {
             }
         }
 
-        Item {}
+        ConfigLabel {
+            text: "Duration:"
+        }
 
-        Row {
-            Controls.Switch {
-                id: clearBuffer
-                text: "Clear buffer when saving"
-                checked: Settings.clear_buffer
+        RowLayout {
+            Layout.fillWidth: true
+
+            Controls.SpinBox {
+                id: duration
+                Layout.fillWidth: true
+                from: 1
+                to: 10000
+                stepSize: 30
+                value: Settings.duration
+            }
+
+            Controls.Label {
+                text: "secs"
+            }
+        }
+
+        ConfigLabel {
+            text: "Container:"
+        }
+
+        Controls.ComboBox {
+            id: container
+            Layout.fillWidth: true
+            model: ["MKV", "MP4", "WEBM", "FLV"]
+            currentIndex: Settings.container
+        }
+
+        ConfigLabel {
+            text: "Codec:"
+        }
+
+        Controls.ComboBox {
+            id: codec
+            Layout.fillWidth: true
+            model: ["H264", "MP4", "WEBM", "FLV"]
+            currentIndex: Settings.codec
+        }
+
+        ConfigLabel {
+            text: "Quality:"
+        }
+
+        Controls.ComboBox {
+            id: quality
+            Layout.fillWidth: true
+            model: ["Medium", "High", "Very high", "Ultra"]
+            currentIndex: Settings.quality
+        }
+
+        ConfigLabel {
+            text: "Framerate:"
+        }
+
+        RowLayout {
+            Layout.fillWidth: true
+
+            Controls.SpinBox {
+                id: framerate
+                Layout.fillWidth: true
+                from: 1
+                to: 1000
+                stepSize: 5
+                value: Settings.framerate
+            }
+
+            Controls.Label {
+                text: "FPS"
             }
         }
 
@@ -132,9 +139,9 @@ Kirigami.ScrollablePage {
 
         Row {
             Controls.Switch {
-                id: recordReplays
-                text: "Record replays"
-                checked: Settings.record_replays
+                id: clearBuffer
+                text: "Clear buffer when saving"
+                checked: Settings.clear_buffer
             }
         }
 
