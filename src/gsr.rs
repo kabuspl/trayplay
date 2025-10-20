@@ -14,7 +14,7 @@ use nix::{
 };
 use tokio::{sync::RwLock, task::JoinHandle};
 
-use crate::config::Config;
+use crate::{config::Config, utils::process_pattern};
 
 #[allow(dead_code)]
 #[derive(Debug)]
@@ -111,25 +111,28 @@ impl GpuScreenRecorder {
         self.stdout_task_handle = Some(tokio::spawn(async move {
             let reader = BufReader::new(stdout);
             for line in reader.lines().filter_map(|line| line.ok()) {
+                let config = config_clone.read().await;
+
                 let path = PathBuf::from_str(&line)
                     .expect("gpu-screen-recorder stdout must only contain file paths");
 
-                let mut target_path = config_clone.read().await.replay_directory.clone();
-                target_path.push(app_name_clone.read().await.clone());
-                if !std::fs::exists(&target_path).unwrap() {
-                    std::fs::create_dir(&target_path).unwrap()
-                }
-                target_path.push(
-                    path.file_name()
-                        .map(|e| e.to_str().unwrap().to_string())
-                        .unwrap()
-                        .replace(
-                            "Replay",
-                            &(app_name_clone.read().await.to_string() + "_replay"),
-                        ),
+                let app_name = app_name_clone.read().await.clone();
+
+                let target_path = format!(
+                    "{}/{}.{}",
+                    config.replay_directory.display(),
+                    process_pattern(&config.file_name_pattern, &app_name),
+                    config.container.to_string()
                 );
 
-                std::fs::rename(path, target_path).expect("failed to move replay");
+                let target_path = target_path.split('/').collect::<Vec<&str>>();
+                let mut target_path_dir = target_path.clone();
+                target_path_dir.pop(); // Remove file name
+
+                std::fs::create_dir_all(target_path_dir.join("/"))
+                    .expect("failed to create directories");
+
+                std::fs::rename(path, target_path.join("/")).expect("failed to move replay");
             }
         }));
 

@@ -19,6 +19,8 @@ pub struct Config {
     pub quality: Quality,
     pub replay_directory: PathBuf,
     pub replay_duration_secs: i64,
+    #[serde(default = "default_file_name_pattern")]
+    pub file_name_pattern: String,
 
     #[serde(skip, default = "Option::default")]
     action_event_tx: Option<Sender<ActionEvent>>,
@@ -76,6 +78,7 @@ impl Default for Config {
             container: Container::MKV,
             codec: Codec::H264,
             replay_duration_secs: 180,
+            file_name_pattern: default_file_name_pattern(),
             action_event_tx: None,
         };
 
@@ -171,4 +174,8 @@ impl Default for Codec {
 
 fn default_bool_true() -> bool {
     true
+}
+
+fn default_file_name_pattern() -> String {
+    "%app%/%app%_replay_%year%-%month%-%day%_%hour%-%minute%-%second%".to_string()
 }

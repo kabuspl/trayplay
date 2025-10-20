@@ -1,6 +1,7 @@
 use std::{path::PathBuf, str::FromStr};
 
 use ashpd::desktop::file_chooser::OpenFileRequest;
+use time::{OffsetDateTime, PrimitiveDateTime, UtcDateTime};
 
 use crate::kdialog::{self, InfoBox, InputBox};
 
@@ -100,4 +101,17 @@ pub async fn ask_path(
             err => Err(err.into()),
         },
     }
+}
+
+pub fn process_pattern(pattern: &str, app_name: &str) -> String {
+    let local_time = OffsetDateTime::now_local().unwrap();
+
+    pattern
+        .replace("%app%", app_name)
+        .replace("%year%", &local_time.year().to_string())
+        .replace("%month%", &(local_time.month() as usize).to_string())
+        .replace("%day%", &local_time.day().to_string())
+        .replace("%hour%", &local_time.hour().to_string())
+        .replace("%minute%", &local_time.minute().to_string())
+        .replace("%second%", &local_time.second().to_string())
 }
