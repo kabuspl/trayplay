@@ -8,5 +8,6 @@ Kirigami.ApplicationWindow {
     minimumWidth: 500
     height: 560
 
+    pageStack.defaultColumnWidth: 500
     pageStack.initialPage: Qt.resolvedUrl("MainPage.qml")
 }

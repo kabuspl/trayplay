@@ -61,7 +61,7 @@ Kirigami.ScrollablePage {
         }
 
         Controls.Label {
-            text: "Save files:"
+            text: "Save videos:"
             Layout.alignment: Qt.AlignTop | Qt.AlignRight
             Layout.topMargin: 2
         }
@@ -69,13 +69,13 @@ Kirigami.ScrollablePage {
         ColumnLayout {
             Controls.RadioButton {
                 id: separateDirsRadio
-                text: "In directories named after current full-screen app"
+                text: "In directories named after the current full-screen app"
                 checked: Settings.file_name_pattern == "%app%/%app%_replay_%year%-%month%-%day%_%hour%-%minute%-%second%"
             }
 
             Controls.RadioButton {
                 id: rootDirRadio
-                text: "Directly in directory selected above"
+                text: "Directly in the directory selected above"
                 checked: Settings.file_name_pattern == "%app%_replay_%year%-%month%-%day%_%hour%-%minute%-%second%"
             }
 
