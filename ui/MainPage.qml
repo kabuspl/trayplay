@@ -148,7 +148,7 @@ Kirigami.ScrollablePage {
         Controls.ComboBox {
             id: codec
             Layout.fillWidth: true
-            model: ["H264", "MP4", "WEBM", "FLV"]
+            model: ["H.264", "H.265 (HEVC)", "H.265 (HEVC) HDR", "H.265 (HEVC) 10-bit", "AV1", "AV1 HDR", "AV1 10-bit", "VP8", "VP9"]
             currentIndex: Settings.codec
         }
 
