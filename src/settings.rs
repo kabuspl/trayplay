@@ -64,6 +64,7 @@ pub struct Settings {
     directory: qt_property!(QString; READ get_directory WRITE set_directory),
     clear_buffer: qt_property!(bool; READ get_clear_buffer WRITE set_clear_buffer),
     record_replays: qt_property!(bool; READ get_record_replays WRITE set_record_replays),
+    file_name_pattern: qt_property!(QString; READ get_file_name_pattern WRITE set_file_name_pattern),
     audio_tracks_inner: Vec<Vec<String>>,
     audio_tracks: qt_property!(QVariantList; READ get_audio_tracks NOTIFY change),
     apply_config: qt_method!(fn(&self)),
@@ -84,6 +85,7 @@ impl Settings {
     property_impl!(directory, QString, cloned);
     property_impl!(clear_buffer, bool);
     property_impl!(record_replays, bool);
+    property_impl!(file_name_pattern, QString, cloned);
 
     fn get_audio_tracks(&self) -> QVariantList {
         self.audio_tracks_inner
@@ -148,6 +150,7 @@ impl Settings {
             .iter()
             .map(|track| track.join("|"))
             .collect();
+        config.file_name_pattern = self.file_name_pattern.to_string();
         futures::executor::block_on(async { config.save().await });
     }
 
@@ -175,6 +178,7 @@ impl Settings {
                 .iter()
                 .map(|track| QStringList::from(track.split("|").collect::<Vec<&str>>()))
                 .collect(),
+            file_name_pattern: config_values.file_name_pattern.clone().into(),
             apply_config: Default::default(),
             remove_audio_source: Default::default(),
             add_audio_source: Default::default(),

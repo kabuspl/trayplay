@@ -60,6 +60,55 @@ Kirigami.ScrollablePage {
             }
         }
 
+        Controls.Label {
+            text: "Save files:"
+            Layout.alignment: Qt.AlignTop | Qt.AlignRight
+            Layout.topMargin: 2
+        }
+
+        ColumnLayout {
+            Controls.RadioButton {
+                id: separateDirsRadio
+                text: "In directories named after current full-screen app"
+                checked: Settings.file_name_pattern == "%app%/%app%_replay_%year%-%month%-%day%_%hour%-%minute%-%second%"
+            }
+
+            Controls.RadioButton {
+                id: rootDirRadio
+                text: "Directly in directory selected above"
+                checked: Settings.file_name_pattern == "%app%_replay_%year%-%month%-%day%_%hour%-%minute%-%second%"
+            }
+
+            Controls.RadioButton {
+                id: customDirRadio
+                text: "Using custom pattern"
+            }
+
+            RowLayout {
+                visible: customDirRadio.checked
+
+                Controls.TextField {
+                    id: customDirField
+                    text: Settings.file_name_pattern
+                    Layout.fillWidth: true
+                }
+
+                Controls.ToolButton {
+                    icon.name: "info"
+
+                    Controls.ToolTip.visible: hovered
+                    Controls.ToolTip.text: `Available variables:
+%app% - title of the current full-screen window or unknown
+%year% - current year
+%month% - current month
+%day% - current day
+%hour% - current hour
+%minute% - current minute
+%second% - current second`
+                }
+            }
+        }
+
         ConfigLabel {
             text: "Duration:"
         }
@@ -168,6 +217,13 @@ Kirigami.ScrollablePage {
             Controls.Button {
                 text: "Apply"
                 onClicked: function () {
+                    if (separateDirsRadio.checked) {
+                        Settings.file_name_pattern = "%app%/%app%_replay_%year%-%month%-%day%_%hour%-%minute%-%second%";
+                    } else if (rootDirRadio.checked) {
+                        Settings.file_name_pattern = "%app%_replay_%year%-%month%-%day%_%hour%-%minute%-%second%";
+                    } else if (customDirRadio.checked) {
+                        Settings.file_name_pattern = customDirField.text;
+                    }
                     Settings.framerate = framerate.value;
                     Settings.duration = duration.value;
                     Settings.quality = quality.currentIndex;
