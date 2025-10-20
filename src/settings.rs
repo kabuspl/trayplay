@@ -33,7 +33,6 @@ macro_rules! setter {
         paste! {
             fn [<set_ $key>](&mut self, value: $type) {
                 self.$key = value;
-                self.change();
             }
         }
     };
@@ -152,6 +151,7 @@ impl Settings {
             .collect();
         config.file_name_pattern = self.file_name_pattern.to_string();
         futures::executor::block_on(async { config.save().await });
+        self.change();
     }
 
     pub async fn new(config: Arc<RwLock<Config>>, action_event_tx: Sender<ActionEvent>) -> Self {
