@@ -33,6 +33,42 @@ Kirigami.ScrollablePage {
         rowSpacing: Kirigami.Units.largeSpacing
 
         ConfigLabel {
+            text: "Video source:"
+        }
+
+        Controls.ComboBox {
+            id: video_source
+            Layout.fillWidth: true
+            model: [
+                {
+                    text: `Default (${Settings.video_sources[0].split("|")[0]})`,
+                    value: "screen"
+                },
+                ...Settings.video_sources.map(e => {
+                    var split = e.split("|");
+                    if (split.length > 1) {
+                        return {
+                            text: `${split[0]} (${split[1]})`,
+                            value: split[0]
+                        };
+                    } else if (split[0] == "portal") {
+                        return {
+                            text: "XDG Desktop Portal",
+                            value: "portal"
+                        };
+                    } else {
+                        return {
+                            text: split[0],
+                            value: split[0]
+                        };
+                    }
+                })]
+            textRole: "text"
+            valueRole: "value"
+            currentValue: Settings.video_source_choice
+        }
+
+        ConfigLabel {
             text: "Directory:"
         }
 
@@ -232,6 +268,7 @@ Kirigami.ScrollablePage {
                     Settings.replay_directory = path.text;
                     Settings.clear_buffer = clearBuffer.checked;
                     Settings.record_replays = recordReplays.checked;
+                    Settings.video_source_choice = video_source.currentValue;
                     Settings.apply_config();
                 }
             }

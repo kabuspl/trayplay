@@ -214,6 +214,8 @@ Kirigami.Page {
                                     spacing: 0
                                     Controls.Label {
                                         Layout.alignment: Qt.AlignVCenter
+                                        Layout.maximumWidth: sourcesList.width - 16
+                                        elide: Text.ElideMiddle
                                         text: switch (modelData) {
                                         case "default_input":
                                             " - Default Microphone";
@@ -301,9 +303,9 @@ Kirigami.Page {
                 } else if (systemSoundRadio.checked) {
                     track = "default_output";
                 } else if (otherDeviceRadio.checked) {
-                    track = otherDevice.currentText;
+                    track = otherDevice.currentValue;
                 } else if (applicationRadio.checked) {
-                    track = "app:" + application.currentText;
+                    track = "app:" + application.currentValue;
                 }
                 Settings.add_audio_source(addDialog.trackIndex, track);
                 addDialog.close();
@@ -320,6 +322,41 @@ Kirigami.Page {
             Controls.RadioButton {
                 id: systemSoundRadio
                 text: "System sound"
+            }
+
+            Controls.RadioButton {
+                id: applicationRadio
+                text: "Application:"
+            }
+
+            Controls.ComboBox {
+                id: application
+                Layout.fillWidth: true
+                Layout.maximumWidth: 300
+                model: Settings.audio_applications
+                enabled: applicationRadio.checked
+            }
+
+            Controls.RadioButton {
+                id: otherDeviceRadio
+                text: "Other device:"
+            }
+
+            Controls.ComboBox {
+                id: otherDevice
+                Layout.fillWidth: true
+                Layout.maximumWidth: 300
+
+                model: Settings.audio_devices.map(e => {
+                    let split = e.split("|");
+                    return {
+                        text: split[1],
+                        value: split[0]
+                    };
+                })
+                textRole: "text"
+                valueRole: "value"
+                enabled: otherDeviceRadio.checked
             }
         }
     }

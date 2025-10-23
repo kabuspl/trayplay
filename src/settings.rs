@@ -8,7 +8,7 @@ use qmetaobject::{
 };
 use tokio::sync::{RwLock, mpsc::Sender};
 
-use crate::{ActionEvent, config::Config};
+use crate::{ActionEvent, config::Config, utils::get_command_output};
 
 macro_rules! getter {
     ($key: ident, $type: expr) => {
@@ -64,6 +64,10 @@ pub struct Settings {
     clear_buffer: qt_property!(bool; READ get_clear_buffer WRITE set_clear_buffer),
     record_replays: qt_property!(bool; READ get_record_replays WRITE set_record_replays),
     file_name_pattern: qt_property!(QString; READ get_file_name_pattern WRITE set_file_name_pattern),
+    audio_applications: qt_property!(QStringList; READ get_audio_applications WRITE set_audio_applications),
+    audio_devices: qt_property!(QStringList; READ get_audio_devices WRITE set_audio_devices),
+    video_sources: qt_property!(QStringList; READ get_video_sources WRITE set_video_sources),
+    video_source_choice: qt_property!(QString; READ get_video_source_choice WRITE set_video_source_choice),
     audio_tracks_inner: Vec<Vec<String>>,
     audio_tracks: qt_property!(QVariantList; READ get_audio_tracks NOTIFY change),
     apply_config: qt_method!(fn(&self)),
@@ -85,6 +89,10 @@ impl Settings {
     property_impl!(clear_buffer, bool);
     property_impl!(record_replays, bool);
     property_impl!(file_name_pattern, QString, cloned);
+    property_impl!(audio_applications, QStringList, cloned);
+    property_impl!(audio_devices, QStringList, cloned);
+    property_impl!(video_sources, QStringList, cloned);
+    property_impl!(video_source_choice, QString, cloned);
 
     fn get_audio_tracks(&self) -> QVariantList {
         self.audio_tracks_inner
@@ -150,12 +158,38 @@ impl Settings {
             .map(|track| track.join("|"))
             .collect();
         config.file_name_pattern = self.file_name_pattern.to_string();
+        config.screen = self.video_source_choice.to_string();
         futures::executor::block_on(async { config.save().await });
         self.change();
     }
 
     pub async fn new(config: Arc<RwLock<Config>>, action_event_tx: Sender<ActionEvent>) -> Self {
         let config_values = config.read().await;
+
+        let audio_applications =
+            get_command_output("gpu-screen-recorder", &["--list-application-audio"])
+                .unwrap()
+                .split('\n')
+                .filter(|e| !e.is_empty())
+                .collect::<QStringList>()
+                .clone();
+
+        let audio_devices = get_command_output("gpu-screen-recorder", &["--list-audio-devices"])
+            .unwrap()
+            .split('\n')
+            .filter(|e| {
+                // we don't need default devices here, they heave separate redio buttons
+                !e.is_empty() && !e.contains("default_output") && !e.contains("default_input")
+            })
+            .collect::<QStringList>()
+            .clone();
+
+        let video_sources = get_command_output("gpu-screen-recorder", &["--list-capture-options"])
+            .unwrap()
+            .split('\n')
+            .filter(|e| !e.is_empty() && *e != "region") // region selection is not supported right now
+            .collect::<QStringList>()
+            .clone();
 
         Self {
             base: Default::default(),
@@ -168,6 +202,10 @@ impl Settings {
             directory: config_values.replay_directory.display().to_string().into(),
             clear_buffer: config_values.clear_buffer_on_save,
             record_replays: config_values.recording_enabled,
+            audio_applications,
+            audio_devices,
+            video_sources,
+            video_source_choice: QString::from(config_values.screen.clone()),
             audio_tracks_inner: config_values
                 .audio_tracks
                 .iter()

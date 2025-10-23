@@ -1,7 +1,7 @@
-use std::{path::PathBuf, str::FromStr};
+use std::{path::PathBuf, process::Stdio, str::FromStr};
 
 use ashpd::desktop::file_chooser::OpenFileRequest;
-use time::{OffsetDateTime, PrimitiveDateTime, UtcDateTime};
+use time::OffsetDateTime;
 
 use crate::kdialog::{self, InfoBox, InputBox};
 
@@ -114,4 +114,18 @@ pub fn process_pattern(pattern: &str, app_name: &str) -> String {
         .replace("%hour%", &local_time.hour().to_string())
         .replace("%minute%", &local_time.minute().to_string())
         .replace("%second%", &local_time.second().to_string())
+}
+
+pub fn get_command_output(command: &str, args: &[&str]) -> Result<String, std::io::Error> {
+    Ok(String::from_utf8_lossy(
+        &std::process::Command::new(command)
+            .args(args)
+            .stdout(Stdio::piped())
+            .spawn()
+            .unwrap()
+            .wait_with_output()
+            .unwrap()
+            .stdout,
+    )
+    .into())
 }
