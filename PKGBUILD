@@ -8,7 +8,7 @@ arch=('x86_64' 'aarch64')
 url="https://github.com/kabuspl/trayplay"
 license=('MIT')
 depends=('gcc-libs' 'glibc' 'gpu-screen-recorder' 'xdg-desktop-portal-impl' 'kdialog' 'kirigami')
-makedepends=('cargo')
+makedepends=('cargo' 'qt6-tools')
 source=("${pkgname}-${pkgver}.tar.gz::https://github.com/kabuspl/trayplay/archive/v${pkgver}.tar.gz")
 sha256sums=('9245373e95902f3902acdb048f3d847fa8a6fbb80a58f4ce3103089aebb63a19')
 
