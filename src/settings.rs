@@ -1,3 +1,4 @@
+use cpp::cpp;
 use paste::paste;
 use std::sync::Arc;
 
@@ -9,6 +10,12 @@ use qmetaobject::{
 use tokio::sync::{RwLock, mpsc::Sender};
 
 use crate::{ActionEvent, config::Config, utils::get_command_output};
+
+cpp! {{
+    #include <QTranslator>
+    #include <QQmlEngine>
+    #include <QCoreApplication>
+}}
 
 macro_rules! getter {
     ($key: ident, $type: expr) => {
@@ -244,11 +251,30 @@ pub fn open_settings(action_event_tx: Sender<ActionEvent>, config: Arc<RwLock<Co
     tokio::spawn(async move {
         let mut engine = QmlEngine::new();
 
+        settings_ui(); // Load qrc
+
+        {
+            let engine_ptr = engine.cpp_ptr();
+            cpp!(unsafe [engine_ptr as "QQmlEngine *"] {
+                static QTranslator translator;
+                QCoreApplication::removeTranslator(&translator);
+
+                QString lang_id = QLocale::system().name();
+
+                if (lang_id != "en") {
+                    if (translator.load(":/ui/lang/" + lang_id + ".qm")) {
+                        QCoreApplication::installTranslator(&translator);
+                    }
+                }
+
+                engine_ptr->retranslate();
+            });
+        }
+
         let settings = Settings::new(config, action_event_tx).await;
 
         qml_register_singleton_instance(cstr!("Settings"), 1, 0, cstr!("Settings"), settings);
 
-        settings_ui(); // Load qrc
         engine.load_url(QUrl::from_user_input("qrc:/ui/settings.qml".into()));
 
         engine.exec();

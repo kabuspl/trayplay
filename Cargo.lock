@@ -1684,6 +1684,8 @@ name = "trayplay"
 version = "0.4.0"
 dependencies = [
  "ashpd",
+ "cpp",
+ "cpp_build",
  "cstr",
  "ctrlc",
  "dirs",
@@ -1698,6 +1700,7 @@ dependencies = [
  "nix",
  "paste",
  "qmetaobject",
+ "qttypes",
  "serde",
  "time",
  "tokio",
