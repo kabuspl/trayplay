@@ -2,7 +2,7 @@
 
 pkgname=trayplay
 pkgver=1.0.0
-pkgrel=1
+pkgrel=3
 pkgdesc="Instant Replay (DVR) app for KDE using gpu-screen-recorder in the background"
 arch=('x86_64' 'aarch64')
 url="https://github.com/kabuspl/trayplay"
@@ -10,7 +10,7 @@ license=('MIT')
 depends=('gcc-libs' 'glibc' 'gpu-screen-recorder' 'xdg-desktop-portal-impl' 'kdialog' 'kirigami')
 makedepends=('cargo' 'qt6-tools')
 source=("${pkgname}-${pkgver}.tar.gz::https://github.com/kabuspl/trayplay/archive/v${pkgver}.tar.gz")
-sha256sums=('9245373e95902f3902acdb048f3d847fa8a6fbb80a58f4ce3103089aebb63a19')
+sha256sums=('b5e13ac7d9d2d97ff4e10d42920c6deeae1638d59eb9521b0756e320b15ec9aa')
 
 prepare() {
     export RUSTUP_TOOLCHAIN=stable
@@ -22,6 +22,7 @@ prepare() {
 build() {
     export RUSTUP_TOOLCHAIN=stable
     export CARGO_TARGET_DIR=target
+    export CXXFLAGS+=" -fno-lto"
 
     cd "$srcdir/$pkgname-$pkgver"
     cargo build --frozen --release --all-features
