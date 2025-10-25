@@ -1,6 +1,6 @@
 # TrayPlay
 ## A simple tray app for recording screen replays on KDE.
-![Tray menu screenshot](preview.png)
+![Screenshots](preview.png)
 
 Simple frontend for [gpu-screen-recorder](https://git.dec05eba.com/gpu-screen-recorder/about)'s replay feature running in the background. Smaller alternative for [gpu-screen-recorder-ui](https://git.dec05eba.com/gpu-screen-recorder-ui/about/). Makes use of [Global Shortcuts](https://flatpak.github.io/xdg-desktop-portal/docs/doc-org.freedesktop.portal.GlobalShortcuts.html) and KDE OSDs. Replays are put into directories named after currently focused fullscreen app. If the active window isn't fullscreen videos are put into "unknown" directory.
 
@@ -14,7 +14,7 @@ Install the package from AUR: https://aur.archlinux.org/packages/trayplay
 Install [rust toolchain](https://www.rust-lang.org/tools/install) and [gpu-screen-recorder](https://git.dec05eba.com/gpu-screen-recorder/about/#:~:text=games.-,Installation), then in the source code directory execute `cargo build --release`. Executable will be located at `target/release/trayplay`. `kwin_script.js` needs to be placed in `dist` directory relative to current working directory when starting trayplay or at `/usr/share/trayplay/kwin_script.js`
 
 ## Configuration
-You can configure TrayPlay through its tray menu or directly with a config file which gets saved after the first start at `/home/username/.config/trayplay.toml` (or other directory set in $XDG_CONFIG_HOME)
+You can configure TrayPlay through its settings menu or directly with a config file which gets saved after the first start at `/home/username/.config/trayplay.toml` (or other directory set in $XDG_CONFIG_HOME)
 
 ```toml
 # start recording immediately
