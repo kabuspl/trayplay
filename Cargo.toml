@@ -1,6 +1,6 @@
 [package]
 name = "trayplay"
-version = "0.4.0"
+version = "1.0.0"
 edition = "2024"
 
 [dependencies]

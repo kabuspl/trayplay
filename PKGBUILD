@@ -1,13 +1,13 @@
 # Maintainer: kabuspl <jakubs832 at gmail dot com>
 
 pkgname=trayplay
-pkgver=0.4.0
+pkgver=1.0.0
 pkgrel=1
 pkgdesc="Instant Replay (DVR) app for KDE using gpu-screen-recorder in the background"
 arch=('x86_64' 'aarch64')
 url="https://github.com/kabuspl/trayplay"
 license=('MIT')
-depends=('gcc-libs' 'glibc' 'gpu-screen-recorder' 'xdg-desktop-portal-impl' 'kdialog')
+depends=('gcc-libs' 'glibc' 'gpu-screen-recorder' 'xdg-desktop-portal-impl' 'kdialog' 'kirigami')
 makedepends=('cargo')
 source=("${pkgname}-${pkgver}.tar.gz::https://github.com/kabuspl/trayplay/archive/v${pkgver}.tar.gz")
 sha256sums=('9245373e95902f3902acdb048f3d847fa8a6fbb80a58f4ce3103089aebb63a19')
