@@ -15,6 +15,8 @@ cpp! {{
     #include <QTranslator>
     #include <QQmlEngine>
     #include <QCoreApplication>
+    #include <QtGui/QGuiApplication>
+    #include <QtGui/QIcon>
 }}
 
 macro_rules! getter {
@@ -260,6 +262,8 @@ pub fn open_settings(action_event_tx: Sender<ActionEvent>, config: Arc<RwLock<Co
         {
             let engine_ptr = engine.cpp_ptr();
             cpp!(unsafe [engine_ptr as "QQmlEngine *"] {
+                QGuiApplication::setWindowIcon(QIcon::fromTheme("media-skip-backward"));
+
                 static QTranslator translator;
                 QCoreApplication::removeTranslator(&translator);
 
