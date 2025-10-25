@@ -6,12 +6,12 @@ import Settings
 
 Kirigami.Page {
     // id: audioPage
-    title: "Audio Tracks"
+    title: qsTr("Audio Tracks")
     padding: 0
     actions: [
         Kirigami.Action {
             icon.name: "list-add"
-            text: "Add track"
+            text: qsTr("Add track")
             onTriggered: function () {
                 Settings.add_audio_track();
             }
@@ -22,7 +22,7 @@ Kirigami.Page {
         actions: [
             Kirigami.Action {
                 icon.name: "settings-configure"
-                text: "Simple"
+                text: qsTr("Simple")
                 checked: simpleAudioTracks.visible
                 onTriggered: function () {
                     simpleAudioTracks.visible = true;
@@ -31,7 +31,7 @@ Kirigami.Page {
             },
             Kirigami.Action {
                 icon.name: "code-class"
-                text: "Advanced"
+                text: qsTr("Advanced")
                 checked: advancedAudioTracks.visible
                 onTriggered: function () {
                     simpleAudioTracks.visible = false;
@@ -94,7 +94,7 @@ Kirigami.Page {
 
             Controls.Switch {
                 id: recordSystem
-                text: "Record system sound"
+                text: qsTr("Record system sound")
                 onToggled: function () {
                     simpleAudioTracksColumn.toggleTracks();
                 }
@@ -102,7 +102,7 @@ Kirigami.Page {
 
             Controls.Switch {
                 id: recordMicrophone
-                text: "Record microphone"
+                text: qsTr("Record microphone")
                 onToggled: function () {
                     simpleAudioTracksColumn.toggleTracks();
                 }
@@ -110,7 +110,7 @@ Kirigami.Page {
 
             Controls.Switch {
                 id: mergeTracks
-                text: "Merge system & microphone tracks"
+                text: qsTr("Merge system & microphone tracks")
                 enabled: recordSystem.checked && recordMicrophone.checked
                 onToggled: function () {
                     if (mergeTracks.checked) {
@@ -140,7 +140,7 @@ Kirigami.Page {
             }
 
             Controls.Label {
-                text: "Simple audio settings are not available when custom audio tracks are configured."
+                text: qsTr("Simple audio settings are not available when custom audio tracks are configured.")
                 wrapMode: Text.Wrap
                 width: parent.width
                 padding: 30
@@ -150,7 +150,7 @@ Kirigami.Page {
             }
 
             Controls.Button {
-                text: "Reset audio tracks"
+                text: qsTr("Reset audio tracks")
                 icon.name: "edit-undo"
                 anchors.horizontalCenter: parent.horizontalCenter
                 onClicked: function () {
@@ -218,10 +218,10 @@ Kirigami.Page {
                                         elide: Text.ElideMiddle
                                         text: switch (modelData) {
                                         case "default_input":
-                                            " - Default Microphone";
+                                            " - " + qsTr("Default Microphone");
                                             break;
                                         case "default_output":
-                                            " - System Sound";
+                                            " - " + qsTr("System Sound");
                                             break;
                                         default:
                                             " - " + modelData;
@@ -274,7 +274,7 @@ Kirigami.Page {
                                 Layout.columnSpan: 3
                                 Layout.fillWidth: true
                                 icon.name: "list-add"
-                                text: "Add source"
+                                text: qsTr("Add source")
                                 onClicked: function () {
                                     addDialog.trackIndex = index;
                                     addDialog.open();
@@ -290,7 +290,7 @@ Kirigami.Page {
     Kirigami.Dialog {
         id: addDialog
         property int trackIndex: 0
-        title: "Add audio source"
+        title: qsTr("Add audio source")
         padding: Kirigami.Units.largeSpacing
         standardButtons: Kirigami.Dialog.NoButton
         customFooterActions: Kirigami.Action {
@@ -315,18 +315,18 @@ Kirigami.Page {
         ColumnLayout {
             Controls.RadioButton {
                 id: defaultMicrophoneRadio
-                text: "Default microhpone"
+                text: qsTr("Default microhpone")
                 checked: true
             }
 
             Controls.RadioButton {
                 id: systemSoundRadio
-                text: "System sound"
+                text: qsTr("System sound")
             }
 
             Controls.RadioButton {
                 id: applicationRadio
-                text: "Application:"
+                text: qsTr("Application:")
             }
 
             Controls.ComboBox {
@@ -339,7 +339,7 @@ Kirigami.Page {
 
             Controls.RadioButton {
                 id: otherDeviceRadio
-                text: "Other device:"
+                text: qsTr("Other device:")
             }
 
             Controls.ComboBox {

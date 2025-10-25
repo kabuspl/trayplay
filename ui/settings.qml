@@ -3,7 +3,7 @@ import org.kde.kirigami as Kirigami
 
 Kirigami.ApplicationWindow {
     id: window
-    title: "TrayPlay Settings"
+    title: qsTr("TrayPlay Settings")
     width: 500
     minimumWidth: 500
     height: 560
