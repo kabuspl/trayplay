@@ -244,7 +244,11 @@ qrc!(settings_ui, "ui" as "ui" {
     "settings.qml",
     "AudioPage.qml",
     "MainPage.qml",
-    "components/ConfigLabel.qml"
+    "components/ConfigLabel.qml",
+    "lang/pl_PL.qm",
+    "lang/de_DE.qm",
+    "lang/fr_FR.qm",
+    "lang/es_ES.qm"
 });
 
 pub fn open_settings(action_event_tx: Sender<ActionEvent>, config: Arc<RwLock<Config>>) {
