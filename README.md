@@ -46,4 +46,21 @@ replay_directory = "/home/username/Videos"
 
 # max duration of a single replay
 replay_duration_secs = 180
+
+# replay file naming pattern - available variables:
+# %app% - title of the current full-screen window or unknown
+# %year% - current year
+# %month% - current month
+# %day% - current day
+# %hour% - current hour
+# %minute% - current minute
+# %second% - current second
+# file extension is added automatically based on video container
+file_name_pattern = "%app%/%app%_replay_%year%-%month%-%day%_%hour%-%minute%-%second%"
 ```
+
+## Contributing
+Feel free to open issues or pull requests.
+
+If you don't know how to code, you can help with translations on crowdin: https://crowdin.com/project/trayplay.
+If your language isn't available there please use the "Request New Language" button.
