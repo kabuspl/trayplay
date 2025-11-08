@@ -108,12 +108,21 @@ pub fn process_pattern(pattern: &str, app_name: &str) -> String {
 
     pattern
         .replace("%app%", app_name)
-        .replace("%year%", &local_time.year().to_string())
-        .replace("%month%", &(local_time.month() as usize).to_string())
-        .replace("%day%", &local_time.day().to_string())
-        .replace("%hour%", &local_time.hour().to_string())
-        .replace("%minute%", &local_time.minute().to_string())
-        .replace("%second%", &local_time.second().to_string())
+        .replace("%year%", &pad_date_component(local_time.year().to_string()))
+        .replace(
+            "%month%",
+            &pad_date_component((local_time.month() as usize).to_string()),
+        )
+        .replace("%day%", &pad_date_component(local_time.day().to_string()))
+        .replace("%hour%", &pad_date_component(local_time.hour().to_string()))
+        .replace(
+            "%minute%",
+            &pad_date_component(local_time.minute().to_string()),
+        )
+        .replace(
+            "%second%",
+            &pad_date_component(local_time.second().to_string()),
+        )
 }
 
 pub fn get_command_output(command: &str, args: &[&str]) -> Result<String, std::io::Error> {
@@ -128,4 +137,8 @@ pub fn get_command_output(command: &str, args: &[&str]) -> Result<String, std::i
             .stdout,
     )
     .into())
+}
+
+fn pad_date_component(input: String) -> String {
+    format!("{:0>2}", input)
 }
