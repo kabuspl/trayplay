@@ -219,7 +219,7 @@ impl ksni::Tray for TrayIcon {
                     .output()
                     .unwrap();
                 MessageBox::new(format!(
-                    "TrayPlay version: {}\ngpu-screen-recorder version: {}\nReport issues at: https://github.com/kabuspl/trayplay/issues\nLicense: MIT\n© 2025 kabuspl",
+                    "TrayPlay version: {}\ngpu-screen-recorder version: {}\nReport issues at: https://github.com/kabuspl/trayplay/issues\nLicense: GNU GPLv3\n© 2025 kabuspl",
                     env!("CARGO_PKG_VERSION"),
                     String::from_utf8(gsr_version.stdout).unwrap()
                 ))
