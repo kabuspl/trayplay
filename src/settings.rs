@@ -201,8 +201,6 @@ impl Settings {
             .collect::<QStringList>()
             .clone();
 
-        println!("{:#?}", video_sources);
-
         Self {
             base: Default::default(),
             change: Default::default(),
