@@ -269,6 +269,7 @@ Kirigami.ScrollablePage {
                     Settings.clear_buffer = clearBuffer.checked;
                     Settings.record_replays = recordReplays.checked;
                     Settings.video_source_choice = video_source.currentValue;
+                    Settings.directory = path.text;
                     Settings.apply_config();
                 }
             }
