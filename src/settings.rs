@@ -1,6 +1,6 @@
 use cpp::cpp;
 use paste::paste;
-use std::sync::Arc;
+use std::{iter, sync::Arc};
 
 use cstr::cstr;
 use qmetaobject::{
@@ -193,12 +193,15 @@ impl Settings {
             .collect::<QStringList>()
             .clone();
 
-        let video_sources = get_command_output("gpu-screen-recorder", &["--list-capture-options"])
+        let video_sources = get_command_output("gpu-screen-recorder", &["--list-monitors"])
             .unwrap()
             .split('\n')
-            .filter(|e| !e.is_empty() && *e != "region") // region selection is not supported right now
+            .filter(|v| !v.is_empty())
+            .chain(iter::once("portal"))
             .collect::<QStringList>()
             .clone();
+
+        println!("{:#?}", video_sources);
 
         Self {
             base: Default::default(),
