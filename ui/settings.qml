@@ -6,7 +6,7 @@ Kirigami.ApplicationWindow {
     title: qsTr("TrayPlay Settings")
     width: 500
     minimumWidth: 500
-    height: 560
+    height: 580
 
     pageStack.defaultColumnWidth: 500
     pageStack.initialPage: Qt.resolvedUrl("MainPage.qml")
