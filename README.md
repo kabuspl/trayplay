@@ -9,7 +9,11 @@ Simple frontend for [gpu-screen-recorder](https://git.dec05eba.com/gpu-screen-re
 
 ## Installing
 ### Arch Linux (and derivatives)
-Install the package from AUR: https://aur.archlinux.org/packages/trayplay
+TrayPlay is available on the AUR as a [normal](https://aur.archlinux.org/packages/trayplay) and [binary](https://aur.archlinux.org/packages/trayplay-bin) package.
+
+If you're using yay you can install TrayPlay using the following command:  
+`yay -S trayplay-bin`
+
 ### Manual compilation
 Install [rust toolchain](https://www.rust-lang.org/tools/install) and [gpu-screen-recorder](https://git.dec05eba.com/gpu-screen-recorder/about/#:~:text=games.-,Installation), then in the source code directory execute `cargo build --release`. Executable will be located at `target/release/trayplay`. `kwin_script.js` needs to be placed in `dist` directory relative to current working directory when starting trayplay or at `/usr/share/trayplay/kwin_script.js`
 
