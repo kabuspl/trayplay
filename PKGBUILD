@@ -10,7 +10,7 @@ license=('GPL-3.0-only')
 depends=('gcc-libs' 'glibc' 'gpu-screen-recorder' 'xdg-desktop-portal-impl' 'kdialog' 'kirigami')
 makedepends=('cargo' 'qt6-tools')
 source=("${pkgname}-${pkgver}.tar.gz::https://github.com/kabuspl/trayplay/archive/v${pkgver}.tar.gz")
-sha256sums=('f7ed958ea8a86f595f8e64f65fd3e6dfdfa1e800680e52bf378619cb29069beb')
+sha256sums=('6a364fb717a70f3664b3e33afc7d1e202bf41c6ac788170b7897b5d7127d06bc')
 
 prepare() {
     export RUSTUP_TOOLCHAIN=stable
