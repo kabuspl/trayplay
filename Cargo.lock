@@ -1644,7 +1644,7 @@ dependencies = [
 
 [[package]]
 name = "trayplay"
-version = "1.0.0"
+version = "1.1.1"
 dependencies = [
  "ashpd",
  "cpp",
