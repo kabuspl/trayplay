@@ -70,7 +70,7 @@ async fn main() -> Result<(), Box<dyn Error>> {
     let mut ui = Ui::new(action_tx.clone(), config.clone()).await;
 
     let connection = Connection::session().await?;
-    let service_name = "ovh.kabus.trayplay";
+    let service_name = "ovh.kabus.TrayPlay";
     let proxy = zbus::fdo::DBusProxy::new(&connection).await?;
     let exists = proxy
         .name_has_owner(BusName::try_from(service_name)?)
@@ -90,7 +90,7 @@ async fn main() -> Result<(), Box<dyn Error>> {
     kwin_script_manager.load().await;
 
     // Let xdg portal know what desktop file are we
-    register_host_app(AppID::from_str("ovh.kabus.trayplay").unwrap()).await?;
+    register_host_app(AppID::from_str("ovh.kabus.TrayPlay").unwrap()).await?;
 
     let tray = TrayIcon::new(action_tx.clone(), &config).await;
     // let tray = TrayIconClean::new(action_tx.clone(), &config);

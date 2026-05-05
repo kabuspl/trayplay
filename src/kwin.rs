@@ -43,7 +43,7 @@ impl<'a> KWinScriptManager<'a> {
                     .expect("Cannot find KWin script")
                     .to_str()
                     .unwrap(),
-                "trayplay",
+                "TrayPlay",
             )
             .await
             .expect("Failed to load KWin script");
@@ -58,7 +58,7 @@ impl<'a> KWinScriptManager<'a> {
         info!("Unloading KWin script");
 
         self.kwin_scripting_proxy
-            .unload_script("trayplay")
+            .unload_script("TrayPlay")
             .await
             .expect("Failed to unload KWin script");
     }
