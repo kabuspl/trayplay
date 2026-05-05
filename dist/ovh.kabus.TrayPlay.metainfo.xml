@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<component type="desktop-application">
+  <id>ovh.kabus.TrayPlay</id>
+
+  <name>TrayPlay</name>
+  <summary>Instant Replay (DVR) app for KDE based on gpu-screen-recorder in the background</summary>
+
+  <metadata_license>MIT</metadata_license>
+  <project_license>GPL-3.0-only</project_license>
+
+  <supports>
+    <control>pointing</control>
+    <control>keyboard</control>
+    <control>touch</control>
+  </supports>
+
+  <description>
+    <p>
+      Simple frontend for [gpu-screen-recorder](https://git.dec05eba.com/gpu-screen-recorder/about)&apos;s replay feature running in the background. Smaller alternative for [gpu-screen-recorder-ui](https://git.dec05eba.com/gpu-screen-recorder-ui/about/). Makes use of [Global Shortcuts](https://flatpak.github.io/xdg-desktop-portal/docs/doc-org.freedesktop.portal.GlobalShortcuts.html) and KDE OSDs. Replays are put into directories named after currently focused fullscreen app. If the active window isn&apos;t fullscreen videos are put into &quot;unknown&quot; directory.
+    </p>
+  </description>
+
+  <launchable type="desktop-id">ovh.kabus.TrayPlay.desktop</launchable>
+  <screenshots>
+    <screenshot type="default">
+      <image>https://raw.githubusercontent.com/kabuspl/trayplay/refs/heads/main/dist/screenshot.png</image>
+    </screenshot>
+  </screenshots>
+</component>
