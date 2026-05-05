@@ -1,6 +1,7 @@
 use std::{path::PathBuf, process::Stdio, str::FromStr};
 
 use ashpd::desktop::file_chooser::OpenFileRequest;
+use dirs::data_dir;
 use time::OffsetDateTime;
 
 pub fn get_app_name(desktop_file: &str) -> Result<Option<String>, std::io::Error> {
@@ -35,9 +36,16 @@ pub fn get_app_name(desktop_file: &str) -> Result<Option<String>, std::io::Error
 }
 
 pub fn get_script_path() -> Option<PathBuf> {
+    let mut script_path = data_dir().unwrap();
+    script_path.push("kwin_script.js");
+    if is_flatpak() {
+        std::fs::copy("/app/share/kwin_script.js", &script_path).unwrap();
+    }
+
     let local_path = std::env::current_dir().unwrap().join("dist/kwin_script.js");
     let search_paths = vec![
         "/usr/share/trayplay/kwin_script.js",
+        &script_path.as_os_str().to_str().unwrap(),
         local_path.to_str().unwrap(),
     ];
 
@@ -114,4 +122,8 @@ pub fn get_command_output(command: &str, args: &[&str]) -> Result<String, std::i
 
 fn pad_date_component(input: String) -> String {
     format!("{:0>2}", input)
+}
+
+pub fn is_flatpak() -> bool {
+    std::env::var("container").is_ok()
 }
