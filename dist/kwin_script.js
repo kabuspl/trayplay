@@ -10,6 +10,7 @@ function send(window) {
             window.desktopFileName,
             window.caption,
             window.fullScreen,
+            window.pid,
         );
         if (active_window != null) {
             active_window.fullScreenChanged.disconnect(fullScreenChanged);
@@ -28,6 +29,7 @@ function fullScreenChanged() {
         active_window.desktopFileName,
         active_window.caption,
         active_window.fullScreen,
+        active_window.pid,
     );
 }
 
