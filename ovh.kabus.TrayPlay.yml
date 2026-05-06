@@ -1,0 +1,106 @@
+id: ovh.kabus.TrayPlay
+runtime: org.kde.Platform
+runtime-version: "6.10"
+sdk: org.kde.Sdk
+sdk-extensions:
+    - org.freedesktop.Sdk.Extension.rust-stable
+command: trayplay
+build-options:
+    append-path: "/usr/lib/sdk/rust-stable/bin"
+    build-args:
+        - --share=network
+finish-args:
+    - --device=dri
+    - --filesystem=host
+    - --filesystem=xdg-run/pipewire-0
+    - --share=ipc
+    - --socket=pulseaudio
+    - --socket=wayland
+    - --socket=fallback-x11
+    - --talk-name=org.freedesktop.Flatpak
+    - --talk-name=org.kde.StatusNotifierWatcher
+    - --talk-name=org.kde.KWin
+    - --own-name=org.kde.*
+    - --own-name=ovh.kabus.trayplay.*
+
+modules:
+    - name: kms-server-proxy
+      disabled: false
+      buildsystem: simple
+      build-commands:
+          - sed --in-place -e "s/com.dec05eba.gpu_screen_recorder/ovh.kabus.TrayPlay/g" main.c
+          - ./build.sh
+          - install -Dm755 kms-server-proxy "$FLATPAK_DEST/bin/kms-server-proxy"
+      sources:
+          - type: archive
+            url: https://dec05eba.com/snapshot/kms-server-proxy.git.r32.64615b4.tar.gz
+            sha512: 824d3d07372b66a979e0258de7de4fcc615c90e36f8ccfb8b3c2414b05ffa131c32a44a9c39681b48d93d941532bd8beb580f398512c4183b898bdf9b37b58f8
+            strip-components: 0
+
+    - name: gpu-screen-recorder
+      disabled: false
+      buildsystem: simple
+      build-commands:
+          - sed --in-place -e "s/com.dec05eba.gpu_screen_recorder/ovh.kabus.TrayPlay/g" kms/client/kms_client.c
+          - sed --in-place -e "s/com.dec05eba.gpu_screen_recorder/ovh.kabus.TrayPlay/g" src/args_parser.c
+          - meson setup build
+          - meson configure --prefix=$FLATPAK_DEST --buildtype=release -Dcapabilities=false
+            -Dsystemd=false -Dnvidia_suspend_fix=false -Dstrip=true build
+          - ninja -C build install
+          - gcc kms/server/kms_server.c -o gsr-kms-server $FLATPAK_DEST/lib/libdrm.a -I$FLATPAK_DEST/include/libdrm
+            $GSR_KMS_SERVER_OPTS
+          - install -Dm755 gsr-kms-server "$FLATPAK_DEST/bin/gsr-kms-server"
+          - strip "$FLATPAK_DEST/bin/gsr-kms-server"
+          - strip "$FLATPAK_DEST/bin/gpu-screen-recorder"
+      build-options:
+          env:
+              GSR_KMS_SERVER_OPTS:
+                  -fstack-protector-all -O3 -s -flto -Wall -Wextra -Werror
+                  -DNDEBUG -static -static-libgcc
+      sources:
+          - type: archive
+            url: https://dec05eba.com/snapshot/gpu-screen-recorder.git.r1323.be5e51b.tar.gz
+            sha512: da40aa71ca7ed3a7b61215ec59416c1902f495f816adc05e440621a145abe774ea114bae5dea40aa1540ff9526414f9aa5aab704cb53004ee1a8dec8cade4d93
+            strip-components: 0
+      modules:
+          - name: libdrm
+            buildsystem: meson
+            config-opts:
+                - -Dintel=disabled
+                - -Dradeon=disabled
+                - -Damdgpu=disabled
+                - -Dnouveau=disabled
+                - -Dvmwgfx=disabled
+                - -Domap=disabled
+                - -Dexynos=disabled
+                - -Dfreedreno=disabled
+                - -Dtegra=disabled
+                - -Dvc4=disabled
+                - -Detnaviv=disabled
+                - -Dcairo-tests=disabled
+                - -Dman-pages=disabled
+                - -Dvalgrind=disabled
+                - -Dtests=false
+                - --default-library=static
+                - --buildtype=release
+            sources:
+                - type: git
+                  url: https://gitlab.freedesktop.org/mesa/drm.git
+                  commit: ad78bb591d02162d3b90890aa4d0a238b2a37cde
+                  tag: libdrm-2.4.122
+
+    - name: trayplay
+      buildsystem: simple
+      build-commands:
+          - find ui/lang/ -name "*.ts" -exec lrelease {} \;
+          - cargo build --release
+          - install -Dm755 target/release/trayplay $FLATPAK_DEST/bin/trayplay
+          - install -Dm644 dist/kwin_script.js $FLATPAK_DEST/share/kwin_script.js
+          - install -Dm644 dist/ovh.kabus.TrayPlay.desktop $FLATPAK_DEST/share/applications/ovh.kabus.TrayPlay.desktop
+          - install -Dm644 dist/ovh.kabus.TrayPlay.svg $FLATPAK_DEST/share/icons/hicolor/scalable/apps/ovh.kabus.TrayPlay.svg
+          - install -Dm644 dist/ovh.kabus.TrayPlay.metainfo.xml $FLATPAK_DEST/share/metainfo/ovh.kabus.TrayPlay.metainfo.xml
+      sources:
+          - type: dir
+            path: /home/kabus/Projects/instantreplay/
+            # url: https://github.com/kabuspl/trayplay.git
+            # tag: v1.1.1

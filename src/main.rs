@@ -14,7 +14,7 @@ use tray::TrayIcon;
 use utils::ask_path;
 use zbus::{Connection, names::BusName, proxy};
 
-use crate::ui::Ui;
+use crate::{ui::Ui, utils::is_kde};
 
 mod active_window;
 mod config;
@@ -89,14 +89,16 @@ async fn main() -> Result<(), Box<dyn Error>> {
     }
 
     let kwin_script_manager = KWinScriptManager::new().await?;
-    kwin_script_manager.load().await;
+    if is_kde() {
+        kwin_script_manager.load().await;
+    }
 
     // Let xdg portal know what desktop file are we
     register_host_app(AppID::from_str("ovh.kabus.TrayPlay").unwrap()).await?;
 
     let tray = TrayIcon::new(action_tx.clone(), &config).await;
     // let tray = TrayIconClean::new(action_tx.clone(), &config);
-    let tray_handle = tray.spawn().await.unwrap();
+    let tray_handle = tray.spawn().await.ok();
     shortcuts::setup_global_shortcuts(action_tx.clone());
 
     let app_name = Arc::new(RwLock::new("unknown".to_string()));
@@ -117,12 +119,17 @@ async fn main() -> Result<(), Box<dyn Error>> {
                     info!("Saving replay from {}", app_name.read().await);
                     match gpu_screen_recorder.save_replay().await {
                         Ok(_) => {
-                            osd_service
-                                .show_text(
-                                    "media-record",
-                                    &format!("Replay from \"{}\" saved!", app_name.read().await),
-                                )
-                                .await?;
+                            if is_kde() {
+                                osd_service
+                                    .show_text(
+                                        "media-record",
+                                        &format!(
+                                            "Replay from \"{}\" saved!",
+                                            app_name.read().await
+                                        ),
+                                    )
+                                    .await?;
+                            }
                         }
                         Err(err) => match err {
                             gsr::Error::RecorderNotRunning => {
@@ -135,7 +142,9 @@ async fn main() -> Result<(), Box<dyn Error>> {
                     }
                 }
                 ActionEvent::Quit => {
-                    kwin_script_manager.unload().await;
+                    if is_kde() {
+                        kwin_script_manager.unload().await;
+                    }
                     gpu_screen_recorder.stop().await?;
                     std::process::exit(0);
                 }
@@ -162,22 +171,28 @@ async fn main() -> Result<(), Box<dyn Error>> {
                 ActionEvent::ToggleReplay => {
                     if gpu_screen_recorder.is_running() {
                         gpu_screen_recorder.stop().await?;
-                        osd_service
-                            .show_text("media-playback-stopped", "Replay recording stopped")
-                            .await?;
+                        if is_kde() {
+                            osd_service
+                                .show_text("media-playback-stopped", "Replay recording stopped")
+                                .await?;
+                        }
                         let mut config = config.write().await;
                         config.recording_enabled = false;
                         config.save().await;
                     } else {
                         gpu_screen_recorder.start().await?;
-                        osd_service
-                            .show_text("media-playback-playing", "Replay recording started")
-                            .await?;
+                        if is_kde() {
+                            osd_service
+                                .show_text("media-playback-playing", "Replay recording started")
+                                .await?;
+                        }
                         let mut config = config.write().await;
                         config.recording_enabled = true;
                         config.save().await;
                     }
-                    tray_handle.update(|_| {}).await;
+                    if let Some(tray_handle) = &tray_handle {
+                        tray_handle.update(|_| {}).await;
+                    }
                 }
                 ActionEvent::ShowWindow(id) => {
                     ui.show_window(&id);

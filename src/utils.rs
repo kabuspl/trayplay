@@ -127,3 +127,7 @@ fn pad_date_component(input: String) -> String {
 pub fn is_flatpak() -> bool {
     std::env::var("container").is_ok()
 }
+
+pub fn is_kde() -> bool {
+    std::env::var("KDE").is_ok()
+}
