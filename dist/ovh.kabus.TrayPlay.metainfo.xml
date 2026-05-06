@@ -3,27 +3,55 @@
   <id>ovh.kabus.TrayPlay</id>
 
   <name>TrayPlay</name>
-  <summary>Instant Replay (DVR) app for KDE based on gpu-screen-recorder in the background</summary>
+  <summary>Instant replay recording app</summary>
 
-  <metadata_license>MIT</metadata_license>
+  <metadata_license>CC0-1.0</metadata_license>
   <project_license>GPL-3.0-only</project_license>
+
+  <developer id="ovh.kabus">
+    <name>Kabus</name>
+  </developer>
+
+  <branding>
+    <color type="primary" scheme_preference="light">#ff3232</color>
+    <color type="primary" scheme_preference="dark">#cb2828</color>
+  </branding>
+
+  <url type="bugtracker">https://github.com/kabuspl/trayplay/issues</url>
+  <url type="homepage">https://github.com/kabuspl/trayplay</url>
+  <url type="donation">https://ko-fi.com/kabus</url>
+  <url type="translate">https://crowdin.com/project/trayplay</url>
+  <url type="vcs-browser">https://github.com/kabuspl/trayplay</url>
+
+  <content_rating type="oars-1.0" />
 
   <supports>
     <control>pointing</control>
     <control>keyboard</control>
-    <control>touch</control>
   </supports>
 
   <description>
     <p>
-      Simple frontend for [gpu-screen-recorder](https://git.dec05eba.com/gpu-screen-recorder/about)&apos;s replay feature running in the background. Smaller alternative for [gpu-screen-recorder-ui](https://git.dec05eba.com/gpu-screen-recorder-ui/about/). Makes use of [Global Shortcuts](https://flatpak.github.io/xdg-desktop-portal/docs/doc-org.freedesktop.portal.GlobalShortcuts.html) and KDE OSDs. Replays are put into directories named after currently focused fullscreen app. If the active window isn&apos;t fullscreen videos are put into &quot;unknown&quot; directory.
+      Simple frontend for gpu-screen-recorder's replay feature running in the background. Smaller alternative for gpu-screen-recorder-ui. Makes use of Global Shortcuts and KDE OSDs. Replays are put into directories named after currently focused fullscreen app. If the active window isn't fullscreen videos are put into "unknown" directory.
     </p>
   </description>
 
   <launchable type="desktop-id">ovh.kabus.TrayPlay.desktop</launchable>
+
   <screenshots>
     <screenshot type="default">
       <image>https://raw.githubusercontent.com/kabuspl/trayplay/refs/heads/main/dist/screenshot.png</image>
     </screenshot>
   </screenshots>
+
+  <releases>
+    <release version="1.1.1" date="2026-05-05">
+      <url type="details">https://github.com/kabuspl/trayplay/releases/tag/v1.1.1</url>
+      <description>
+        <p>First Flatpak release</p>
+      </description>
+    </release>
+  </releases>
+
+  <translation type="qt">trayplay</translation>
 </component>
