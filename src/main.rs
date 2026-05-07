@@ -19,7 +19,6 @@ mod config;
 mod gsr;
 mod kwin;
 mod logger;
-mod settings;
 mod shortcuts;
 mod tray;
 mod ui;

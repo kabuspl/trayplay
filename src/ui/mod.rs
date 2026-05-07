@@ -4,9 +4,11 @@ use cpp::cpp;
 use cstr::cstr;
 use qmetaobject::{QmlEngine, qml_register_singleton_instance, qrc, queued_callback};
 use qttypes::{QString, QUrl, QVariant};
-use tokio::sync::{Mutex, RwLock, mpsc::Sender, oneshot};
+use tokio::sync::{RwLock, mpsc::Sender, oneshot};
 
-use crate::{ActionEvent, config::Config, settings::Settings};
+use crate::{ActionEvent, config::Config, ui::settings::Settings};
+
+mod settings;
 
 cpp! {{
     #include <QTranslator>

@@ -2,10 +2,9 @@ use cpp::cpp;
 use paste::paste;
 use std::{iter, sync::Arc};
 
-use cstr::cstr;
 use qmetaobject::{
-    QSingletonInit, QString, QStringList, QUrl, QVariantList, QmlEngine, prelude::QObject,
-    qml_register_singleton_instance, qrc, qt_base_class, qt_method, qt_property, qt_signal,
+    QSingletonInit, QString, QStringList, QVariantList, prelude::QObject, qt_base_class, qt_method,
+    qt_property, qt_signal,
 };
 use tokio::sync::{RwLock, mpsc::Sender};
 
@@ -241,51 +240,4 @@ impl Settings {
 
 impl QSingletonInit for Settings {
     fn init(&mut self) {}
-}
-
-qrc!(settings_ui, "ui" as "ui" {
-    "settings.qml",
-    "AudioPage.qml",
-    "MainPage.qml",
-    "components/ConfigLabel.qml",
-    "lang/pl_PL.qm",
-    "lang/de_DE.qm",
-    "lang/fr_FR.qm",
-    "lang/es_ES.qm"
-});
-
-pub fn open_settings(action_event_tx: Sender<ActionEvent>, config: Arc<RwLock<Config>>) {
-    tokio::spawn(async move {
-        let mut engine = QmlEngine::new();
-
-        settings_ui(); // Load qrc
-
-        {
-            let engine_ptr = engine.cpp_ptr();
-            cpp!(unsafe [engine_ptr as "QQmlEngine *"] {
-                QGuiApplication::setWindowIcon(QIcon::fromTheme("media-skip-backward"));
-
-                static QTranslator translator;
-                QCoreApplication::removeTranslator(&translator);
-
-                QString lang_id = QLocale::system().name();
-
-                if (lang_id != "en") {
-                    if (translator.load(":/ui/lang/" + lang_id + ".qm")) {
-                        QCoreApplication::installTranslator(&translator);
-                    }
-                }
-
-                engine_ptr->retranslate();
-            });
-        }
-
-        let settings = Settings::new(config, action_event_tx).await;
-
-        qml_register_singleton_instance(cstr!("Settings"), 1, 0, cstr!("Settings"), settings);
-
-        engine.load_url(QUrl::from_user_input("qrc:/ui/settings.qml".into()));
-
-        engine.exec();
-    });
 }
