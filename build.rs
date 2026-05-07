@@ -27,6 +27,7 @@ fn main() {
 
     println!("cargo:rerun-if-changed=src/settings.rs");
     println!("cargo:rerun-if-changed=ui/lang");
+    println!("cargo:rustc-link-lib=Qt6QuickControls2");
 
     config.include(&qt_include_path).build("src/main.rs");
 }

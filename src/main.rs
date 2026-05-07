@@ -12,7 +12,7 @@ use tray::TrayIcon;
 use utils::ask_path;
 use zbus::{Connection, names::BusName, proxy};
 
-use crate::settings::open_settings;
+use crate::ui::Ui;
 
 mod active_window;
 mod config;
@@ -23,6 +23,7 @@ mod logger;
 mod settings;
 mod shortcuts;
 mod tray;
+mod ui;
 mod utils;
 
 #[derive(Debug)]
@@ -97,6 +98,8 @@ async fn main() -> Result<(), Box<dyn Error>> {
     let conn = Connection::session().await?;
     let osd_service = OsdServiceProxy::new(&conn).await?;
 
+    let ui = Ui::new(action_tx.clone(), config.clone()).await;
+
     loop {
         if let Some(action) = action_rx.recv().await {
             match action {
@@ -167,7 +170,7 @@ async fn main() -> Result<(), Box<dyn Error>> {
                     tray_handle.update(|_| {}).await;
                 }
                 ActionEvent::OpenSettings => {
-                    open_settings(action_tx.clone(), config.clone());
+                    ui.open_settings();
                 }
                 other => {
                     warn!("Unhandled action event: {:?}", other)
