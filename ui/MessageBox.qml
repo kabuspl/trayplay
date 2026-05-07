@@ -2,6 +2,7 @@ import QtQuick
 import org.kde.kirigami as Kirigami
 import QtQuick.Controls
 import QtQuick.Layouts
+import MessageBoxHelper
 
 Window {
     id: messageBox
@@ -58,7 +59,6 @@ Window {
             id: messageBoxButton
             Layout.alignment: Qt.AlignRight
             text: "OK"
-            onClicked: messageBox.visible = false
             highlighted: true
             icon.name: "dialog-ok"
             focus: true
@@ -66,6 +66,11 @@ Window {
 
             Keys.onReturnPressed: messageBoxButton.click()
             Keys.onEscapePressed: messageBoxButton.click()
+
+            onClicked: {
+                messageBox.visible = false;
+                MessageBoxHelper.send_result(0);
+            }
         }
     }
 }

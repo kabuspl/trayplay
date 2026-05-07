@@ -4,10 +4,22 @@ use cpp::cpp;
 use cstr::cstr;
 use qmetaobject::{QmlEngine, qml_register_singleton_instance, qrc, queued_callback};
 use qttypes::{QString, QUrl, QVariant};
-use tokio::sync::{RwLock, mpsc::Sender, oneshot};
+use tokio::sync::{
+    RwLock,
+    mpsc::{self, Receiver, Sender},
+    oneshot,
+};
 
-use crate::{ActionEvent, config::Config, ui::settings::Settings};
+use crate::{
+    ActionEvent,
+    config::Config,
+    ui::{
+        messagebox::{MessageBoxHelper, MessageBoxResult},
+        settings::Settings,
+    },
+};
 
+mod messagebox;
 mod settings;
 
 cpp! {{
@@ -23,10 +35,13 @@ cpp! {{
 pub struct Ui {
     change_window_visibility: Arc<dyn Fn(bool)>,
     show_message_box: Arc<dyn Fn((QString, QString, QString))>,
+    message_box_result_rx: Receiver<MessageBoxResult>,
 }
 
 impl Ui {
     pub async fn new(action_event_tx: Sender<ActionEvent>, config: Arc<RwLock<Config>>) -> Self {
+        let (message_box_result_tx, message_box_result_rx) = mpsc::channel(8);
+
         let (settings_cb_tx, settings_cb_rx) = oneshot::channel();
         let (message_box_cb_tx, message_box_cb_rx) = oneshot::channel();
         tokio::spawn(async move {
@@ -56,8 +71,16 @@ impl Ui {
             }
 
             let settings = Settings::new(config, action_event_tx).await;
-
             qml_register_singleton_instance(cstr!("Settings"), 1, 0, cstr!("Settings"), settings);
+
+            let message_box_helper = MessageBoxHelper::new(message_box_result_tx);
+            qml_register_singleton_instance(
+                cstr!("MessageBoxHelper"),
+                1,
+                0,
+                cstr!("MessageBoxHelper"),
+                message_box_helper,
+            );
 
             engine.load_url(QUrl::from_user_input("qrc:/ui/settings.qml".into()));
 
@@ -96,6 +119,7 @@ impl Ui {
         let obj = Self {
             change_window_visibility: settings_cb_rx.await.unwrap(),
             show_message_box: message_box_cb_rx.await.unwrap(),
+            message_box_result_rx,
         };
 
         obj
@@ -105,20 +129,22 @@ impl Ui {
         self.change_window_visibility.as_ref()(true);
     }
 
-    pub fn show_info(&self, title: &str, text: &str) {
+    pub async fn show_info(&mut self, title: &str, text: &str) -> MessageBoxResult {
         self.show_message_box.as_ref()((
             QString::from("dialog-information"),
             QString::from(title),
             QString::from(text),
         ));
+        self.message_box_result_rx.recv().await.unwrap()
     }
 
-    pub fn show_error(&self, title: &str, text: &str) {
+    pub async fn show_error(&mut self, title: &str, text: &str) -> MessageBoxResult {
         self.show_message_box.as_ref()((
             QString::from("dialog-error"),
             QString::from(title),
             QString::from(text),
         ));
+        self.message_box_result_rx.recv().await.unwrap()
     }
 }
 

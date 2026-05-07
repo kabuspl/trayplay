@@ -67,6 +67,8 @@ async fn main() -> Result<(), Box<dyn Error>> {
 
     let config = Arc::new(RwLock::new(Config::load(action_tx.clone()).await));
 
+    let mut ui = Ui::new(action_tx.clone(), config.clone()).await;
+
     let connection = Connection::session().await?;
     let service_name = "ovh.kabus.trayplay";
     let proxy = zbus::fdo::DBusProxy::new(&connection).await?;
@@ -76,6 +78,11 @@ async fn main() -> Result<(), Box<dyn Error>> {
 
     if exists {
         error!("Cannot start more than one instance of TrayPlay!");
+        ui.show_error(
+            "TrayPlay",
+            "Cannot start more than one instance of TrayPlay!",
+        )
+        .await;
         std::process::exit(1);
     }
 
@@ -100,8 +107,6 @@ async fn main() -> Result<(), Box<dyn Error>> {
 
     let conn = Connection::session().await?;
     let osd_service = OsdServiceProxy::new(&conn).await?;
-
-    let ui = Ui::new(action_tx.clone(), config.clone()).await;
 
     loop {
         if let Some(action) = action_rx.recv().await {
@@ -176,10 +181,10 @@ async fn main() -> Result<(), Box<dyn Error>> {
                     ui.open_settings();
                 }
                 ActionEvent::ShowInfo(title, text) => {
-                    ui.show_info(&title, &text);
+                    let _ = ui.show_info(&title, &text).await;
                 }
                 ActionEvent::ShowError(title, text) => {
-                    ui.show_error(&title, &text);
+                    let _ = ui.show_error(&title, &text).await;
                 }
                 other => {
                     warn!("Unhandled action event: {:?}", other)
