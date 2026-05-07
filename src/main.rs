@@ -6,7 +6,7 @@ use gsr::GpuScreenRecorder;
 use ksni::TrayMethods;
 use kwin::KWinScriptManager;
 use log::{error, info, warn};
-use logger::{CombinedLogger, KDialogLogger};
+use logger::{CombinedLogger, UiLogger};
 use tokio::sync::{RwLock, mpsc};
 use tray::TrayIcon;
 use utils::ask_path;
@@ -17,7 +17,6 @@ use crate::ui::Ui;
 mod active_window;
 mod config;
 mod gsr;
-mod kdialog;
 mod kwin;
 mod logger;
 mod settings;
@@ -35,6 +34,8 @@ pub enum ActionEvent {
     ConfigSaved,
     ToggleReplay,
     OpenSettings,
+    ShowInfo(String, String),
+    ShowError(String, String),
 }
 
 #[proxy(
@@ -49,18 +50,21 @@ trait OsdService {
 
 #[tokio::main]
 async fn main() -> Result<(), Box<dyn Error>> {
+    let (action_tx, mut action_rx) = mpsc::channel(8);
+
     let env_logger = env_logger::builder()
         .parse_env(env_logger::Env::default().default_filter_or("warn"))
         .build();
-    let kdialog_logger = KDialogLogger {};
+
+    let kdialog_logger = UiLogger {
+        action_event_tx: action_tx.clone(),
+    };
 
     log::set_max_level(env_logger.filter());
     log::set_boxed_logger(Box::new(CombinedLogger(vec![
         Box::new(env_logger),
         Box::new(kdialog_logger),
     ])))?;
-
-    let (action_tx, mut action_rx) = mpsc::channel(8);
 
     let config = Arc::new(RwLock::new(Config::load(action_tx.clone()).await));
 
@@ -171,6 +175,12 @@ async fn main() -> Result<(), Box<dyn Error>> {
                 }
                 ActionEvent::OpenSettings => {
                     ui.open_settings();
+                }
+                ActionEvent::ShowInfo(title, text) => {
+                    ui.show_info(&title, &text);
+                }
+                ActionEvent::ShowError(title, text) => {
+                    ui.show_error(&title, &text);
                 }
                 other => {
                     warn!("Unhandled action event: {:?}", other)

@@ -1,6 +1,7 @@
 use log::{Level, Log};
+use tokio::sync::mpsc::Sender;
 
-use crate::kdialog::{InfoBox, MessageBox};
+use crate::ActionEvent;
 
 pub struct CombinedLogger(pub Vec<Box<dyn Log>>);
 
@@ -20,9 +21,11 @@ impl Log for CombinedLogger {
     }
 }
 
-pub struct KDialogLogger;
+pub struct UiLogger {
+    pub action_event_tx: Sender<ActionEvent>,
+}
 
-impl Log for KDialogLogger {
+impl Log for UiLogger {
     fn enabled(&self, metadata: &log::Metadata) -> bool {
         metadata.level() <= Level::Warn
     }
@@ -31,35 +34,35 @@ impl Log for KDialogLogger {
         if record.level() <= Level::Warn {
             match record.level() {
                 log::Level::Error => {
-                    InfoBox::error(format!("{}", record.args()))
-                        .title(format!(
+                    let _ = self.action_event_tx.try_send(ActionEvent::ShowError(
+                        format!(
                             "Error - {} - {}",
                             record.module_path().unwrap_or("unknown module"),
                             record.file().unwrap_or("unknown file")
-                        ))
-                        .show()
-                        .unwrap();
+                        ),
+                        format!("{}", record.args()),
+                    ));
                 }
                 log::Level::Warn => {
-                    InfoBox::warning(format!("{}", record.args()))
-                        .title(format!(
+                    let _ = self.action_event_tx.try_send(ActionEvent::ShowInfo(
+                        format!(
                             "Warning - {} - {}",
                             record.module_path().unwrap_or("unknown module"),
                             record.file().unwrap_or("unknown file")
-                        ))
-                        .show()
-                        .unwrap();
+                        ),
+                        format!("{}", record.args()),
+                    ));
                 }
                 other => {
-                    MessageBox::new(format!("{}", record.args()))
-                        .title(format!(
+                    let _ = self.action_event_tx.try_send(ActionEvent::ShowInfo(
+                        format!(
                             "{} - {} - {}",
                             other.as_str(),
                             record.module_path().unwrap_or("unknown module"),
                             record.file().unwrap_or("unknown file")
-                        ))
-                        .show()
-                        .unwrap();
+                        ),
+                        format!("{}", record.args()),
+                    ));
                 }
             }
         }

@@ -3,8 +3,6 @@ use std::{path::PathBuf, process::Stdio, str::FromStr};
 use ashpd::desktop::file_chooser::OpenFileRequest;
 use time::OffsetDateTime;
 
-use crate::kdialog::{self, InfoBox, InputBox};
-
 pub fn get_app_name(desktop_file: &str) -> Result<Option<String>, std::io::Error> {
     let user_applications_path = format!("{}/applications/", dirs::data_dir().unwrap().display());
     let search_paths = vec![
@@ -50,34 +48,6 @@ pub fn get_script_path() -> Option<PathBuf> {
             acc
         }
     })
-}
-
-pub fn ask_custom_number(
-    title: &str,
-    label: &str,
-    initial: impl Into<i64>,
-) -> Result<Option<i64>, Box<dyn std::error::Error>> {
-    let initial = initial.into();
-
-    let result = InputBox::new(label, kdialog::InputBoxType::Text)
-        .initial(initial.to_string())
-        .title(title)
-        .show()?;
-
-    if let Some(result) = result {
-        let number = result.replace("\n", "").parse::<i64>();
-        if let Ok(number) = number {
-            Ok(Some(number))
-        } else {
-            InfoBox::warning("You need to input an integer.")
-                .title("Wrong input")
-                .show()?;
-
-            ask_custom_number(title, label, initial)
-        }
-    } else {
-        Ok(None)
-    }
 }
 
 pub async fn ask_path(

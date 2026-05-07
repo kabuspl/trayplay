@@ -20,11 +20,13 @@ cpp! {{
 
 pub struct Ui {
     change_window_visibility: Arc<dyn Fn(bool)>,
+    show_message_box: Arc<dyn Fn((QString, QString, QString))>,
 }
 
 impl Ui {
     pub async fn new(action_event_tx: Sender<ActionEvent>, config: Arc<RwLock<Config>>) -> Self {
         let (settings_cb_tx, settings_cb_rx) = oneshot::channel();
+        let (message_box_cb_tx, message_box_cb_rx) = oneshot::channel();
         tokio::spawn(async move {
             let mut engine = QmlEngine::new();
 
@@ -68,11 +70,30 @@ impl Ui {
                 })
             }));
 
+            let _ = message_box_cb_tx.send(Arc::new({
+                let engine_ptr = engine.cpp_ptr();
+                queued_callback(move |params: (QString, QString, QString)| {
+                    let icon = QVariant::from(params.0);
+                    let title = QVariant::from(params.1);
+                    let text = QVariant::from(params.2);
+
+                    cpp!(unsafe [engine_ptr as "QQmlEngine *", icon as "QVariant", title as "QVariant", text as "QVariant"] {
+                        QQmlContext* qml_context = engine_ptr->rootContext();
+                        QObject* messageBox = qml_context->findObjectRecursively("messageBox");
+                        messageBox->setProperty("icon", icon);
+                        messageBox->setProperty("title", title);
+                        messageBox->setProperty("text", text);
+                        messageBox->setProperty("visible", true);
+                    });
+                })
+            }));
+
             engine.exec();
         });
 
         let obj = Self {
             change_window_visibility: settings_cb_rx.await.unwrap(),
+            show_message_box: message_box_cb_rx.await.unwrap(),
         };
 
         obj
@@ -81,12 +102,29 @@ impl Ui {
     pub fn open_settings(&self) {
         self.change_window_visibility.as_ref()(true);
     }
+
+    pub fn show_info(&self, title: &str, text: &str) {
+        self.show_message_box.as_ref()((
+            QString::from("dialog-information"),
+            QString::from(title),
+            QString::from(text),
+        ));
+    }
+
+    pub fn show_error(&self, title: &str, text: &str) {
+        self.show_message_box.as_ref()((
+            QString::from("dialog-error"),
+            QString::from(title),
+            QString::from(text),
+        ));
+    }
 }
 
 qrc!(settings_ui, "ui" as "ui" {
     "settings.qml",
     "AudioPage.qml",
     "MainPage.qml",
+    "MessageBox.qml",
     "components/ConfigLabel.qml",
     "lang/pl_PL.qm",
     "lang/de_DE.qm",

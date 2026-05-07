@@ -7,7 +7,7 @@ use ksni::{
 };
 use tokio::sync::{RwLock, mpsc::Sender};
 
-use crate::{ActionEvent, config::Config, kdialog::MessageBox};
+use crate::{ActionEvent, config::Config};
 
 pub struct TrayIcon {
     _enabled: bool,
@@ -213,19 +213,16 @@ impl ksni::Tray for TrayIcon {
                 ..Default::default()
             }
             .into(),
-            tray_config_item_custom!("About", "help-about", async move |_, _| {
+            tray_config_item_custom!("About", "help-about", async move |_, action_event_tx: Sender<ActionEvent>| {
                 let gsr_version = Command::new("gpu-screen-recorder")
                     .arg("--version")
                     .output()
                     .unwrap();
-                MessageBox::new(format!(
+                action_event_tx.send(ActionEvent::ShowInfo("About TrayPlay".to_string(), format!(
                     "TrayPlay version: {}\ngpu-screen-recorder version: {}\nReport issues at: https://github.com/kabuspl/trayplay/issues\nLicense: GNU GPLv3\n© 2025 kabuspl",
                     env!("CARGO_PKG_VERSION"),
                     String::from_utf8(gsr_version.stdout).unwrap()
-                ))
-                .title("About TrayPlay")
-                .show()
-                .unwrap();
+                ))).await.unwrap();
             })
             .into(),
             MenuItem::Separator,
