@@ -30,6 +30,7 @@ cpp! {{
     #include <QtGui/QIcon>
     #include <QQuickStyle>
     #include <QQmlContext>
+    #include <QQmlApplicationEngine>
 }}
 
 pub struct Ui {
@@ -88,8 +89,8 @@ impl Ui {
                 let engine_ptr = engine.cpp_ptr();
                 queued_callback(move |visible: bool| {
                     cpp!(unsafe [engine_ptr as "QQmlEngine *", visible as "bool"] {
-                        QQmlContext* qml_context = engine_ptr->rootContext();
-                        QObject* window = qml_context->findObjectRecursively("window");
+                        QObject* root_object = ((QQmlApplicationEngine*)engine_ptr)->rootObjects().first();
+                        QObject* window = root_object->findChild<QObject*>("window");
                         window->setProperty("visible", QVariant::fromValue(visible));
                     });
                 })
@@ -103,8 +104,8 @@ impl Ui {
                     let text = QVariant::from(params.2);
 
                     cpp!(unsafe [engine_ptr as "QQmlEngine *", icon as "QVariant", title as "QVariant", text as "QVariant"] {
-                        QQmlContext* qml_context = engine_ptr->rootContext();
-                        QObject* messageBox = qml_context->findObjectRecursively("messageBox");
+                        QObject* root_object = ((QQmlApplicationEngine*)engine_ptr)->rootObjects().first();
+                        QObject* messageBox = root_object->findChild<QObject*>("messageBox");
                         messageBox->setProperty("icon", icon);
                         messageBox->setProperty("title", title);
                         messageBox->setProperty("text", text);

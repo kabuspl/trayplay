@@ -4,6 +4,7 @@ import org.kde.kirigami as Kirigami
 QtObject {
     property var settingsWindow: Kirigami.ApplicationWindow {
         id: window
+        objectName: "window"
         title: qsTr("TrayPlay Settings")
         width: 500
         minimumWidth: 500
@@ -21,5 +22,6 @@ QtObject {
 
     property var messageBoxWindow: MessageBox {
         id: messageBox
+        objectName: "messageBox"
     }
 }
