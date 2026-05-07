@@ -17,6 +17,7 @@ use crate::{
         messagebox::{MessageBoxHelper, MessageBoxResult},
         settings::Settings,
     },
+    utils::is_flatpak,
 };
 
 mod messagebox;
@@ -119,6 +120,8 @@ impl Ui {
                 cstr!("MessageBoxHelper"),
                 message_box_helper,
             );
+
+            engine.set_property(QString::from("isFlatpak"), QVariant::from(is_flatpak()));
 
             engine.load_url(QUrl::from_user_input("qrc:/ui/settings.qml".into()));
 

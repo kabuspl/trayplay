@@ -8,7 +8,11 @@ use qmetaobject::{
 };
 use tokio::sync::{RwLock, mpsc::Sender};
 
-use crate::{ActionEvent, config::Config, utils::get_command_output};
+use crate::{
+    ActionEvent,
+    config::Config,
+    utils::{get_command_output, is_flatpak},
+};
 
 cpp! {{
     #include <QTranslator>
@@ -69,6 +73,7 @@ pub struct Settings {
     container: qt_property!(usize; READ get_container WRITE set_container),
     codec: qt_property!(usize; READ get_codec WRITE set_codec),
     directory: qt_property!(QString; READ get_directory WRITE set_directory),
+    real_directory: qt_property!(QString; READ get_real_directory WRITE set_real_directory),
     clear_buffer: qt_property!(bool; READ get_clear_buffer WRITE set_clear_buffer),
     record_replays: qt_property!(bool; READ get_record_replays WRITE set_record_replays),
     file_name_pattern: qt_property!(QString; READ get_file_name_pattern WRITE set_file_name_pattern),
@@ -84,6 +89,7 @@ pub struct Settings {
     remove_audio_track: qt_method!(fn(&mut self, track: usize)),
     add_audio_track: qt_method!(fn(&mut self)),
     move_audio_track: qt_method!(fn(&mut self, track: usize, target_index: usize)),
+    update_real_path: qt_method!(fn(&mut self)),
     change: qt_signal!(),
 }
 
@@ -94,6 +100,7 @@ impl Settings {
     property_impl!(container, usize);
     property_impl!(codec, usize);
     property_impl!(directory, QString, cloned);
+    property_impl!(real_directory, QString, cloned);
     property_impl!(clear_buffer, bool);
     property_impl!(record_replays, bool);
     property_impl!(file_name_pattern, QString, cloned);
@@ -137,6 +144,11 @@ impl Settings {
         } else {
             self.audio_tracks_inner.swap(track_index, target_index);
         }
+        self.change();
+    }
+
+    fn update_real_path(&mut self) {
+        self.real_directory = get_real_directory(&self.directory.to_string()).into();
         self.change();
     }
 
@@ -209,6 +221,10 @@ impl Settings {
             container: config_values.container as usize,
             codec: config_values.codec as usize,
             directory: config_values.replay_directory.display().to_string().into(),
+            real_directory: get_real_directory(
+                &config_values.replay_directory.display().to_string(),
+            )
+            .into(),
             clear_buffer: config_values.clear_buffer_on_save,
             record_replays: config_values.recording_enabled,
             audio_applications,
@@ -232,6 +248,7 @@ impl Settings {
             remove_audio_track: Default::default(),
             add_audio_track: Default::default(),
             move_audio_track: Default::default(),
+            update_real_path: Default::default(),
             config: config.clone(),
             action_event_tx: Some(action_event_tx),
         }
@@ -240,4 +257,16 @@ impl Settings {
 
 impl QSingletonInit for Settings {
     fn init(&mut self) {}
+}
+
+fn get_real_directory(path: &str) -> String {
+    if is_flatpak() {
+        if let Ok(Some(host_path)) = xattr::get(path, "user.document-portal.host-path") {
+            String::from_utf8_lossy(host_path.as_slice()).to_string()
+        } else {
+            "unknown".to_string()
+        }
+    } else {
+        path.to_string()
+    }
 }

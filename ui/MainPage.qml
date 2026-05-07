@@ -78,7 +78,11 @@ Kirigami.ScrollablePage {
             Controls.TextField {
                 id: path
                 Layout.fillWidth: true
-                text: Settings.directory
+                readOnly: isFlatpak
+                text: Settings.real_directory
+
+                Controls.ToolTip.visible: isFlatpak && (hovered || activeFocus)
+                Controls.ToolTip.text: qsTr("Manual path editing is not supported under Flatpak - please use the file picker")
             }
 
             Controls.Button {
@@ -92,7 +96,10 @@ Kirigami.ScrollablePage {
                 id: pathChooser
                 title: qsTr("Choose replay directory")
                 currentFolder: "file://" + path.text
-                onAccepted: path.text = selectedFolder.toString().replace("file://", "")
+                onAccepted: {
+                    Settings.directory = selectedFolder.toString().replace("file://", "");
+                    Settings.update_real_path();
+                }
             }
         }
 
@@ -265,11 +272,9 @@ Kirigami.ScrollablePage {
                     Settings.quality = quality.currentIndex;
                     Settings.container = container.currentIndex;
                     Settings.codec = codec.currentIndex;
-                    Settings.replay_directory = path.text;
                     Settings.clear_buffer = clearBuffer.checked;
                     Settings.record_replays = recordReplays.checked;
                     Settings.video_source_choice = video_source.currentValue;
-                    Settings.directory = path.text;
                     Settings.apply_config();
                 }
             }
