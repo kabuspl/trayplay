@@ -1,4 +1,4 @@
-use std::sync::Arc;
+use std::{process::Command, sync::Arc};
 
 use cpp::cpp;
 use cstr::cstr;
@@ -31,10 +31,13 @@ cpp! {{
     #include <QQuickStyle>
     #include <QQmlContext>
     #include <QQmlApplicationEngine>
+    #include <KLocalizedQmlContext>
+    #include <KLocalizedString>
+    #include <KAboutData>
 }}
 
 pub struct Ui {
-    change_window_visibility: Arc<dyn Fn(bool)>,
+    change_window_visibility: Arc<dyn Fn((QString, bool))>,
     show_message_box: Arc<dyn Fn((QString, QString, QString))>,
     message_box_result_rx: Receiver<MessageBoxResult>,
 }
@@ -52,9 +55,30 @@ impl Ui {
 
             {
                 let engine_ptr = engine.cpp_ptr();
-                cpp!(unsafe [engine_ptr as "QQmlEngine *"] {
+
+                let version = QString::from(env!("CARGO_PKG_VERSION"));
+                let gsr_version = QString::from(
+                    String::from_utf8_lossy(
+                        &Command::new("gpu-screen-recorder")
+                            .arg("--version")
+                            .output()
+                            .unwrap()
+                            .stdout,
+                    )
+                    .to_string()
+                    .replace('\n', ""),
+                );
+
+                cpp!(unsafe [engine_ptr as "QQmlEngine *", version as "QString", gsr_version as "QString"] {
+                    KLocalizedString::setApplicationDomain("trayplay");
+
+                    QGuiApplication::setDesktopFileName(QStringLiteral("ovh.kabus.TrayPlay"));
                     QGuiApplication::setWindowIcon(QIcon::fromTheme("media-skip-backward"));
                     QQuickStyle::setStyle(QStringLiteral("org.kde.desktop"));
+
+                    auto ctx = new KLocalizedQmlContext(engine_ptr);
+                    engine_ptr->rootContext()->setContextObject(ctx);
+                    QQmlEngine::setContextForObject(ctx, engine_ptr->rootContext());
 
                     static QTranslator translator;
                     QCoreApplication::removeTranslator(&translator);
@@ -68,6 +92,19 @@ impl Ui {
                     }
 
                     engine_ptr->retranslate();
+
+                    KAboutData aboutData(QStringLiteral("TrayPlay"), QStringLiteral("TrayPlay"),
+                        version, i18n("Instant replay recorder"), KAboutLicense::GPL_V3,
+                        i18n("© 2026 Jakub Sakra"), QStringLiteral(), QStringLiteral("https://github.com/kabuspl/trayplay"),
+                        QStringLiteral("https://github.com/kabuspl/trayplay/issues"));
+                    aboutData.setDesktopFileName("ovh.kabus.TrayPlay");
+                    aboutData.addAuthor(QStringLiteral("Jakub Sakra"), i18n("Creator"),
+                        QStringLiteral("me@kabus.ovh"), QStringLiteral("https://kabus.ovh"));
+                    aboutData.addComponent(QStringLiteral("gpu-screen-recorder"), i18n("Recording backend"),
+                        gsr_version, QStringLiteral("https://git.dec05eba.com/gpu-screen-recorder/about/"),
+                        KAboutLicense::GPL_V3);
+
+                    KAboutData::setApplicationData(aboutData);
                 });
             }
 
@@ -87,10 +124,12 @@ impl Ui {
 
             let _ = settings_cb_tx.send(Arc::new({
                 let engine_ptr = engine.cpp_ptr();
-                queued_callback(move |visible: bool| {
-                    cpp!(unsafe [engine_ptr as "QQmlEngine *", visible as "bool"] {
+                queued_callback(move |args: (QString, bool)| {
+                    let id = args.0;
+                    let visible = args.1;
+                    cpp!(unsafe [engine_ptr as "QQmlEngine *", id as "QString", visible as "bool"] {
                         QObject* root_object = ((QQmlApplicationEngine*)engine_ptr)->rootObjects().first();
-                        QObject* window = root_object->findChild<QObject*>("window");
+                        QObject* window = root_object->findChild<QObject*>(id);
                         window->setProperty("visible", QVariant::fromValue(visible));
                     });
                 })
@@ -126,8 +165,8 @@ impl Ui {
         obj
     }
 
-    pub fn open_settings(&self) {
-        self.change_window_visibility.as_ref()(true);
+    pub fn show_window(&self, id: &str) {
+        self.change_window_visibility.as_ref()((QString::from(id), true));
     }
 
     pub async fn show_info(&mut self, title: &str, text: &str) -> MessageBoxResult {

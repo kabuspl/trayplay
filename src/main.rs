@@ -1,3 +1,5 @@
+#![recursion_limit = "256"]
+
 use std::{error::Error, str::FromStr, sync::Arc};
 
 use ashpd::{AppID, register_host_app};
@@ -32,7 +34,7 @@ pub enum ActionEvent {
     ChangeReplayPath,
     ConfigSaved,
     ToggleReplay,
-    OpenSettings,
+    ShowWindow(String),
     ShowInfo(String, String),
     ShowError(String, String),
 }
@@ -177,8 +179,8 @@ async fn main() -> Result<(), Box<dyn Error>> {
                     }
                     tray_handle.update(|_| {}).await;
                 }
-                ActionEvent::OpenSettings => {
-                    ui.open_settings();
+                ActionEvent::ShowWindow(id) => {
+                    ui.show_window(&id);
                 }
                 ActionEvent::ShowInfo(title, text) => {
                     let _ = ui.show_info(&title, &text).await;

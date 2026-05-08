@@ -24,10 +24,16 @@ fn main() {
     config.include(format!("{}/QtQuick", qt_include_path));
     config.include(format!("{}/QtQml", qt_include_path));
     config.include(format!("{}/QtQuickControls2", qt_include_path));
+    config.include(format!("{}/QtQmlIntegration", qt_include_path));
+    config.include("/usr/include/KF6/KI18n/");
+    config.include("/usr/include/KF6/KCoreAddons/");
 
     println!("cargo:rerun-if-changed=src/settings.rs");
     println!("cargo:rerun-if-changed=ui/lang");
     println!("cargo:rustc-link-lib=Qt6QuickControls2");
+    println!("cargo:rustc-link-lib=KF6I18n");
+    println!("cargo:rustc-link-lib=KF6I18nQml");
+    println!("cargo:rustc-link-lib=KF6CoreAddons");
 
     config.include(&qt_include_path).build("src/main.rs");
 }

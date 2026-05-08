@@ -181,9 +181,18 @@ impl ksni::Tray for TrayIcon {
         let config = futures::executor::block_on(async { self.config.read().await });
 
         vec![
-            tray_config_item_toggle!("Record replays", "media-record", config.recording_enabled, async |_, action_event_tx: Sender<ActionEvent>| {
-                action_event_tx.send(ActionEvent::ToggleReplay).await.unwrap();
-            }).into(),
+            tray_config_item_toggle!(
+                "Record replays",
+                "media-record",
+                config.recording_enabled,
+                async |_, action_event_tx: Sender<ActionEvent>| {
+                    action_event_tx
+                        .send(ActionEvent::ToggleReplay)
+                        .await
+                        .unwrap();
+                }
+            )
+            .into(),
             StandardItem {
                 label: "Save replay".into(),
                 icon_name: "document-save".into(),
@@ -206,24 +215,32 @@ impl ksni::Tray for TrayIcon {
                     let tx_clone = tx_clone.clone();
                     move |_| {
                         futures::executor::block_on(async {
-                            tx_clone.send(ActionEvent::OpenSettings).await.unwrap();
+                            tx_clone
+                                .send(ActionEvent::ShowWindow("window".to_string()))
+                                .await
+                                .unwrap();
                         });
                     }
                 }),
                 ..Default::default()
             }
             .into(),
-            tray_config_item_custom!("About", "help-about", async move |_, action_event_tx: Sender<ActionEvent>| {
-                let gsr_version = Command::new("gpu-screen-recorder")
-                    .arg("--version")
-                    .output()
-                    .unwrap();
-                action_event_tx.send(ActionEvent::ShowInfo("About TrayPlay".to_string(), format!(
-                    "TrayPlay version: {}\ngpu-screen-recorder version: {}\nReport issues at: https://github.com/kabuspl/trayplay/issues\nLicense: GNU GPLv3\n© 2025 kabuspl",
-                    env!("CARGO_PKG_VERSION"),
-                    String::from_utf8(gsr_version.stdout).unwrap()
-                ))).await.unwrap();
-            })
+            StandardItem {
+                label: "About".into(),
+                icon_name: "help-about".into(),
+                activate: Box::new({
+                    let tx_clone = tx_clone.clone();
+                    move |_| {
+                        futures::executor::block_on(async {
+                            tx_clone
+                                .send(ActionEvent::ShowWindow("aboutWindow".to_string()))
+                                .await
+                                .unwrap();
+                        });
+                    }
+                }),
+                ..Default::default()
+            }
             .into(),
             MenuItem::Separator,
             StandardItem {
