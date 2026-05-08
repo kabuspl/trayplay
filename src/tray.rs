@@ -167,7 +167,7 @@ impl ksni::Tray for TrayIcon {
     }
 
     fn icon_name(&self) -> String {
-        "media-skip-backward".into()
+        "ovh.kabus.TrayPlay".into()
     }
 
     fn title(&self) -> String {

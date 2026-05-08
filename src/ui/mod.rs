@@ -74,7 +74,7 @@ impl Ui {
                     KLocalizedString::setApplicationDomain("trayplay");
 
                     QGuiApplication::setDesktopFileName(QStringLiteral("ovh.kabus.TrayPlay"));
-                    QGuiApplication::setWindowIcon(QIcon::fromTheme("media-skip-backward"));
+                    QGuiApplication::setWindowIcon(QIcon::fromTheme("ovh.kabus.TrayPlay"));
                     QQuickStyle::setStyle(QStringLiteral("org.kde.desktop"));
 
                     auto ctx = new KLocalizedQmlContext(engine_ptr);
