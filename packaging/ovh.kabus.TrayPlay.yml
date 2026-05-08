@@ -28,6 +28,7 @@ modules:
       disabled: false
       buildsystem: simple
       build-commands:
+          # change hardcoded path
           - sed --in-place -e "s/com.dec05eba.gpu_screen_recorder/ovh.kabus.TrayPlay/g" main.c
           - ./build.sh
           - install -Dm755 kms-server-proxy "$FLATPAK_DEST/bin/kms-server-proxy"
@@ -41,6 +42,7 @@ modules:
       disabled: false
       buildsystem: simple
       build-commands:
+          # change hardcoded paths
           - sed --in-place -e "s/com.dec05eba.gpu_screen_recorder/ovh.kabus.TrayPlay/g" kms/client/kms_client.c
           - sed --in-place -e "s/com.dec05eba.gpu_screen_recorder/ovh.kabus.TrayPlay/g" src/args_parser.c
           - meson setup build
@@ -100,7 +102,6 @@ modules:
           - install -Dm644 dist/ovh.kabus.TrayPlay.svg $FLATPAK_DEST/share/icons/hicolor/scalable/apps/ovh.kabus.TrayPlay.svg
           - install -Dm644 dist/ovh.kabus.TrayPlay.metainfo.xml $FLATPAK_DEST/share/metainfo/ovh.kabus.TrayPlay.metainfo.xml
       sources:
-          - type: dir
-            path: /home/kabus/Projects/instantreplay/
-            # url: https://github.com/kabuspl/trayplay.git
-            # tag: v1.1.1
+          - type: git
+            url: https://github.com/kabuspl/trayplay.git
+            tag: v1.2.0
