@@ -11,7 +11,7 @@ build-options:
         - --share=network
 finish-args:
     - --device=dri
-    - --filesystem=host
+    - --filesystem=home
     - --filesystem=xdg-run/pipewire-0
     - --share=ipc
     - --socket=pulseaudio
