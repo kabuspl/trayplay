@@ -3,9 +3,9 @@ var active_window = null;
 function send(window) {
     if (window.active) {
         callDBus(
-            "ovh.kabus.trayplay",
-            "/ovh/kabus/trayplay",
-            "ovh.kabus.trayplay.ActiveWindowManager",
+            "ovh.kabus.TrayPlay",
+            "/ovh/kabus/TrayPlay",
+            "ovh.kabus.TrayPlay.ActiveWindowManager",
             "SetActiveWindow",
             window.desktopFileName,
             window.caption,
@@ -22,9 +22,9 @@ function send(window) {
 
 function fullScreenChanged() {
     callDBus(
-        "ovh.kabus.trayplay",
-        "/ovh/kabus/trayplay",
-        "ovh.kabus.trayplay.ActiveWindowManager",
+        "ovh.kabus.TrayPlay",
+        "/ovh/kabus/TrayPlay",
+        "ovh.kabus.TrayPlay.ActiveWindowManager",
         "SetActiveWindow",
         active_window.desktopFileName,
         active_window.caption,

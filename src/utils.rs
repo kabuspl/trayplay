@@ -10,6 +10,7 @@ pub fn get_app_name(desktop_file: &str) -> Result<Option<String>, std::io::Error
         "/usr/share/applications/",
         &user_applications_path,
         "/var/lib/flatpak/exports/share/applications/",
+        "/run/host/usr/share/applications/",
         "",
     ];
     let desktop_file_path = search_paths.iter().fold(None, |acc, search_path| {
@@ -129,5 +130,5 @@ pub fn is_flatpak() -> bool {
 }
 
 pub fn is_kde() -> bool {
-    std::env::var("KDE").is_ok()
+    std::env::var("XDG_CURRENT_DESKTOP").is_ok_and(|v| v == "KDE")
 }
