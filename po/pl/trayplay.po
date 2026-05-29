@@ -3,7 +3,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-05-29 15:25+0200\n"
+"POT-Creation-Date: 2026-05-29 16:29+0200\n"
 "PO-Revision-Date: 2026-05-18 03:01+0200\n"
 "Last-Translator: Jakub Sakra <me@kabus.ovh>\n"
 "Language-Team: Polish <https://github.com/kabuspl/trayplay>\n"
@@ -87,21 +87,33 @@ msgstr "Aplikacja:"
 msgid "Other device:"
 msgstr "Inne urządzenie:"
 
-#: ui/settings.qml:9
+#: ui/settings.qml:11
 msgid "TrayPlay Settings"
 msgstr "Ustawienia TrayPlay"
 
-#: ui/settings.qml:32
+#: ui/settings.qml:34
 msgid "About TrayPlay"
 msgstr "O TrayPlay"
 
-#: ui/MainPage.qml:12
+#: ui/settings.qml:67 ui/MainPage.qml:16
+msgid "Record replays"
+msgstr "Nagrywaj powtórki"
+
+#: ui/settings.qml:76
+msgid "Save replay"
+msgstr "Zapisz powtórkę"
+
+#: ui/settings.qml:82 ui/MainPage.qml:12
 msgid "Settings"
 msgstr "Ustawienia"
 
-#: ui/MainPage.qml:16
-msgid "Record replays"
-msgstr "Nagrywaj powtórki"
+#: ui/settings.qml:91
+msgid "About"
+msgstr "O programie"
+
+#: ui/settings.qml:101
+msgid "Quit"
+msgstr "Zamknij"
 
 #: ui/MainPage.qml:36
 msgid "Video source:"
@@ -196,19 +208,19 @@ msgstr "Czyść bufor przy zapisie"
 msgid "Edit audio tracks"
 msgstr "Edytuj ścieżki dźwięku"
 
-#: src/ui/mod.rs:85
+#: src/ui/mod.rs:87
 msgid "Instant replay recorder"
 msgstr "Program do nagrywania powtórek"
 
-#: src/ui/mod.rs:86
+#: src/ui/mod.rs:88
 msgid "© 2026 Jakub Sakra"
 msgstr ""
 
-#: src/ui/mod.rs:89
+#: src/ui/mod.rs:91
 msgid "Creator"
 msgstr "Twórca"
 
-#: src/ui/mod.rs:91
+#: src/ui/mod.rs:93
 msgid "Recording backend"
 msgstr "Program nagrywający ekran"
 

@@ -1,6 +1,8 @@
 import QtQuick
 import org.kde.kirigami as Kirigami
 import org.kde.kirigamiaddons.formcard as FormCard
+import Qt.labs.platform
+import TrayHelper
 
 QtObject {
     property var settingsWindow: Kirigami.ApplicationWindow {
@@ -41,6 +43,65 @@ QtObject {
         onClosing: close => {
             close.accepted = false;
             aboutWindow.visible = false;
+        }
+    }
+
+    property var trayIcon: SystemTrayIcon {
+        visible: true
+        icon.name: "ovh.kabus.TrayPlay"
+        tooltip: "TrayPlay"
+
+        onActivated: {
+            window.show();
+            window.raise();
+            window.requestActivate();
+        }
+
+        menu: Menu {
+            onAboutToShow: {
+                recordReplays.checked = TrayHelper.record_replays;
+            }
+
+            MenuItem {
+                id: recordReplays
+                text: i18n("Record replays")
+                icon.name: "media-record"
+                checked: TrayHelper.record_replays
+                onTriggered: {
+                    TrayHelper.record_replays = checked;
+                }
+                checkable: true
+            }
+            MenuItem {
+                text: i18n("Save replay")
+                icon.name: "document-save"
+                onTriggered: TrayHelper.save_replay()
+            }
+            MenuSeparator {}
+            MenuItem {
+                text: i18n("Settings")
+                icon.name: "settings-configure"
+                onTriggered: {
+                    window.show();
+                    window.raise();
+                    window.requestActivate();
+                }
+            }
+            MenuItem {
+                text: i18n("About")
+                icon.name: "help-about"
+                onTriggered: {
+                    aboutWindow.show();
+                    aboutWindow.raise();
+                    aboutWindow.requestActivate();
+                }
+            }
+            MenuSeparator {}
+            MenuItem {
+                text: i18n("Quit")
+                icon.name: "application-exit"
+                onTriggered: TrayHelper.quit()
+            }
         }
     }
 }

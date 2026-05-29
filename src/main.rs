@@ -10,7 +10,6 @@ use kwin::KWinScriptManager;
 use log::{error, info, warn};
 use logger::{CombinedLogger, UiLogger};
 use tokio::sync::{RwLock, mpsc};
-use tray::TrayIcon;
 use utils::ask_path;
 use zbus::{Connection, names::BusName, proxy};
 
@@ -22,7 +21,6 @@ mod gsr;
 mod kwin;
 mod logger;
 mod shortcuts;
-mod tray;
 mod ui;
 mod utils;
 
@@ -96,9 +94,6 @@ async fn main() -> Result<(), Box<dyn Error>> {
     // Let xdg portal know what desktop file are we
     register_host_app(AppID::from_str("ovh.kabus.TrayPlay").unwrap()).await?;
 
-    let tray = TrayIcon::new(action_tx.clone(), &config).await;
-    // let tray = TrayIconClean::new(action_tx.clone(), &config);
-    let tray_handle = tray.spawn().await.ok();
     shortcuts::setup_global_shortcuts(action_tx.clone());
 
     let app_name = Arc::new(RwLock::new("unknown".to_string()));
@@ -189,9 +184,6 @@ async fn main() -> Result<(), Box<dyn Error>> {
                         let mut config = config.write().await;
                         config.recording_enabled = true;
                         config.save().await;
-                    }
-                    if let Some(tray_handle) = &tray_handle {
-                        tray_handle.update(|_| {}).await;
                     }
                 }
                 ActionEvent::ShowWindow(id) => {

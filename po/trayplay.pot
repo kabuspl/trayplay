@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-05-29 15:25+0200\n"
+"POT-Creation-Date: 2026-05-29 16:29+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -87,20 +87,32 @@ msgstr ""
 msgid "Other device:"
 msgstr ""
 
-#: ui/settings.qml:9
+#: ui/settings.qml:11
 msgid "TrayPlay Settings"
 msgstr ""
 
-#: ui/settings.qml:32
+#: ui/settings.qml:34
 msgid "About TrayPlay"
 msgstr ""
 
-#: ui/MainPage.qml:12
+#: ui/settings.qml:67 ui/MainPage.qml:16
+msgid "Record replays"
+msgstr ""
+
+#: ui/settings.qml:76
+msgid "Save replay"
+msgstr ""
+
+#: ui/settings.qml:82 ui/MainPage.qml:12
 msgid "Settings"
 msgstr ""
 
-#: ui/MainPage.qml:16
-msgid "Record replays"
+#: ui/settings.qml:91
+msgid "About"
+msgstr ""
+
+#: ui/settings.qml:101
+msgid "Quit"
 msgstr ""
 
 #: ui/MainPage.qml:36
@@ -185,18 +197,18 @@ msgstr ""
 msgid "Edit audio tracks"
 msgstr ""
 
-#: src/ui/mod.rs:85
+#: src/ui/mod.rs:87
 msgid "Instant replay recorder"
 msgstr ""
 
-#: src/ui/mod.rs:86
+#: src/ui/mod.rs:88
 msgid "© 2026 Jakub Sakra"
 msgstr ""
 
-#: src/ui/mod.rs:89
+#: src/ui/mod.rs:91
 msgid "Creator"
 msgstr ""
 
-#: src/ui/mod.rs:91
+#: src/ui/mod.rs:93
 msgid "Recording backend"
 msgstr ""

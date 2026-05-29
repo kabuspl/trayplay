@@ -16,12 +16,14 @@ use crate::{
     ui::{
         messagebox::{MessageBoxHelper, MessageBoxResult},
         settings::Settings,
+        tray::TrayHelper,
     },
     utils::is_flatpak,
 };
 
 mod messagebox;
 mod settings;
+mod tray;
 
 cpp! {{
     #include <QTranslator>
@@ -96,7 +98,7 @@ impl Ui {
                 });
             }
 
-            let settings = Settings::new(config, action_event_tx).await;
+            let settings = Settings::new(config.clone(), action_event_tx.clone()).await;
             qml_register_singleton_instance(cstr!("Settings"), 1, 0, cstr!("Settings"), settings);
 
             let message_box_helper = MessageBoxHelper::new(message_box_result_tx);
@@ -106,6 +108,15 @@ impl Ui {
                 0,
                 cstr!("MessageBoxHelper"),
                 message_box_helper,
+            );
+
+            let tray_helper = TrayHelper::new(config.clone(), action_event_tx.clone()).await;
+            qml_register_singleton_instance(
+                cstr!("TrayHelper"),
+                1,
+                0,
+                cstr!("TrayHelper"),
+                tray_helper,
             );
 
             engine.set_property(QString::from("isFlatpak"), QVariant::from(is_flatpak()));
