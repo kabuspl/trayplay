@@ -41,7 +41,7 @@ Kirigami.ScrollablePage {
             Layout.fillWidth: true
             model: [
                 {
-                    text: i18n("Default (%1)").arg(Settings.video_sources[0].split("|")[0]),
+                    text: i18n("Default (%0)").arg(Settings.video_sources[0].split("|")[0]),
                     value: "screen"
                 },
                 ...Settings.video_sources.map(e => {
@@ -110,20 +110,23 @@ Kirigami.ScrollablePage {
         }
 
         ColumnLayout {
-            Controls.RadioButton {
+            ConfigRadio {
                 id: separateDirsRadio
+                Layout.fillWidth: true
                 text: i18n("In directories named after the current full-screen app")
                 checked: Settings.file_name_pattern == "%app%/%app%_replay_%year%-%month%-%day%_%hour%-%minute%-%second%"
             }
 
-            Controls.RadioButton {
+            ConfigRadio {
                 id: rootDirRadio
+                Layout.fillWidth: true
                 text: i18n("Directly in the directory selected above")
                 checked: Settings.file_name_pattern == "%app%_replay_%year%-%month%-%day%_%hour%-%minute%-%second%"
             }
 
-            Controls.RadioButton {
+            ConfigRadio {
                 id: customDirRadio
+                Layout.fillWidth: true
                 text: i18n("Using custom pattern")
             }
 
@@ -140,14 +143,16 @@ Kirigami.ScrollablePage {
                     icon.name: "info"
 
                     Controls.ToolTip.visible: hovered
-                    Controls.ToolTip.text: i18n("Available variables: \
-%app% - title of the current full-screen window or unknown \
-%year% - current year \
-%month% - current month \
-%day% - current day \
-%hour% - current hour \
-%minute% - current minute \
-%second% - current second")
+                    Controls.ToolTip.text: i18n(
+                        "Available variables:\n" +
+                        "%app% - title of the current full-screen window or unknown\n" +
+                        "%year% - current year\n" +
+                        "%month% - current month\n" +
+                        "%day% - current day\n" +
+                        "%hour% - current hour\n" +
+                        "%minute% - current minute\n" +
+                        "%second% - current second"
+                    )
                 }
             }
         }

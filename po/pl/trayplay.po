@@ -3,7 +3,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-05-29 14:58+0200\n"
+"POT-Creation-Date: 2026-05-29 15:25+0200\n"
 "PO-Revision-Date: 2026-05-18 03:01+0200\n"
 "Last-Translator: Jakub Sakra <me@kabus.ovh>\n"
 "Language-Team: Polish <https://github.com/kabuspl/trayplay>\n"
@@ -14,22 +14,6 @@ msgstr ""
 "X-Generator: Lokalize 26.04.1\n"
 "Plural-Forms: nplurals=3; plural=(n==1 ? 0 : n%10>=2 && n%10<=4 && (n%100<10 "
 "|| n%100>=20) ? 1 : 2);\n"
-
-#: src/ui/mod.rs:85
-msgid "Instant replay recorder"
-msgstr "Program do nagrywania powtórek"
-
-#: src/ui/mod.rs:86
-msgid "© 2026 Jakub Sakra"
-msgstr ""
-
-#: src/ui/mod.rs:89
-msgid "Creator"
-msgstr "Twórca"
-
-#: src/ui/mod.rs:91
-msgid "Recording backend"
-msgstr "Program nagrywający ekran"
 
 #: ui/AudioPage.qml:9
 msgid "Audio Tracks"
@@ -151,20 +135,25 @@ msgstr "Zapisuj nagrania:"
 msgid "In directories named after the current full-screen app"
 msgstr "W katalogach nazwanych jak obecna pełnoekranowa aplikacja"
 
-#: ui/MainPage.qml:130
+#: ui/MainPage.qml:123
 msgid "Directly in the directory selected above"
 msgstr "Bezpośrednio w katalogu wybranym powyżej"
 
-#: ui/MainPage.qml:136
+#: ui/MainPage.qml:130
 msgid "Using custom pattern"
 msgstr "Używając niestandardowego wzoru"
 
-#: ui/MainPage.qml:152
+#: ui/MainPage.qml:147
 #, fuzzy
 msgid ""
-"Available variables: %app% - title of the current full-screen window or "
-"unknown %year% - current year %month% - current month %day% - current day "
-"%hour% - current hour %minute% - current minute %second% - current second"
+"Available variables:\n"
+"%app% - title of the current full-screen window or unknown\n"
+"%year% - current year\n"
+"%month% - current month\n"
+"%day% - current day\n"
+"%hour% - current hour\n"
+"%minute% - current minute\n"
+"%second% - current second"
 msgstr ""
 "Dostępne zmienne:\n"
 "%app% - nazwa obecnej pełnoekranowej aplikacji lub \"unknown\"\n"
@@ -175,37 +164,53 @@ msgstr ""
 "%minute% - obecna minuta\n"
 "%second% - obecna sekunda"
 
-#: ui/MainPage.qml:165
+#: ui/MainPage.qml:161
 msgid "Duration:"
 msgstr "Długość:"
 
-#: ui/MainPage.qml:181
+#: ui/MainPage.qml:177
 msgid "secs"
 msgstr "sekund"
 
-#: ui/MainPage.qml:186
+#: ui/MainPage.qml:182
 msgid "Container:"
 msgstr "Format:"
 
-#: ui/MainPage.qml:197
+#: ui/MainPage.qml:193
 msgid "Codec:"
 msgstr "Kodek:"
 
-#: ui/MainPage.qml:208
+#: ui/MainPage.qml:204
 msgid "Quality:"
 msgstr "Jakość:"
 
-#: ui/MainPage.qml:219
+#: ui/MainPage.qml:215
 msgid "Framerate:"
 msgstr "Klatki na sekundę:"
 
-#: ui/MainPage.qml:244
+#: ui/MainPage.qml:240
 msgid "Clear buffer when saving"
 msgstr "Czyść bufor przy zapisie"
 
-#: ui/MainPage.qml:253
+#: ui/MainPage.qml:249
 msgid "Edit audio tracks"
 msgstr "Edytuj ścieżki dźwięku"
+
+#: src/ui/mod.rs:85
+msgid "Instant replay recorder"
+msgstr "Program do nagrywania powtórek"
+
+#: src/ui/mod.rs:86
+msgid "© 2026 Jakub Sakra"
+msgstr ""
+
+#: src/ui/mod.rs:89
+msgid "Creator"
+msgstr "Twórca"
+
+#: src/ui/mod.rs:91
+msgid "Recording backend"
+msgstr "Program nagrywający ekran"
 
 #~ msgid "Default microhpone"
 #~ msgstr "Domyślny mikrofon"

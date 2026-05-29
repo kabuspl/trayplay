@@ -184,4 +184,5 @@ qrc!(settings_ui, "ui" as "ui" {
     "MainPage.qml",
     "MessageBox.qml",
     "components/ConfigLabel.qml",
+    "components/ConfigRadio.qml",
 });
