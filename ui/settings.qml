@@ -6,7 +6,7 @@ QtObject {
     property var settingsWindow: Kirigami.ApplicationWindow {
         id: window
         objectName: "window"
-        title: qsTr("TrayPlay Settings")
+        title: i18n("TrayPlay Settings")
         width: 500
         minimumWidth: 500
         height: 580
@@ -29,7 +29,7 @@ QtObject {
     property var aboutWindow: Kirigami.ApplicationWindow {
         id: aboutWindow
         objectName: "aboutWindow"
-        title: qsTr("About TrayPlay")
+        title: i18n("About TrayPlay")
         width: 500
         minimumWidth: 500
         height: 580

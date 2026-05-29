@@ -81,19 +81,6 @@ impl Ui {
                     engine_ptr->rootContext()->setContextObject(ctx);
                     QQmlEngine::setContextForObject(ctx, engine_ptr->rootContext());
 
-                    static QTranslator translator;
-                    QCoreApplication::removeTranslator(&translator);
-
-                    QString lang_id = QLocale::system().name();
-
-                    if (lang_id != "en") {
-                        if (translator.load(":/ui/lang/" + lang_id + ".qm")) {
-                            QCoreApplication::installTranslator(&translator);
-                        }
-                    }
-
-                    engine_ptr->retranslate();
-
                     KAboutData aboutData(QStringLiteral("TrayPlay"), QStringLiteral("TrayPlay"),
                         version, i18n("Instant replay recorder"), KAboutLicense::GPL_V3,
                         i18n("© 2026 Jakub Sakra"), QStringLiteral(), QStringLiteral("https://github.com/kabuspl/trayplay"),
@@ -197,8 +184,4 @@ qrc!(settings_ui, "ui" as "ui" {
     "MainPage.qml",
     "MessageBox.qml",
     "components/ConfigLabel.qml",
-    "lang/pl_PL.qm",
-    "lang/de_DE.qm",
-    "lang/fr_FR.qm",
-    "lang/es_ES.qm"
 });

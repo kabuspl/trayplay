@@ -4,7 +4,7 @@ fn main() {
     let manifest_dir = std::env::var("CARGO_MANIFEST_DIR").unwrap();
 
     Command::new("bash")
-        .arg("lrelease.sh")
+        .arg("po/update.sh")
         .current_dir(manifest_dir)
         .status()
         .unwrap();
@@ -29,7 +29,7 @@ fn main() {
     config.include("/usr/include/KF6/KCoreAddons/");
 
     println!("cargo:rerun-if-changed=src/settings.rs");
-    println!("cargo:rerun-if-changed=ui/lang");
+    println!("cargo:rerun-if-changed=po");
     println!("cargo:rustc-link-lib=Qt6QuickControls2");
     println!("cargo:rustc-link-lib=KF6I18n");
     println!("cargo:rustc-link-lib=KF6I18nQml");

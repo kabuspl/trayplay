@@ -9,11 +9,11 @@ import "components"
 
 Kirigami.ScrollablePage {
     id: mainPage
-    title: qsTr("Settings")
+    title: i18n("Settings")
     actions: [
         Kirigami.Action {
             id: recordReplays
-            text: qsTr("Record replays")
+            text: i18n("Record replays")
             checkable: true
 
             displayComponent: Controls.Switch {
@@ -33,7 +33,7 @@ Kirigami.ScrollablePage {
         rowSpacing: Kirigami.Units.largeSpacing
 
         ConfigLabel {
-            text: qsTr("Video source:")
+            text: i18n("Video source:")
         }
 
         Controls.ComboBox {
@@ -41,7 +41,7 @@ Kirigami.ScrollablePage {
             Layout.fillWidth: true
             model: [
                 {
-                    text: qsTr("Default (%1)").arg(Settings.video_sources[0].split("|")[0]),
+                    text: i18n("Default (%1)").arg(Settings.video_sources[0].split("|")[0]),
                     value: "screen"
                 },
                 ...Settings.video_sources.map(e => {
@@ -69,7 +69,7 @@ Kirigami.ScrollablePage {
         }
 
         ConfigLabel {
-            text: qsTr("Directory:")
+            text: i18n("Directory:")
         }
 
         RowLayout {
@@ -82,7 +82,7 @@ Kirigami.ScrollablePage {
                 text: Settings.real_directory
 
                 Controls.ToolTip.visible: isFlatpak && (hovered || activeFocus)
-                Controls.ToolTip.text: qsTr("Manual path editing is not supported under Flatpak - please use the file picker")
+                Controls.ToolTip.text: i18n("Manual path editing is not supported under Flatpak - please use the file picker")
             }
 
             Controls.Button {
@@ -94,7 +94,7 @@ Kirigami.ScrollablePage {
 
             Dialogs.FolderDialog {
                 id: pathChooser
-                title: qsTr("Choose replay directory")
+                title: i18n("Choose replay directory")
                 currentFolder: "file://" + path.text
                 onAccepted: {
                     Settings.directory = selectedFolder.toString().replace("file://", "");
@@ -104,7 +104,7 @@ Kirigami.ScrollablePage {
         }
 
         Controls.Label {
-            text: qsTr("Save videos:")
+            text: i18n("Save videos:")
             Layout.alignment: Qt.AlignTop | Qt.AlignRight
             Layout.topMargin: 2
         }
@@ -112,19 +112,19 @@ Kirigami.ScrollablePage {
         ColumnLayout {
             Controls.RadioButton {
                 id: separateDirsRadio
-                text: qsTr("In directories named after the current full-screen app")
+                text: i18n("In directories named after the current full-screen app")
                 checked: Settings.file_name_pattern == "%app%/%app%_replay_%year%-%month%-%day%_%hour%-%minute%-%second%"
             }
 
             Controls.RadioButton {
                 id: rootDirRadio
-                text: qsTr("Directly in the directory selected above")
+                text: i18n("Directly in the directory selected above")
                 checked: Settings.file_name_pattern == "%app%_replay_%year%-%month%-%day%_%hour%-%minute%-%second%"
             }
 
             Controls.RadioButton {
                 id: customDirRadio
-                text: qsTr("Using custom pattern")
+                text: i18n("Using custom pattern")
             }
 
             RowLayout {
@@ -140,20 +140,20 @@ Kirigami.ScrollablePage {
                     icon.name: "info"
 
                     Controls.ToolTip.visible: hovered
-                    Controls.ToolTip.text: qsTr(`Available variables:
-%app% - title of the current full-screen window or unknown
-%year% - current year
-%month% - current month
-%day% - current day
-%hour% - current hour
-%minute% - current minute
-%second% - current second`)
+                    Controls.ToolTip.text: i18n("Available variables: \
+%app% - title of the current full-screen window or unknown \
+%year% - current year \
+%month% - current month \
+%day% - current day \
+%hour% - current hour \
+%minute% - current minute \
+%second% - current second")
                 }
             }
         }
 
         ConfigLabel {
-            text: qsTr("Duration:")
+            text: i18n("Duration:")
         }
 
         RowLayout {
@@ -169,12 +169,12 @@ Kirigami.ScrollablePage {
             }
 
             Controls.Label {
-                text: qsTr("secs")
+                text: i18n("secs")
             }
         }
 
         ConfigLabel {
-            text: qsTr("Container:")
+            text: i18n("Container:")
         }
 
         Controls.ComboBox {
@@ -185,7 +185,7 @@ Kirigami.ScrollablePage {
         }
 
         ConfigLabel {
-            text: qsTr("Codec:")
+            text: i18n("Codec:")
         }
 
         Controls.ComboBox {
@@ -196,7 +196,7 @@ Kirigami.ScrollablePage {
         }
 
         ConfigLabel {
-            text: qsTr("Quality:")
+            text: i18n("Quality:")
         }
 
         Controls.ComboBox {
@@ -207,7 +207,7 @@ Kirigami.ScrollablePage {
         }
 
         ConfigLabel {
-            text: qsTr("Framerate:")
+            text: i18n("Framerate:")
         }
 
         RowLayout {
@@ -232,7 +232,7 @@ Kirigami.ScrollablePage {
         Row {
             Controls.Switch {
                 id: clearBuffer
-                text: qsTr("Clear buffer when saving")
+                text: i18n("Clear buffer when saving")
                 checked: Settings.clear_buffer
             }
         }
@@ -241,7 +241,7 @@ Kirigami.ScrollablePage {
 
         Controls.Button {
             Layout.fillWidth: true
-            text: qsTr("Edit audio tracks")
+            text: i18n("Edit audio tracks")
             icon.name: "view-media-track"
             onClicked: function () {
                 window.pageStack.push(Qt.resolvedUrl("AudioPage.qml"));

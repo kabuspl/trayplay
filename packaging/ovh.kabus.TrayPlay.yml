@@ -94,8 +94,8 @@ modules:
     - name: trayplay
       buildsystem: simple
       build-commands:
-          - find ui/lang/ -name "*.ts" -exec lrelease {} \;
           - cargo build --release
+          - find locale -type f -exec install -Dm644 "{}" "$FLATPAK_DEST/share/{}" \;
           - install -Dm755 target/release/trayplay $FLATPAK_DEST/bin/trayplay
           - install -Dm644 dist/kwin_script.js $FLATPAK_DEST/share/kwin_script.js
           - install -Dm644 dist/ovh.kabus.TrayPlay.desktop $FLATPAK_DEST/share/applications/ovh.kabus.TrayPlay.desktop

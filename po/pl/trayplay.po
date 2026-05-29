@@ -1,0 +1,211 @@
+# SPDX-FileCopyrightText: 2026 Jakub Sakra <me@kabus.ovh>
+msgid ""
+msgstr ""
+"Project-Id-Version: \n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-05-29 14:58+0200\n"
+"PO-Revision-Date: 2026-05-18 03:01+0200\n"
+"Last-Translator: Jakub Sakra <me@kabus.ovh>\n"
+"Language-Team: Polish <https://github.com/kabuspl/trayplay>\n"
+"Language: pl_PL\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Generator: Lokalize 26.04.1\n"
+"Plural-Forms: nplurals=3; plural=(n==1 ? 0 : n%10>=2 && n%10<=4 && (n%100<10 "
+"|| n%100>=20) ? 1 : 2);\n"
+
+#: src/ui/mod.rs:85
+msgid "Instant replay recorder"
+msgstr "Program do nagrywania powtórek"
+
+#: src/ui/mod.rs:86
+msgid "© 2026 Jakub Sakra"
+msgstr ""
+
+#: src/ui/mod.rs:89
+msgid "Creator"
+msgstr "Twórca"
+
+#: src/ui/mod.rs:91
+msgid "Recording backend"
+msgstr "Program nagrywający ekran"
+
+#: ui/AudioPage.qml:9
+msgid "Audio Tracks"
+msgstr "Ścieżki Dźwięku"
+
+#: ui/AudioPage.qml:14
+msgid "Add track"
+msgstr "Dodaj ścieżkę"
+
+#: ui/AudioPage.qml:25
+msgid "Simple"
+msgstr "Proste"
+
+#: ui/AudioPage.qml:34
+msgid "Advanced"
+msgstr "Zaawansowane"
+
+#: ui/AudioPage.qml:97
+msgid "Record system sound"
+msgstr "Nagrywaj dźwięk systemu"
+
+#: ui/AudioPage.qml:105
+msgid "Record microphone"
+msgstr "Nagrywaj mikrofon"
+
+#: ui/AudioPage.qml:113
+msgid "Merge system & microphone tracks"
+msgstr "Złącz ścieżki systemu i mikrofonu"
+
+#: ui/AudioPage.qml:143
+msgid ""
+"Simple audio settings are not available when custom audio tracks are "
+"configured."
+msgstr ""
+"Proste ustawienia dźwięku nie są dostępne, gdy skonfigurowane są własne "
+"ścieżki."
+
+#: ui/AudioPage.qml:153
+msgid "Reset audio tracks"
+msgstr "Zresetuj ścieżki dźwięku"
+
+#: ui/AudioPage.qml:221
+msgid "Default Microphone"
+msgstr "Domyślny mikrofon"
+
+#: ui/AudioPage.qml:224
+msgid "System Sound"
+msgstr "Dźwięk systemu"
+
+#: ui/AudioPage.qml:277
+msgid "Add source"
+msgstr "Dodaj źródło"
+
+#: ui/AudioPage.qml:293
+msgid "Add audio source"
+msgstr "Dodaj źródło dźwięku"
+
+#: ui/AudioPage.qml:318
+msgid "Default microphone"
+msgstr "Domyślny mikrofon"
+
+#: ui/AudioPage.qml:324
+msgid "System sound"
+msgstr "Dźwięk systemu"
+
+#: ui/AudioPage.qml:329
+msgid "Application:"
+msgstr "Aplikacja:"
+
+#: ui/AudioPage.qml:342
+msgid "Other device:"
+msgstr "Inne urządzenie:"
+
+#: ui/settings.qml:9
+msgid "TrayPlay Settings"
+msgstr "Ustawienia TrayPlay"
+
+#: ui/settings.qml:32
+msgid "About TrayPlay"
+msgstr "O TrayPlay"
+
+#: ui/MainPage.qml:12
+msgid "Settings"
+msgstr "Ustawienia"
+
+#: ui/MainPage.qml:16
+msgid "Record replays"
+msgstr "Nagrywaj powtórki"
+
+#: ui/MainPage.qml:36
+msgid "Video source:"
+msgstr "Źródło obrazu:"
+
+#: ui/MainPage.qml:44
+msgid "Default (%0)"
+msgstr "Domyślne (%0)"
+
+#: ui/MainPage.qml:72
+msgid "Directory:"
+msgstr "Katalog:"
+
+#: ui/MainPage.qml:85
+msgid ""
+"Manual path editing is not supported under Flatpak - please use the file "
+"picker"
+msgstr ""
+"Ręczne edytowanie ścieżki nie jest wspierane gdy aplikacja jest uruchomiona "
+"przez Flatpak - użyj przycisku obok"
+
+#: ui/MainPage.qml:97
+msgid "Choose replay directory"
+msgstr "Wybierz katalog powtórek"
+
+#: ui/MainPage.qml:107
+msgid "Save videos:"
+msgstr "Zapisuj nagrania:"
+
+#: ui/MainPage.qml:116
+msgid "In directories named after the current full-screen app"
+msgstr "W katalogach nazwanych jak obecna pełnoekranowa aplikacja"
+
+#: ui/MainPage.qml:130
+msgid "Directly in the directory selected above"
+msgstr "Bezpośrednio w katalogu wybranym powyżej"
+
+#: ui/MainPage.qml:136
+msgid "Using custom pattern"
+msgstr "Używając niestandardowego wzoru"
+
+#: ui/MainPage.qml:152
+#, fuzzy
+msgid ""
+"Available variables: %app% - title of the current full-screen window or "
+"unknown %year% - current year %month% - current month %day% - current day "
+"%hour% - current hour %minute% - current minute %second% - current second"
+msgstr ""
+"Dostępne zmienne:\n"
+"%app% - nazwa obecnej pełnoekranowej aplikacji lub \"unknown\"\n"
+"%year% - obecny rok\n"
+"%month% - obecny miesiąc\n"
+"%day% - obecny dzień\n"
+"%hour% - obecna godzina\n"
+"%minute% - obecna minuta\n"
+"%second% - obecna sekunda"
+
+#: ui/MainPage.qml:165
+msgid "Duration:"
+msgstr "Długość:"
+
+#: ui/MainPage.qml:181
+msgid "secs"
+msgstr "sekund"
+
+#: ui/MainPage.qml:186
+msgid "Container:"
+msgstr "Format:"
+
+#: ui/MainPage.qml:197
+msgid "Codec:"
+msgstr "Kodek:"
+
+#: ui/MainPage.qml:208
+msgid "Quality:"
+msgstr "Jakość:"
+
+#: ui/MainPage.qml:219
+msgid "Framerate:"
+msgstr "Klatki na sekundę:"
+
+#: ui/MainPage.qml:244
+msgid "Clear buffer when saving"
+msgstr "Czyść bufor przy zapisie"
+
+#: ui/MainPage.qml:253
+msgid "Edit audio tracks"
+msgstr "Edytuj ścieżki dźwięku"
+
+#~ msgid "Default microhpone"
+#~ msgstr "Domyślny mikrofon"
