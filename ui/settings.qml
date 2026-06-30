@@ -77,6 +77,11 @@ QtObject {
                 icon.name: "document-save"
                 onTriggered: TrayHelper.save_replay()
             }
+            MenuItem {
+                text: i18n("Open replay directory")
+                icon.name: "inode-directory"
+                onTriggered: TrayHelper.open_replay_directory()
+            }
             MenuSeparator {}
             MenuItem {
                 text: i18n("Settings")

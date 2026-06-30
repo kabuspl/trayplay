@@ -11,7 +11,7 @@ use tokio::sync::{RwLock, mpsc::Sender};
 use crate::{
     ActionEvent,
     config::Config,
-    utils::{get_command_output, is_flatpak},
+    utils::{get_command_output, get_real_directory, is_flatpak},
 };
 
 cpp! {{
@@ -257,16 +257,4 @@ impl Settings {
 
 impl QSingletonInit for Settings {
     fn init(&mut self) {}
-}
-
-fn get_real_directory(path: &str) -> String {
-    if is_flatpak() {
-        if let Ok(Some(host_path)) = xattr::get(path, "user.document-portal.host-path") {
-            String::from_utf8_lossy(host_path.as_slice()).to_string()
-        } else {
-            "unknown".to_string()
-        }
-    } else {
-        path.to_string()
-    }
 }

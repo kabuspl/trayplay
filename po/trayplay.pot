@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-05-29 16:29+0200\n"
+"POT-Creation-Date: 2026-06-30 13:59+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -103,15 +103,19 @@ msgstr ""
 msgid "Save replay"
 msgstr ""
 
-#: ui/settings.qml:82 ui/MainPage.qml:12
+#: ui/settings.qml:81
+msgid "Open replay directory"
+msgstr ""
+
+#: ui/settings.qml:87 ui/MainPage.qml:12
 msgid "Settings"
 msgstr ""
 
-#: ui/settings.qml:91
+#: ui/settings.qml:96
 msgid "About"
 msgstr ""
 
-#: ui/settings.qml:101
+#: ui/settings.qml:106
 msgid "Quit"
 msgstr ""
 

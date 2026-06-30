@@ -3,7 +3,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-05-29 16:29+0200\n"
+"POT-Creation-Date: 2026-06-30 13:59+0200\n"
 "PO-Revision-Date: 2026-05-18 03:01+0200\n"
 "Last-Translator: Jakub Sakra <me@kabus.ovh>\n"
 "Language-Team: Polish <https://github.com/kabuspl/trayplay>\n"
@@ -103,15 +103,19 @@ msgstr "Nagrywaj powtórki"
 msgid "Save replay"
 msgstr "Zapisz powtórkę"
 
-#: ui/settings.qml:82 ui/MainPage.qml:12
+#: ui/settings.qml:81
+msgid "Open replay directory"
+msgstr "Otwórz katalog powtórek"
+
+#: ui/settings.qml:87 ui/MainPage.qml:12
 msgid "Settings"
 msgstr "Ustawienia"
 
-#: ui/settings.qml:91
+#: ui/settings.qml:96
 msgid "About"
 msgstr "O programie"
 
-#: ui/settings.qml:101
+#: ui/settings.qml:106
 msgid "Quit"
 msgstr "Zamknij"
 

@@ -132,3 +132,15 @@ pub fn is_flatpak() -> bool {
 pub fn is_kde() -> bool {
     std::env::var("XDG_CURRENT_DESKTOP").is_ok_and(|v| v == "KDE")
 }
+
+pub fn get_real_directory(path: &str) -> String {
+    if is_flatpak() {
+        if let Ok(Some(host_path)) = xattr::get(path, "user.document-portal.host-path") {
+            String::from_utf8_lossy(host_path.as_slice()).to_string()
+        } else {
+            "unknown".to_string()
+        }
+    } else {
+        path.to_string()
+    }
+}
