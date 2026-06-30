@@ -1,20 +1,18 @@
-use std::{
-    fmt::Display,
-    io::{BufRead, BufReader},
-    path::PathBuf,
-    process::{Child, Command, Stdio},
-    str::FromStr,
-    sync::Arc,
-};
+use std::{fmt::Display, path::PathBuf, process::Stdio, str::FromStr, sync::Arc};
 
 use log::debug;
 use nix::{
     sys::signal::{self, Signal},
     unistd::Pid,
 };
-use tokio::{sync::RwLock, task::JoinHandle};
+use tokio::{
+    io::{AsyncBufReadExt, BufReader},
+    process::Command,
+    sync::{RwLock, mpsc::Sender, oneshot},
+    task::JoinHandle,
+};
 
-use crate::{config::Config, utils::process_pattern};
+use crate::{ActionEvent, config::Config, utils::process_pattern};
 
 #[allow(dead_code)]
 #[derive(Debug)]
@@ -45,24 +43,31 @@ impl From<nix::errno::Errno> for Error {
 }
 
 pub struct GpuScreenRecorder {
-    process: Option<Child>,
+    pid: Option<u32>,
     config: Arc<RwLock<Config>>,
     app_name: Arc<RwLock<String>>,
     stdout_task_handle: Option<JoinHandle<()>>,
     stderr_task_handle: Option<JoinHandle<()>>,
+    watcher_task_handle: Option<JoinHandle<()>>,
+    watcher_cancel_tx: Option<oneshot::Sender<()>>,
+    action_tx: Sender<ActionEvent>,
 }
 
 impl GpuScreenRecorder {
     pub async fn new(
         config: Arc<RwLock<Config>>,
         app_name: Arc<RwLock<String>>,
+        action_tx: Sender<ActionEvent>,
     ) -> Result<Self, Error> {
         Ok(Self {
-            process: None,
+            pid: None,
             config,
             app_name,
             stderr_task_handle: None,
             stdout_task_handle: None,
+            watcher_task_handle: None,
+            watcher_cancel_tx: None,
+            action_tx,
         })
     }
 
@@ -99,8 +104,8 @@ impl GpuScreenRecorder {
 
         let stderr = process.stderr.take().unwrap();
         self.stderr_task_handle = Some(tokio::spawn(async move {
-            let reader = BufReader::new(stderr);
-            for line in reader.lines().filter_map(|line| line.ok()) {
+            let mut lines = BufReader::new(stderr).lines();
+            while let Ok(Some(line)) = lines.next_line().await {
                 debug!(target: "gpu-screen-recorder stderr", "{}", line);
             }
         }));
@@ -109,8 +114,8 @@ impl GpuScreenRecorder {
         let app_name_clone = self.app_name.clone();
         let config_clone = self.config.clone();
         self.stdout_task_handle = Some(tokio::spawn(async move {
-            let reader = BufReader::new(stdout);
-            for line in reader.lines().filter_map(|line| line.ok()) {
+            let mut lines = BufReader::new(stdout).lines();
+            while let Ok(Some(line)) = lines.next_line().await {
                 let config = config_clone.read().await;
 
                 let path = PathBuf::from_str(&line)
@@ -136,26 +141,48 @@ impl GpuScreenRecorder {
             }
         }));
 
-        self.process = Some(process);
+        let pid = process.id().expect("process should have a PID after spawn");
+
+        let (cancel_tx, cancel_rx) = oneshot::channel::<()>();
+        let action_tx = self.action_tx.clone();
+        self.watcher_task_handle = Some(tokio::spawn(async move {
+            tokio::select! {
+                biased;
+                _ = cancel_rx => {}
+                result = process.wait() => {
+                    if let Ok(status) = result {
+                        if !status.success() {
+                            let _ = action_tx.send(ActionEvent::GsrCrashed).await;
+                        }
+                    }
+                }
+            }
+        }));
+
+        self.watcher_cancel_tx = Some(cancel_tx);
+        self.pid = Some(pid);
 
         Ok(())
     }
 
     pub async fn stop(&mut self) -> Result<(), Error> {
-        if let Some(process) = &self.process {
-            signal::kill(Pid::from_raw(process.id() as i32), Signal::SIGTERM)?;
-            self.process = None;
+        if let Some(pid) = self.pid.take() {
+            if let Some(cancel_tx) = self.watcher_cancel_tx.take() {
+                let _ = cancel_tx.send(());
+            }
 
-            Ok(())
+            match signal::kill(Pid::from_raw(pid as i32), Signal::SIGTERM) {
+                Ok(()) | Err(nix::errno::Errno::ESRCH) => Ok(()),
+                Err(e) => Err(Error::NixErrno(e)),
+            }
         } else {
             Err(Error::RecorderNotRunning)
         }
     }
 
     pub async fn save_replay(&mut self) -> Result<(), Error> {
-        // info!("Saving replay from {}", self.app_name.read().await);
-        if let Some(process) = &self.process {
-            signal::kill(Pid::from_raw(process.id() as i32), Signal::SIGUSR1)?;
+        if let Some(pid) = self.pid {
+            signal::kill(Pid::from_raw(pid as i32), Signal::SIGUSR1)?;
             Ok(())
         } else {
             Err(Error::RecorderNotRunning)
@@ -163,6 +190,6 @@ impl GpuScreenRecorder {
     }
 
     pub fn is_running(&self) -> bool {
-        self.process.is_some()
+        self.pid.is_some()
     }
 }

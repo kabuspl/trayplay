@@ -1,6 +1,6 @@
 #![recursion_limit = "256"]
 
-use std::{error::Error, str::FromStr, sync::Arc};
+use std::{error::Error, str::FromStr, sync::Arc, time::Duration};
 
 use ashpd::{AppID, register_host_app};
 use config::Config;
@@ -10,6 +10,7 @@ use kwin::KWinScriptManager;
 use log::{error, info, warn};
 use logger::{CombinedLogger, UiLogger};
 use tokio::sync::{RwLock, mpsc};
+use tokio::time::sleep;
 use utils::ask_path;
 use zbus::{Connection, names::BusName, proxy};
 
@@ -35,6 +36,7 @@ pub enum ActionEvent {
     ShowWindow(String),
     ShowInfo(String, String),
     ShowError(String, String),
+    GsrCrashed,
 }
 
 #[proxy(
@@ -99,7 +101,8 @@ async fn main() -> Result<(), Box<dyn Error>> {
     let app_name = Arc::new(RwLock::new("unknown".to_string()));
     active_window::setup_active_window_manager(app_name.clone()).await?;
 
-    let mut gpu_screen_recorder = GpuScreenRecorder::new(config.clone(), app_name.clone()).await?;
+    let mut gpu_screen_recorder =
+        GpuScreenRecorder::new(config.clone(), app_name.clone(), action_tx.clone()).await?;
     if config.read().await.recording_enabled {
         handle_gsr_start_result(gpu_screen_recorder.start().await);
     }
@@ -194,6 +197,15 @@ async fn main() -> Result<(), Box<dyn Error>> {
                 }
                 ActionEvent::ShowError(title, text) => {
                     let _ = ui.show_error(&title, &text).await;
+                }
+                ActionEvent::GsrCrashed => {
+                    sleep(Duration::from_secs(2)).await;
+                    handle_gsr_start_result(gpu_screen_recorder.start().await);
+                    if is_kde() {
+                        let _ = osd_service
+                            .show_text("dialog-warning", "Replay recording restarted after a crash")
+                            .await;
+                    }
                 }
                 other => {
                     warn!("Unhandled action event: {:?}", other)
