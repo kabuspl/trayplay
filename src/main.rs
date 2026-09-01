@@ -99,7 +99,7 @@ async fn main() -> Result<(), Box<dyn Error>> {
     shortcuts::setup_global_shortcuts(action_tx.clone());
 
     let app_name = Arc::new(RwLock::new("unknown".to_string()));
-    active_window::setup_active_window_manager(app_name.clone()).await?;
+    active_window::setup_active_window_manager(app_name.clone(), config.clone()).await?;
 
     let mut gpu_screen_recorder =
         GpuScreenRecorder::new(config.clone(), app_name.clone(), action_tx.clone()).await?;

@@ -3,7 +3,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-06-30 13:59+0200\n"
+"POT-Creation-Date: 2026-09-01 04:53+0200\n"
 "PO-Revision-Date: 2026-05-18 03:01+0200\n"
 "Last-Translator: Jakub Sakra <me@kabus.ovh>\n"
 "Language-Team: Polish <https://github.com/kabuspl/trayplay>\n"
@@ -87,37 +87,13 @@ msgstr "Aplikacja:"
 msgid "Other device:"
 msgstr "Inne urządzenie:"
 
-#: ui/settings.qml:11
-msgid "TrayPlay Settings"
-msgstr "Ustawienia TrayPlay"
-
-#: ui/settings.qml:34
-msgid "About TrayPlay"
-msgstr "O TrayPlay"
-
-#: ui/settings.qml:67 ui/MainPage.qml:16
-msgid "Record replays"
-msgstr "Nagrywaj powtórki"
-
-#: ui/settings.qml:76
-msgid "Save replay"
-msgstr "Zapisz powtórkę"
-
-#: ui/settings.qml:81
-msgid "Open replay directory"
-msgstr "Otwórz katalog powtórek"
-
-#: ui/settings.qml:87 ui/MainPage.qml:12
+#: ui/MainPage.qml:12 ui/settings.qml:87
 msgid "Settings"
 msgstr "Ustawienia"
 
-#: ui/settings.qml:96
-msgid "About"
-msgstr "O programie"
-
-#: ui/settings.qml:106
-msgid "Quit"
-msgstr "Zamknij"
+#: ui/MainPage.qml:16 ui/settings.qml:67
+msgid "Record replays"
+msgstr "Nagrywaj powtórki"
 
 #: ui/MainPage.qml:36
 msgid "Video source:"
@@ -208,9 +184,45 @@ msgstr "Klatki na sekundę:"
 msgid "Clear buffer when saving"
 msgstr "Czyść bufor przy zapisie"
 
-#: ui/MainPage.qml:249
+#: ui/MainPage.qml:250
+msgid "Use Steam game names"
+msgstr "Używaj nazw gier ze Steam"
+
+#: ui/MainPage.qml:258
+msgid ""
+"Uses app name from Steam instead of window title for file naming when "
+"recorded app is launched through Steam."
+msgstr ""
+"Używa nazwy aplikacji ze Steam zamiast tytułu okna do nazwania pliku, jeśli "
+"nagrywana aplikacja została uruchomiona przez Steam."
+
+#: ui/MainPage.qml:267
 msgid "Edit audio tracks"
 msgstr "Edytuj ścieżki dźwięku"
+
+#: ui/settings.qml:11
+msgid "TrayPlay Settings"
+msgstr "Ustawienia TrayPlay"
+
+#: ui/settings.qml:34
+msgid "About TrayPlay"
+msgstr "O TrayPlay"
+
+#: ui/settings.qml:76
+msgid "Save replay"
+msgstr "Zapisz powtórkę"
+
+#: ui/settings.qml:81
+msgid "Open replay directory"
+msgstr "Otwórz katalog powtórek"
+
+#: ui/settings.qml:96
+msgid "About"
+msgstr "O programie"
+
+#: ui/settings.qml:106
+msgid "Quit"
+msgstr "Zamknij"
 
 #: src/ui/mod.rs:87
 msgid "Instant replay recorder"

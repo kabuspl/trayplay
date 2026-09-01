@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-06-30 13:59+0200\n"
+"POT-Creation-Date: 2026-09-01 04:53+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -87,36 +87,12 @@ msgstr ""
 msgid "Other device:"
 msgstr ""
 
-#: ui/settings.qml:11
-msgid "TrayPlay Settings"
-msgstr ""
-
-#: ui/settings.qml:34
-msgid "About TrayPlay"
-msgstr ""
-
-#: ui/settings.qml:67 ui/MainPage.qml:16
-msgid "Record replays"
-msgstr ""
-
-#: ui/settings.qml:76
-msgid "Save replay"
-msgstr ""
-
-#: ui/settings.qml:81
-msgid "Open replay directory"
-msgstr ""
-
-#: ui/settings.qml:87 ui/MainPage.qml:12
+#: ui/MainPage.qml:12 ui/settings.qml:87
 msgid "Settings"
 msgstr ""
 
-#: ui/settings.qml:96
-msgid "About"
-msgstr ""
-
-#: ui/settings.qml:106
-msgid "Quit"
+#: ui/MainPage.qml:16 ui/settings.qml:67
+msgid "Record replays"
 msgstr ""
 
 #: ui/MainPage.qml:36
@@ -197,8 +173,42 @@ msgstr ""
 msgid "Clear buffer when saving"
 msgstr ""
 
-#: ui/MainPage.qml:249
+#: ui/MainPage.qml:250
+msgid "Use Steam game names"
+msgstr ""
+
+#: ui/MainPage.qml:258
+msgid ""
+"Uses app name from Steam instead of window title for file naming when "
+"recorded app is launched through Steam."
+msgstr ""
+
+#: ui/MainPage.qml:267
 msgid "Edit audio tracks"
+msgstr ""
+
+#: ui/settings.qml:11
+msgid "TrayPlay Settings"
+msgstr ""
+
+#: ui/settings.qml:34
+msgid "About TrayPlay"
+msgstr ""
+
+#: ui/settings.qml:76
+msgid "Save replay"
+msgstr ""
+
+#: ui/settings.qml:81
+msgid "Open replay directory"
+msgstr ""
+
+#: ui/settings.qml:96
+msgid "About"
+msgstr ""
+
+#: ui/settings.qml:106
+msgid "Quit"
 msgstr ""
 
 #: src/ui/mod.rs:87

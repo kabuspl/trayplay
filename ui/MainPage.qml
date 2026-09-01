@@ -244,6 +244,24 @@ Kirigami.ScrollablePage {
 
         Item {}
 
+        RowLayout {
+            Controls.Switch {
+                id: useSteamGameNames
+                text: i18n("Use Steam game names")
+                checked: Settings.use_steam_game_names
+            }
+
+            Controls.ToolButton {
+                icon.name: "info"
+
+                Controls.ToolTip.visible: hovered
+                Controls.ToolTip.text: i18n("Uses app name from Steam instead of window title for file " +
+                    "naming when recorded app is launched through Steam.")
+            }
+        }
+
+        Item {}
+
         Controls.Button {
             Layout.fillWidth: true
             text: i18n("Edit audio tracks")
@@ -280,6 +298,7 @@ Kirigami.ScrollablePage {
                     Settings.clear_buffer = clearBuffer.checked;
                     Settings.record_replays = recordReplays.checked;
                     Settings.video_source_choice = video_source.currentValue;
+                    Settings.use_steam_game_names = useSteamGameNames.checked;
                     Settings.apply_config();
                 }
             }

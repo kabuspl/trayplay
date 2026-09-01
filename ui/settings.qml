@@ -11,7 +11,7 @@ QtObject {
         title: i18n("TrayPlay Settings")
         width: 500
         minimumWidth: 500
-        height: 580
+        height: 620
         visible: false
 
         pageStack.defaultColumnWidth: 500
