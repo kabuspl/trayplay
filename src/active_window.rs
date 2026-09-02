@@ -10,10 +10,7 @@ use tokio::{
 };
 use zbus::interface;
 
-use crate::{
-    config::{self, Config},
-    utils,
-};
+use crate::{config::Config, utils};
 
 struct ActiveWindowManager {
     tx: mpsc::Sender<(String, String, bool, i32)>,

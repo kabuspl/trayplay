@@ -1,6 +1,6 @@
 use std::{process::Command, sync::Arc};
 
-use qmetaobject::{prelude::QObject, qt_base_class, qt_method, qt_property, qt_signal};
+use qmetaobject::{prelude::QObject, qt_base_class, qt_method, qt_property};
 use tokio::sync::{RwLock, mpsc::Sender};
 
 use crate::{ActionEvent, config::Config, utils::get_real_directory};

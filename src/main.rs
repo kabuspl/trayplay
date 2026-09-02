@@ -5,7 +5,6 @@ use std::{error::Error, str::FromStr, sync::Arc, time::Duration};
 use ashpd::{AppID, register_host_app};
 use config::Config;
 use gsr::GpuScreenRecorder;
-use ksni::TrayMethods;
 use kwin::KWinScriptManager;
 use log::{error, info, warn};
 use logger::{CombinedLogger, UiLogger};

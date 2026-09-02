@@ -11,7 +11,7 @@ use tokio::sync::{RwLock, mpsc::Sender};
 use crate::{
     ActionEvent,
     config::Config,
-    utils::{get_command_output, get_real_directory, is_flatpak},
+    utils::{get_command_output, get_real_directory},
 };
 
 cpp! {{
@@ -196,7 +196,8 @@ impl Settings {
         self.container = config.container as usize;
         self.codec = config.codec as usize;
         self.directory = config.replay_directory.display().to_string().into();
-        self.real_directory = get_real_directory(&config.replay_directory.display().to_string()).into();
+        self.real_directory =
+            get_real_directory(&config.replay_directory.display().to_string()).into();
         self.clear_buffer = config.clear_buffer_on_save;
         self.record_replays = config.recording_enabled;
         self.video_source_choice = config.screen.clone().into();
