@@ -3,7 +3,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-09-01 04:53+0200\n"
+"POT-Creation-Date: 2026-09-02 04:22+0200\n"
 "PO-Revision-Date: 2026-05-18 03:01+0200\n"
 "Last-Translator: Jakub Sakra <me@kabus.ovh>\n"
 "Language-Team: Polish <https://github.com/kabuspl/trayplay>\n"
@@ -15,35 +15,27 @@ msgstr ""
 "Plural-Forms: nplurals=3; plural=(n==1 ? 0 : n%10>=2 && n%10<=4 && (n%100<10 "
 "|| n%100>=20) ? 1 : 2);\n"
 
-#: ui/AudioPage.qml:9
-msgid "Audio Tracks"
-msgstr "Ścieżki Dźwięku"
-
-#: ui/AudioPage.qml:14
-msgid "Add track"
-msgstr "Dodaj ścieżkę"
-
-#: ui/AudioPage.qml:25
+#: ui/AudioPage.qml:27
 msgid "Simple"
 msgstr "Proste"
 
-#: ui/AudioPage.qml:34
+#: ui/AudioPage.qml:36
 msgid "Advanced"
 msgstr "Zaawansowane"
 
-#: ui/AudioPage.qml:97
+#: ui/AudioPage.qml:100
 msgid "Record system sound"
 msgstr "Nagrywaj dźwięk systemu"
 
-#: ui/AudioPage.qml:105
+#: ui/AudioPage.qml:108
 msgid "Record microphone"
 msgstr "Nagrywaj mikrofon"
 
-#: ui/AudioPage.qml:113
+#: ui/AudioPage.qml:116
 msgid "Merge system & microphone tracks"
 msgstr "Złącz ścieżki systemu i mikrofonu"
 
-#: ui/AudioPage.qml:143
+#: ui/AudioPage.qml:146
 msgid ""
 "Simple audio settings are not available when custom audio tracks are "
 "configured."
@@ -51,63 +43,59 @@ msgstr ""
 "Proste ustawienia dźwięku nie są dostępne, gdy skonfigurowane są własne "
 "ścieżki."
 
-#: ui/AudioPage.qml:153
+#: ui/AudioPage.qml:156
 msgid "Reset audio tracks"
 msgstr "Zresetuj ścieżki dźwięku"
 
-#: ui/AudioPage.qml:221
+#: ui/AudioPage.qml:225
 msgid "Default Microphone"
 msgstr "Domyślny mikrofon"
 
-#: ui/AudioPage.qml:224
+#: ui/AudioPage.qml:228
 msgid "System Sound"
 msgstr "Dźwięk systemu"
 
-#: ui/AudioPage.qml:277
+#: ui/AudioPage.qml:281
 msgid "Add source"
 msgstr "Dodaj źródło"
 
-#: ui/AudioPage.qml:293
+#: ui/AudioPage.qml:305
+msgid "Add track"
+msgstr "Dodaj ścieżkę"
+
+#: ui/AudioPage.qml:319
 msgid "Add audio source"
 msgstr "Dodaj źródło dźwięku"
 
-#: ui/AudioPage.qml:318
+#: ui/AudioPage.qml:344
 msgid "Default microphone"
 msgstr "Domyślny mikrofon"
 
-#: ui/AudioPage.qml:324
+#: ui/AudioPage.qml:350
 msgid "System sound"
 msgstr "Dźwięk systemu"
 
-#: ui/AudioPage.qml:329
+#: ui/AudioPage.qml:355
 msgid "Application:"
 msgstr "Aplikacja:"
 
-#: ui/AudioPage.qml:342
+#: ui/AudioPage.qml:368
 msgid "Other device:"
 msgstr "Inne urządzenie:"
 
-#: ui/MainPage.qml:12 ui/settings.qml:87
-msgid "Settings"
-msgstr "Ustawienia"
+#: ui/MainPage.qml:12 ui/SettingsWindow.qml:106
+msgid "General"
+msgstr "Ogólne"
 
-#: ui/MainPage.qml:16 ui/settings.qml:67
+#: ui/MainPage.qml:43 ui/main.qml:34
 msgid "Record replays"
 msgstr "Nagrywaj powtórki"
 
-#: ui/MainPage.qml:36
-msgid "Video source:"
-msgstr "Źródło obrazu:"
-
-#: ui/MainPage.qml:44
-msgid "Default (%0)"
-msgstr "Domyślne (%0)"
-
-#: ui/MainPage.qml:72
+#: ui/MainPage.qml:63
 msgid "Directory:"
 msgstr "Katalog:"
 
-#: ui/MainPage.qml:85
+#: ui/MainPage.qml:73
 msgid ""
 "Manual path editing is not supported under Flatpak - please use the file "
 "picker"
@@ -115,28 +103,27 @@ msgstr ""
 "Ręczne edytowanie ścieżki nie jest wspierane gdy aplikacja jest uruchomiona "
 "przez Flatpak - użyj przycisku obok"
 
-#: ui/MainPage.qml:97
+#: ui/MainPage.qml:85
 msgid "Choose replay directory"
 msgstr "Wybierz katalog powtórek"
 
-#: ui/MainPage.qml:107
+#: ui/MainPage.qml:96
 msgid "Save videos:"
 msgstr "Zapisuj nagrania:"
 
-#: ui/MainPage.qml:116
+#: ui/MainPage.qml:102
 msgid "In directories named after the current full-screen app"
 msgstr "W katalogach nazwanych jak obecna pełnoekranowa aplikacja"
 
-#: ui/MainPage.qml:123
+#: ui/MainPage.qml:110
 msgid "Directly in the directory selected above"
 msgstr "Bezpośrednio w katalogu wybranym powyżej"
 
-#: ui/MainPage.qml:130
-msgid "Using custom pattern"
-msgstr "Używając niestandardowego wzoru"
+#: ui/MainPage.qml:118
+msgid "Using custom pattern: "
+msgstr "Używając niestandardowego wzoru:"
 
-#: ui/MainPage.qml:147
-#, fuzzy
+#: ui/MainPage.qml:139
 msgid ""
 "Available variables:\n"
 "%app% - title of the current full-screen window or unknown\n"
@@ -156,39 +143,27 @@ msgstr ""
 "%minute% - obecna minuta\n"
 "%second% - obecna sekunda"
 
-#: ui/MainPage.qml:161
+#: ui/MainPage.qml:154
 msgid "Duration:"
 msgstr "Długość:"
 
-#: ui/MainPage.qml:177
+#: ui/MainPage.qml:167
 msgid "secs"
 msgstr "sekund"
 
-#: ui/MainPage.qml:182
+#: ui/MainPage.qml:173
 msgid "Container:"
 msgstr "Format:"
 
-#: ui/MainPage.qml:193
-msgid "Codec:"
-msgstr "Kodek:"
+#: ui/MainPage.qml:183
+msgid "Clear buffer when saving:"
+msgstr "Czyść bufor przy zapisie:"
 
-#: ui/MainPage.qml:204
-msgid "Quality:"
-msgstr "Jakość:"
+#: ui/MainPage.qml:191
+msgid "Use Steam game names:"
+msgstr "Używaj nazw gier ze Steam:"
 
-#: ui/MainPage.qml:215
-msgid "Framerate:"
-msgstr "Klatki na sekundę:"
-
-#: ui/MainPage.qml:240
-msgid "Clear buffer when saving"
-msgstr "Czyść bufor przy zapisie"
-
-#: ui/MainPage.qml:250
-msgid "Use Steam game names"
-msgstr "Używaj nazw gier ze Steam"
-
-#: ui/MainPage.qml:258
+#: ui/MainPage.qml:205
 msgid ""
 "Uses app name from Steam instead of window title for file naming when "
 "recorded app is launched through Steam."
@@ -196,31 +171,72 @@ msgstr ""
 "Używa nazwy aplikacji ze Steam zamiast tytułu okna do nazwania pliku, jeśli "
 "nagrywana aplikacja została uruchomiona przez Steam."
 
-#: ui/MainPage.qml:267
-msgid "Edit audio tracks"
-msgstr "Edytuj ścieżki dźwięku"
+#: ui/SettingsWindow.qml:13 ui/main.qml:54
+msgid "Settings"
+msgstr "Ustawienia"
 
-#: ui/settings.qml:11
-msgid "TrayPlay Settings"
-msgstr "Ustawienia TrayPlay"
+#: ui/SettingsWindow.qml:114 ui/VideoPage.qml:12
+msgid "Video"
+msgstr "Wideo"
 
-#: ui/settings.qml:34
-msgid "About TrayPlay"
-msgstr "O TrayPlay"
+#: ui/SettingsWindow.qml:122
+msgid "Audio tracks"
+msgstr "Ścieżki dźwięku"
 
-#: ui/settings.qml:76
-msgid "Save replay"
-msgstr "Zapisz powtórkę"
-
-#: ui/settings.qml:81
-msgid "Open replay directory"
-msgstr "Otwórz katalog powtórek"
-
-#: ui/settings.qml:96
+#: ui/SettingsWindow.qml:130 ui/main.qml:64
 msgid "About"
 msgstr "O programie"
 
-#: ui/settings.qml:106
+#: ui/SettingsWindow.qml:176
+msgid "Apply Settings"
+msgstr "Zastosuj ustawienia"
+
+#: ui/SettingsWindow.qml:177
+msgid ""
+"The current page has unsaved changes. Apply the changes or discard them?"
+msgstr "Obecna strona ma niezapisane zmiany. Zastosować je czy odrzucić?"
+
+#: ui/SettingsWindow.qml:213
+msgid "OK"
+msgstr "OK"
+
+#: ui/SettingsWindow.qml:220
+msgid "Apply"
+msgstr "Zastosuj"
+
+#: ui/SettingsWindow.qml:226
+msgid "Cancel"
+msgstr "Anuluj"
+
+#: ui/VideoPage.qml:34
+msgid "Video source:"
+msgstr "Źródło obrazu:"
+
+#: ui/VideoPage.qml:38
+msgid "Default (%0)"
+msgstr "Domyślne (%0)"
+
+#: ui/VideoPage.qml:68
+msgid "Codec:"
+msgstr "Kodek:"
+
+#: ui/VideoPage.qml:77
+msgid "Quality:"
+msgstr "Jakość:"
+
+#: ui/VideoPage.qml:86
+msgid "Framerate:"
+msgstr "Klatki na sekundę:"
+
+#: ui/main.qml:43
+msgid "Save replay"
+msgstr "Zapisz powtórkę"
+
+#: ui/main.qml:48
+msgid "Open replay directory"
+msgstr "Otwórz katalog powtórek"
+
+#: ui/main.qml:75
 msgid "Quit"
 msgstr "Zamknij"
 
@@ -240,5 +256,11 @@ msgstr "Twórca"
 msgid "Recording backend"
 msgstr "Program nagrywający ekran"
 
-#~ msgid "Default microhpone"
-#~ msgstr "Domyślny mikrofon"
+#~ msgid "TrayPlay Settings"
+#~ msgstr "Ustawienia TrayPlay"
+
+#~ msgid "Edit audio tracks"
+#~ msgstr "Edytuj ścieżki dźwięku"
+
+#~ msgid "About TrayPlay"
+#~ msgstr "O TrayPlay"

@@ -121,7 +121,7 @@ impl Ui {
 
             engine.set_property(QString::from("isFlatpak"), QVariant::from(is_flatpak()));
 
-            engine.load_url(QUrl::from_user_input("qrc:/ui/settings.qml".into()));
+            engine.load_url(QUrl::from_user_input("qrc:/ui/main.qml".into()));
 
             let _ = settings_cb_tx.send(Arc::new({
                 let engine_ptr = engine.cpp_ptr();
@@ -190,10 +190,14 @@ impl Ui {
 }
 
 qrc!(settings_ui, "ui" as "ui" {
-    "settings.qml",
+    "main.qml",
     "AudioPage.qml",
+    "AboutPage.qml",
+    "VideoPage.qml",
     "MainPage.qml",
     "MessageBox.qml",
+    "SettingsWindow.qml",
     "components/ConfigLabel.qml",
     "components/ConfigRadio.qml",
+    "components/ConfigCategoryDelegate.qml",
 });

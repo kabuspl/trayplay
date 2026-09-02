@@ -4,21 +4,23 @@ import QtQuick.Layouts
 import org.kde.kirigami as Kirigami
 import Settings
 
-Kirigami.Page {
-    // id: audioPage
-    title: i18n("Audio Tracks")
-    padding: 0
-    actions: [
-        Kirigami.Action {
-            icon.name: "list-add"
-            text: i18n("Add track")
-            onTriggered: function () {
-                Settings.add_audio_track();
+ColumnLayout {
+    property var settingsWindow
+    property var flickable: advancedAudioTracks.visible ? advancedAudioTracks.contentItem : null
+    spacing: 0
+
+    Connections {
+        target: Settings
+        function onChange() {
+            if (settingsWindow) {
+                settingsWindow.markDirty();
             }
-            visible: advancedAudioTracks.visible
         }
-    ]
-    header: Kirigami.NavigationTabBar {
+    }
+
+    Kirigami.NavigationTabBar {
+        z: 1
+        Layout.fillWidth: true
         actions: [
             Kirigami.Action {
                 icon.name: "settings-configure"
@@ -44,7 +46,8 @@ Kirigami.Page {
     Item {
         id: simpleAudioTracks
         visible: true
-        anchors.fill: parent
+        Layout.fillWidth: true
+        Layout.fillHeight: true
         onVisibleChanged: function () {
             checkSwitches();
         }
@@ -170,7 +173,8 @@ Kirigami.Page {
     Controls.ScrollView {
         id: advancedAudioTracks
         visible: false
-        anchors.fill: parent
+        Layout.fillWidth: true
+        Layout.fillHeight: true
         Controls.ScrollBar.horizontal.policy: Controls.ScrollBar.AlwaysOff
 
         Kirigami.CardsListView {
@@ -281,6 +285,28 @@ Kirigami.Page {
                                 }
                             }
                         }
+                    }
+                }
+            }
+
+            footer: Column {
+                anchors {
+                    left: parent.left
+                    right: parent.right
+                }
+
+                Item {
+                    width: 1
+                    height: Kirigami.Units.largeSpacing * 2
+                }
+
+                Controls.Button {
+                    icon.name: "list-add"
+                    text: i18n("Add track")
+                    anchors.horizontalCenter: parent.horizontalCenter
+
+                    onClicked: function () {
+                        Settings.add_audio_track();
                     }
                 }
             }

@@ -1,49 +1,16 @@
 import QtQuick
-import org.kde.kirigami as Kirigami
-import org.kde.kirigamiaddons.formcard as FormCard
 import Qt.labs.platform
 import TrayHelper
 
 QtObject {
-    property var settingsWindow: Kirigami.ApplicationWindow {
+    property var settingsWindow: SettingsWindow {
         id: window
         objectName: "window"
-        title: i18n("TrayPlay Settings")
-        width: 500
-        minimumWidth: 500
-        height: 620
-        visible: false
-
-        pageStack.defaultColumnWidth: 500
-        pageStack.initialPage: Qt.resolvedUrl("MainPage.qml")
-
-        onClosing: close => {
-            close.accepted = false;
-            window.visible = false;
-        }
     }
 
     property var messageBoxWindow: MessageBox {
         id: messageBox
         objectName: "messageBox"
-    }
-
-    property var aboutWindow: Kirigami.ApplicationWindow {
-        id: aboutWindow
-        objectName: "aboutWindow"
-        title: i18n("About TrayPlay")
-        width: 500
-        minimumWidth: 500
-        height: 580
-        visible: false
-
-        pageStack.defaultColumnWidth: 500
-        pageStack.initialPage: FormCard.AboutPage {}
-
-        onClosing: close => {
-            close.accepted = false;
-            aboutWindow.visible = false;
-        }
     }
 
     property var trayIcon: SystemTrayIcon {
@@ -87,6 +54,7 @@ QtObject {
                 text: i18n("Settings")
                 icon.name: "settings-configure"
                 onTriggered: {
+                    window.open("MainPage.qml");
                     window.show();
                     window.raise();
                     window.requestActivate();
@@ -96,9 +64,10 @@ QtObject {
                 text: i18n("About")
                 icon.name: "help-about"
                 onTriggered: {
-                    aboutWindow.show();
-                    aboutWindow.raise();
-                    aboutWindow.requestActivate();
+                    window.open("AboutPage.qml");
+                    window.show();
+                    window.raise();
+                    window.requestActivate();
                 }
             }
             MenuSeparator {}

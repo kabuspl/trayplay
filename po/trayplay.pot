@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-09-01 04:53+0200\n"
+"POT-Creation-Date: 2026-09-02 04:22+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -17,123 +17,111 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: ui/AudioPage.qml:9
-msgid "Audio Tracks"
-msgstr ""
-
-#: ui/AudioPage.qml:14
-msgid "Add track"
-msgstr ""
-
-#: ui/AudioPage.qml:25
+#: ui/AudioPage.qml:27
 msgid "Simple"
 msgstr ""
 
-#: ui/AudioPage.qml:34
+#: ui/AudioPage.qml:36
 msgid "Advanced"
 msgstr ""
 
-#: ui/AudioPage.qml:97
+#: ui/AudioPage.qml:100
 msgid "Record system sound"
 msgstr ""
 
-#: ui/AudioPage.qml:105
+#: ui/AudioPage.qml:108
 msgid "Record microphone"
 msgstr ""
 
-#: ui/AudioPage.qml:113
+#: ui/AudioPage.qml:116
 msgid "Merge system & microphone tracks"
 msgstr ""
 
-#: ui/AudioPage.qml:143
+#: ui/AudioPage.qml:146
 msgid ""
 "Simple audio settings are not available when custom audio tracks are "
 "configured."
 msgstr ""
 
-#: ui/AudioPage.qml:153
+#: ui/AudioPage.qml:156
 msgid "Reset audio tracks"
 msgstr ""
 
-#: ui/AudioPage.qml:221
+#: ui/AudioPage.qml:225
 msgid "Default Microphone"
 msgstr ""
 
-#: ui/AudioPage.qml:224
+#: ui/AudioPage.qml:228
 msgid "System Sound"
 msgstr ""
 
-#: ui/AudioPage.qml:277
+#: ui/AudioPage.qml:281
 msgid "Add source"
 msgstr ""
 
-#: ui/AudioPage.qml:293
+#: ui/AudioPage.qml:305
+msgid "Add track"
+msgstr ""
+
+#: ui/AudioPage.qml:319
 msgid "Add audio source"
 msgstr ""
 
-#: ui/AudioPage.qml:318
+#: ui/AudioPage.qml:344
 msgid "Default microphone"
 msgstr ""
 
-#: ui/AudioPage.qml:324
+#: ui/AudioPage.qml:350
 msgid "System sound"
 msgstr ""
 
-#: ui/AudioPage.qml:329
+#: ui/AudioPage.qml:355
 msgid "Application:"
 msgstr ""
 
-#: ui/AudioPage.qml:342
+#: ui/AudioPage.qml:368
 msgid "Other device:"
 msgstr ""
 
-#: ui/MainPage.qml:12 ui/settings.qml:87
-msgid "Settings"
+#: ui/MainPage.qml:12 ui/SettingsWindow.qml:106
+msgid "General"
 msgstr ""
 
-#: ui/MainPage.qml:16 ui/settings.qml:67
+#: ui/MainPage.qml:43 ui/main.qml:34
 msgid "Record replays"
 msgstr ""
 
-#: ui/MainPage.qml:36
-msgid "Video source:"
-msgstr ""
-
-#: ui/MainPage.qml:44
-msgid "Default (%0)"
-msgstr ""
-
-#: ui/MainPage.qml:72
+#: ui/MainPage.qml:63
 msgid "Directory:"
 msgstr ""
 
-#: ui/MainPage.qml:85
+#: ui/MainPage.qml:73
 msgid ""
 "Manual path editing is not supported under Flatpak - please use the file "
 "picker"
 msgstr ""
 
-#: ui/MainPage.qml:97
+#: ui/MainPage.qml:85
 msgid "Choose replay directory"
 msgstr ""
 
-#: ui/MainPage.qml:107
+#: ui/MainPage.qml:96
 msgid "Save videos:"
 msgstr ""
 
-#: ui/MainPage.qml:116
+#: ui/MainPage.qml:102
 msgid "In directories named after the current full-screen app"
 msgstr ""
 
-#: ui/MainPage.qml:123
+#: ui/MainPage.qml:110
 msgid "Directly in the directory selected above"
 msgstr ""
 
-#: ui/MainPage.qml:130
-msgid "Using custom pattern"
+#: ui/MainPage.qml:118
+msgid "Using custom pattern: "
 msgstr ""
 
-#: ui/MainPage.qml:147
+#: ui/MainPage.qml:139
 msgid ""
 "Available variables:\n"
 "%app% - title of the current full-screen window or unknown\n"
@@ -145,69 +133,98 @@ msgid ""
 "%second% - current second"
 msgstr ""
 
-#: ui/MainPage.qml:161
+#: ui/MainPage.qml:154
 msgid "Duration:"
 msgstr ""
 
-#: ui/MainPage.qml:177
+#: ui/MainPage.qml:167
 msgid "secs"
 msgstr ""
 
-#: ui/MainPage.qml:182
+#: ui/MainPage.qml:173
 msgid "Container:"
 msgstr ""
 
-#: ui/MainPage.qml:193
-msgid "Codec:"
+#: ui/MainPage.qml:183
+msgid "Clear buffer when saving:"
 msgstr ""
 
-#: ui/MainPage.qml:204
-msgid "Quality:"
+#: ui/MainPage.qml:191
+msgid "Use Steam game names:"
 msgstr ""
 
-#: ui/MainPage.qml:215
-msgid "Framerate:"
-msgstr ""
-
-#: ui/MainPage.qml:240
-msgid "Clear buffer when saving"
-msgstr ""
-
-#: ui/MainPage.qml:250
-msgid "Use Steam game names"
-msgstr ""
-
-#: ui/MainPage.qml:258
+#: ui/MainPage.qml:205
 msgid ""
 "Uses app name from Steam instead of window title for file naming when "
 "recorded app is launched through Steam."
 msgstr ""
 
-#: ui/MainPage.qml:267
-msgid "Edit audio tracks"
+#: ui/SettingsWindow.qml:13 ui/main.qml:54
+msgid "Settings"
 msgstr ""
 
-#: ui/settings.qml:11
-msgid "TrayPlay Settings"
+#: ui/SettingsWindow.qml:114 ui/VideoPage.qml:12
+msgid "Video"
 msgstr ""
 
-#: ui/settings.qml:34
-msgid "About TrayPlay"
+#: ui/SettingsWindow.qml:122
+msgid "Audio tracks"
 msgstr ""
 
-#: ui/settings.qml:76
-msgid "Save replay"
-msgstr ""
-
-#: ui/settings.qml:81
-msgid "Open replay directory"
-msgstr ""
-
-#: ui/settings.qml:96
+#: ui/SettingsWindow.qml:130 ui/main.qml:64
 msgid "About"
 msgstr ""
 
-#: ui/settings.qml:106
+#: ui/SettingsWindow.qml:176
+msgid "Apply Settings"
+msgstr ""
+
+#: ui/SettingsWindow.qml:177
+msgid ""
+"The current page has unsaved changes. Apply the changes or discard them?"
+msgstr ""
+
+#: ui/SettingsWindow.qml:213
+msgid "OK"
+msgstr ""
+
+#: ui/SettingsWindow.qml:220
+msgid "Apply"
+msgstr ""
+
+#: ui/SettingsWindow.qml:226
+msgid "Cancel"
+msgstr ""
+
+#: ui/VideoPage.qml:34
+msgid "Video source:"
+msgstr ""
+
+#: ui/VideoPage.qml:38
+msgid "Default (%0)"
+msgstr ""
+
+#: ui/VideoPage.qml:68
+msgid "Codec:"
+msgstr ""
+
+#: ui/VideoPage.qml:77
+msgid "Quality:"
+msgstr ""
+
+#: ui/VideoPage.qml:86
+msgid "Framerate:"
+msgstr ""
+
+#: ui/main.qml:43
+msgid "Save replay"
+msgstr ""
+
+#: ui/main.qml:48
+msgid "Open replay directory"
+msgstr ""
+
+#: ui/main.qml:75
 msgid "Quit"
 msgstr ""
 

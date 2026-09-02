@@ -9,7 +9,34 @@ import "components"
 
 Kirigami.ScrollablePage {
     id: mainPage
-    title: i18n("Settings")
+    title: i18n("General")
+    property var settingsWindow
+
+    function markDirty() {
+        if (settingsWindow) {
+            settingsWindow.markDirty();
+        }
+    }
+
+    function saveChanges() {
+        if (separateDirsRadio.checked) {
+            Settings.file_name_pattern = "%app%/%app%_replay_%year%-%month%-%day%_%hour%-%minute%-%second%";
+        } else if (rootDirRadio.checked) {
+            Settings.file_name_pattern = "%app%_replay_%year%-%month%-%day%_%hour%-%minute%-%second%";
+        } else if (customDirRadio.checked) {
+            Settings.file_name_pattern = customDirField.text;
+        }
+        if (!isFlatpak) {
+            Settings.directory = path.text;
+            Settings.update_real_path();
+        }
+        Settings.duration = duration.value;
+        Settings.container = container.currentIndex;
+        Settings.clear_buffer = clearBuffer.checked;
+        Settings.record_replays = recordReplays.checked;
+        Settings.use_steam_game_names = useSteamGameNames.checked;
+    }
+
     actions: [
         Kirigami.Action {
             id: recordReplays
@@ -23,63 +50,24 @@ Kirigami.ScrollablePage {
             Component.onCompleted: function () {
                 recordReplays.checked = Settings.record_replays;
             }
+            onTriggered: mainPage.markDirty()
         }
     ]
 
-    GridLayout {
+    Kirigami.FormLayout {
         width: parent.width
         height: parent.height
-        columns: 2
-        rowSpacing: Kirigami.Units.largeSpacing
-
-        ConfigLabel {
-            text: i18n("Video source:")
-        }
-
-        Controls.ComboBox {
-            id: video_source
-            Layout.fillWidth: true
-            model: [
-                {
-                    text: i18n("Default (%0)").arg(Settings.video_sources[0].split("|")[0]),
-                    value: "screen"
-                },
-                ...Settings.video_sources.map(e => {
-                    var split = e.split("|");
-                    if (split.length > 1) {
-                        return {
-                            text: `${split[0]} (${split[1]})`,
-                            value: split[0]
-                        };
-                    } else if (split[0] == "portal") {
-                        return {
-                            text: "XDG Desktop Portal",
-                            value: "portal"
-                        };
-                    } else {
-                        return {
-                            text: split[0],
-                            value: split[0]
-                        };
-                    }
-                })]
-            textRole: "text"
-            valueRole: "value"
-            currentValue: Settings.video_source_choice
-        }
-
-        ConfigLabel {
-            text: i18n("Directory:")
-        }
 
         RowLayout {
             Layout.fillWidth: true
+            Kirigami.FormData.label: i18n("Directory:")
 
             Controls.TextField {
                 id: path
                 Layout.fillWidth: true
                 readOnly: isFlatpak
                 text: Settings.real_directory
+                onTextEdited: mainPage.markDirty()
 
                 Controls.ToolTip.visible: isFlatpak && (hovered || activeFocus)
                 Controls.ToolTip.text: i18n("Manual path editing is not supported under Flatpak - please use the file picker")
@@ -99,22 +87,21 @@ Kirigami.ScrollablePage {
                 onAccepted: {
                     Settings.directory = selectedFolder.toString().replace("file://", "");
                     Settings.update_real_path();
+                    mainPage.markDirty();
                 }
             }
         }
 
-        Controls.Label {
-            text: i18n("Save videos:")
-            Layout.alignment: Qt.AlignTop | Qt.AlignRight
-            Layout.topMargin: 2
-        }
-
         ColumnLayout {
+            Kirigami.FormData.label: i18n("Save videos:")
+            Kirigami.FormData.labelAlignment: Qt.AlignTop
+
             ConfigRadio {
                 id: separateDirsRadio
                 Layout.fillWidth: true
                 text: i18n("In directories named after the current full-screen app")
                 checked: Settings.file_name_pattern == "%app%/%app%_replay_%year%-%month%-%day%_%hour%-%minute%-%second%"
+                onClicked: mainPage.markDirty()
             }
 
             ConfigRadio {
@@ -122,25 +109,30 @@ Kirigami.ScrollablePage {
                 Layout.fillWidth: true
                 text: i18n("Directly in the directory selected above")
                 checked: Settings.file_name_pattern == "%app%_replay_%year%-%month%-%day%_%hour%-%minute%-%second%"
+                onClicked: mainPage.markDirty()
             }
 
             ConfigRadio {
                 id: customDirRadio
                 Layout.fillWidth: true
-                text: i18n("Using custom pattern")
+                text: i18n("Using custom pattern: ")
+                onClicked: mainPage.markDirty()
             }
 
             RowLayout {
-                visible: customDirRadio.checked
+                // visible: customDirRadio.checked
 
                 Controls.TextField {
                     id: customDirField
                     text: Settings.file_name_pattern
                     Layout.fillWidth: true
+                    enabled: customDirRadio.checked
+                    onTextEdited: mainPage.markDirty()
                 }
 
                 Controls.ToolButton {
                     icon.name: "info"
+                    enabled: customDirRadio.checked
 
                     Controls.ToolTip.visible: hovered
                     Controls.ToolTip.text: i18n(
@@ -157,12 +149,9 @@ Kirigami.ScrollablePage {
             }
         }
 
-        ConfigLabel {
-            text: i18n("Duration:")
-        }
-
         RowLayout {
             Layout.fillWidth: true
+            Kirigami.FormData.label: i18n("Duration:")
 
             Controls.SpinBox {
                 id: duration
@@ -171,6 +160,7 @@ Kirigami.ScrollablePage {
                 to: 10000
                 stepSize: 30
                 value: Settings.duration
+                onValueModified: mainPage.markDirty()
             }
 
             Controls.Label {
@@ -178,81 +168,38 @@ Kirigami.ScrollablePage {
             }
         }
 
-        ConfigLabel {
-            text: i18n("Container:")
-        }
-
         Controls.ComboBox {
             id: container
+            Kirigami.FormData.label: i18n("Container:")
             Layout.fillWidth: true
             model: ["MKV", "MP4", "WEBM", "FLV"]
             currentIndex: Settings.container
+            onActivated: mainPage.markDirty()
         }
 
-        ConfigLabel {
-            text: i18n("Codec:")
-        }
 
-        Controls.ComboBox {
-            id: codec
-            Layout.fillWidth: true
-            model: ["H.264", "H.265 (HEVC)", "H.265 (HEVC) HDR", "H.265 (HEVC) 10-bit", "AV1", "AV1 HDR", "AV1 10-bit", "VP8", "VP9"]
-            currentIndex: Settings.codec
-        }
-
-        ConfigLabel {
-            text: i18n("Quality:")
-        }
-
-        Controls.ComboBox {
-            id: quality
-            Layout.fillWidth: true
-            model: ["Medium", "High", "Very high", "Ultra"]
-            currentIndex: Settings.quality
-        }
-
-        ConfigLabel {
-            text: i18n("Framerate:")
-        }
-
-        RowLayout {
-            Layout.fillWidth: true
-
-            Controls.SpinBox {
-                id: framerate
-                Layout.fillWidth: true
-                from: 1
-                to: 1000
-                stepSize: 5
-                value: Settings.framerate
-            }
-
-            Controls.Label {
-                text: "FPS"
-            }
-        }
-
-        Item {}
-
-        Row {
-            Controls.Switch {
-                id: clearBuffer
-                text: i18n("Clear buffer when saving")
-                checked: Settings.clear_buffer
-            }
+        Controls.Switch {
+            id: clearBuffer
+            Kirigami.FormData.label: i18n("Clear buffer when saving:")
+            checked: Settings.clear_buffer
+            onToggled: mainPage.markDirty()
         }
 
         Item {}
 
         RowLayout {
+            Kirigami.FormData.label: i18n("Use Steam game names:")
+
             Controls.Switch {
                 id: useSteamGameNames
-                text: i18n("Use Steam game names")
                 checked: Settings.use_steam_game_names
+                onToggled: mainPage.markDirty()
             }
 
             Controls.ToolButton {
                 icon.name: "info"
+                Layout.preferredWidth: 24
+                Layout.preferredHeight: 24
 
                 Controls.ToolTip.visible: hovered
                 Controls.ToolTip.text: i18n("Uses app name from Steam instead of window title for file " +
@@ -260,48 +207,5 @@ Kirigami.ScrollablePage {
             }
         }
 
-        Item {}
-
-        Controls.Button {
-            Layout.fillWidth: true
-            text: i18n("Edit audio tracks")
-            icon.name: "view-media-track"
-            onClicked: function () {
-                window.pageStack.push(Qt.resolvedUrl("AudioPage.qml"));
-            }
-        }
-
-        Item {
-            Layout.columnSpan: 2
-            Layout.fillHeight: true
-        }
-
-        Row {
-            Layout.columnSpan: 2
-            Layout.alignment: Qt.AlignRight
-
-            Controls.Button {
-                text: "Apply"
-                onClicked: function () {
-                    if (separateDirsRadio.checked) {
-                        Settings.file_name_pattern = "%app%/%app%_replay_%year%-%month%-%day%_%hour%-%minute%-%second%";
-                    } else if (rootDirRadio.checked) {
-                        Settings.file_name_pattern = "%app%_replay_%year%-%month%-%day%_%hour%-%minute%-%second%";
-                    } else if (customDirRadio.checked) {
-                        Settings.file_name_pattern = customDirField.text;
-                    }
-                    Settings.framerate = framerate.value;
-                    Settings.duration = duration.value;
-                    Settings.quality = quality.currentIndex;
-                    Settings.container = container.currentIndex;
-                    Settings.codec = codec.currentIndex;
-                    Settings.clear_buffer = clearBuffer.checked;
-                    Settings.record_replays = recordReplays.checked;
-                    Settings.video_source_choice = video_source.currentValue;
-                    Settings.use_steam_game_names = useSteamGameNames.checked;
-                    Settings.apply_config();
-                }
-            }
-        }
     }
 }

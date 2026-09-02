@@ -85,6 +85,7 @@ pub struct Settings {
     audio_tracks_inner: Vec<Vec<String>>,
     audio_tracks: qt_property!(QVariantList; READ get_audio_tracks NOTIFY change),
     apply_config: qt_method!(fn(&self)),
+    discard_changes: qt_method!(fn(&mut self)),
     remove_audio_source: qt_method!(fn(&mut self, track: usize, source: usize)),
     add_audio_source: qt_method!(fn(&mut self, track: usize, source: QString)),
     remove_audio_track: qt_method!(fn(&mut self, track: usize)),
@@ -186,6 +187,29 @@ impl Settings {
         self.change();
     }
 
+    fn discard_changes(&mut self) {
+        let config = futures::executor::block_on(async { self.config.read().await });
+
+        self.framerate = config.framerate;
+        self.duration = config.replay_duration_secs as u32;
+        self.quality = config.quality as usize;
+        self.container = config.container as usize;
+        self.codec = config.codec as usize;
+        self.directory = config.replay_directory.display().to_string().into();
+        self.real_directory = get_real_directory(&config.replay_directory.display().to_string()).into();
+        self.clear_buffer = config.clear_buffer_on_save;
+        self.record_replays = config.recording_enabled;
+        self.video_source_choice = config.screen.clone().into();
+        self.audio_tracks_inner = config
+            .audio_tracks
+            .iter()
+            .map(|track| track.split('|').map(str::to_owned).collect())
+            .collect();
+        self.file_name_pattern = config.file_name_pattern.clone().into();
+        self.use_steam_game_names = config.use_steam_game_names;
+        self.change();
+    }
+
     pub async fn new(config: Arc<RwLock<Config>>, action_event_tx: Sender<ActionEvent>) -> Self {
         let config_values = config.read().await;
 
@@ -247,6 +271,7 @@ impl Settings {
             file_name_pattern: config_values.file_name_pattern.clone().into(),
             use_steam_game_names: config_values.use_steam_game_names,
             apply_config: Default::default(),
+            discard_changes: Default::default(),
             remove_audio_source: Default::default(),
             add_audio_source: Default::default(),
             remove_audio_track: Default::default(),
