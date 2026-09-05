@@ -35,42 +35,15 @@ impl<'a> GlobalShortcutManager<'a> {
     }
 
     pub async fn register_all(&self) -> Result<(), GlobalShortcutManagerError> {
-        let request = self
-            .global_shortcuts_wrapper
-            .list_shortcuts(&self.global_shortcuts_session)
-            .await?;
-
-        let shortcut_ids = request
-            .response()?
-            .shortcuts()
-            .iter()
-            .map(|shortcut| shortcut.id().to_string())
-            .collect::<Vec<String>>();
-
         let shortcuts: Vec<NewShortcut> = SHORTCUTS
             .iter()
-            .filter(|s| !shortcut_ids.contains(&s.0.to_string()))
             .map(|s| NewShortcut::new(s.0, s.1).preferred_trigger(s.2))
             .collect();
 
-        if !shortcuts.is_empty() {
-            let request = self
-                .global_shortcuts_wrapper
-                .bind_shortcuts(&self.global_shortcuts_session, &shortcuts, None)
-                .await;
-
-            // Ignore missing field error for now - looks like a bug in ashpd or in KDE 6.4 beta
-            if let Err(error) = &request {
-                if let ashpd::Error::Zbus(zbus::Error::Variant(zbus::zvariant::Error::Message(
-                    message,
-                ))) = error
-                {
-                    if message != "missing field `shortcuts`" {
-                        request?;
-                    }
-                }
-            }
-        }
+        let request = self
+            .global_shortcuts_wrapper
+            .bind_shortcuts(&self.global_shortcuts_session, &shortcuts, None)
+            .await?;
 
         Ok(())
     }
