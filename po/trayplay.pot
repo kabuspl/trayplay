@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-09-02 04:24+0200\n"
+"POT-Creation-Date: 2026-09-03 02:11+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -87,41 +87,41 @@ msgstr ""
 msgid "General"
 msgstr ""
 
-#: ui/MainPage.qml:43 ui/main.qml:34
+#: ui/MainPage.qml:58 ui/main.qml:34
 msgid "Record replays"
 msgstr ""
 
-#: ui/MainPage.qml:63
+#: ui/MainPage.qml:75
 msgid "Directory:"
 msgstr ""
 
-#: ui/MainPage.qml:73
+#: ui/MainPage.qml:84
 msgid ""
 "Manual path editing is not supported under Flatpak - please use the file "
 "picker"
 msgstr ""
 
-#: ui/MainPage.qml:85
+#: ui/MainPage.qml:96
 msgid "Choose replay directory"
 msgstr ""
 
-#: ui/MainPage.qml:96
+#: ui/MainPage.qml:108
 msgid "Save videos:"
 msgstr ""
 
-#: ui/MainPage.qml:102
+#: ui/MainPage.qml:114
 msgid "In directories named after the current full-screen app"
 msgstr ""
 
-#: ui/MainPage.qml:110
+#: ui/MainPage.qml:121
 msgid "Directly in the directory selected above"
 msgstr ""
 
-#: ui/MainPage.qml:118
+#: ui/MainPage.qml:128
 msgid "Using custom pattern: "
 msgstr ""
 
-#: ui/MainPage.qml:139
+#: ui/MainPage.qml:148
 msgid ""
 "Available variables:\n"
 "%app% - title of the current full-screen window or unknown\n"
@@ -133,27 +133,31 @@ msgid ""
 "%second% - current second"
 msgstr ""
 
-#: ui/MainPage.qml:154
+#: ui/MainPage.qml:163
 msgid "Duration:"
 msgstr ""
 
-#: ui/MainPage.qml:167
+#: ui/MainPage.qml:175
 msgid "secs"
 msgstr ""
 
-#: ui/MainPage.qml:173
+#: ui/MainPage.qml:181
 msgid "Container:"
 msgstr ""
 
-#: ui/MainPage.qml:183
+#: ui/MainPage.qml:189
 msgid "Clear buffer when saving:"
 msgstr ""
 
-#: ui/MainPage.qml:191
+#: ui/MainPage.qml:195
+msgid "Detect only fullscreen apps:"
+msgstr ""
+
+#: ui/MainPage.qml:200
 msgid "Use Steam game names:"
 msgstr ""
 
-#: ui/MainPage.qml:205
+#: ui/MainPage.qml:213
 msgid ""
 "Uses app name from Steam instead of window title for file naming when "
 "recorded app is launched through Steam."

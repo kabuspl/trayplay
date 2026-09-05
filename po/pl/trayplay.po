@@ -3,7 +3,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-09-02 04:24+0200\n"
+"POT-Creation-Date: 2026-09-03 02:11+0200\n"
 "PO-Revision-Date: 2026-05-18 03:01+0200\n"
 "Last-Translator: Jakub Sakra <me@kabus.ovh>\n"
 "Language-Team: Polish <https://github.com/kabuspl/trayplay>\n"
@@ -87,15 +87,15 @@ msgstr "Inne urządzenie:"
 msgid "General"
 msgstr "Ogólne"
 
-#: ui/MainPage.qml:43 ui/main.qml:34
+#: ui/MainPage.qml:58 ui/main.qml:34
 msgid "Record replays"
 msgstr "Nagrywaj powtórki"
 
-#: ui/MainPage.qml:63
+#: ui/MainPage.qml:75
 msgid "Directory:"
 msgstr "Katalog:"
 
-#: ui/MainPage.qml:73
+#: ui/MainPage.qml:84
 msgid ""
 "Manual path editing is not supported under Flatpak - please use the file "
 "picker"
@@ -103,27 +103,27 @@ msgstr ""
 "Ręczne edytowanie ścieżki nie jest wspierane gdy aplikacja jest uruchomiona "
 "przez Flatpak - użyj przycisku obok"
 
-#: ui/MainPage.qml:85
+#: ui/MainPage.qml:96
 msgid "Choose replay directory"
 msgstr "Wybierz katalog powtórek"
 
-#: ui/MainPage.qml:96
+#: ui/MainPage.qml:108
 msgid "Save videos:"
 msgstr "Zapisuj nagrania:"
 
-#: ui/MainPage.qml:102
+#: ui/MainPage.qml:114
 msgid "In directories named after the current full-screen app"
 msgstr "W katalogach nazwanych jak obecna pełnoekranowa aplikacja"
 
-#: ui/MainPage.qml:110
+#: ui/MainPage.qml:121
 msgid "Directly in the directory selected above"
 msgstr "Bezpośrednio w katalogu wybranym powyżej"
 
-#: ui/MainPage.qml:118
+#: ui/MainPage.qml:128
 msgid "Using custom pattern: "
 msgstr "Używając niestandardowego wzoru:"
 
-#: ui/MainPage.qml:139
+#: ui/MainPage.qml:148
 msgid ""
 "Available variables:\n"
 "%app% - title of the current full-screen window or unknown\n"
@@ -143,27 +143,31 @@ msgstr ""
 "%minute% - obecna minuta\n"
 "%second% - obecna sekunda"
 
-#: ui/MainPage.qml:154
+#: ui/MainPage.qml:163
 msgid "Duration:"
 msgstr "Długość:"
 
-#: ui/MainPage.qml:167
+#: ui/MainPage.qml:175
 msgid "secs"
 msgstr "sekund"
 
-#: ui/MainPage.qml:173
+#: ui/MainPage.qml:181
 msgid "Container:"
 msgstr "Format:"
 
-#: ui/MainPage.qml:183
+#: ui/MainPage.qml:189
 msgid "Clear buffer when saving:"
 msgstr "Czyść bufor przy zapisie:"
 
-#: ui/MainPage.qml:191
+#: ui/MainPage.qml:195
+msgid "Detect only fullscreen apps:"
+msgstr "Wykrywaj tylko pełnoekranowe okna:"
+
+#: ui/MainPage.qml:200
 msgid "Use Steam game names:"
 msgstr "Używaj nazw gier ze Steam:"
 
-#: ui/MainPage.qml:205
+#: ui/MainPage.qml:213
 msgid ""
 "Uses app name from Steam instead of window title for file naming when "
 "recorded app is launched through Steam."

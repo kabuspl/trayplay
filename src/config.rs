@@ -21,6 +21,8 @@ pub struct Config {
     pub replay_duration_secs: i64,
     #[serde(default = "default_file_name_pattern")]
     pub file_name_pattern: String,
+    #[serde(default = "default_bool_true")]
+    pub detect_only_fullscreen_apps: bool,
     #[serde(default = "default_bool_false")]
     pub use_steam_game_names: bool, // default only used when reading existing config - we don't want to change behavior for existing users
 
@@ -81,6 +83,7 @@ impl Default for Config {
             codec: Codec::H264,
             replay_duration_secs: 180,
             file_name_pattern: default_file_name_pattern(),
+            detect_only_fullscreen_apps: true,
             use_steam_game_names: true,
             action_event_tx: None,
         };

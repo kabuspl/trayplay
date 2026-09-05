@@ -77,6 +77,7 @@ pub struct Settings {
     clear_buffer: qt_property!(bool; READ get_clear_buffer WRITE set_clear_buffer),
     record_replays: qt_property!(bool; READ get_record_replays WRITE set_record_replays),
     file_name_pattern: qt_property!(QString; READ get_file_name_pattern WRITE set_file_name_pattern),
+    detect_only_fullscreen_apps: qt_property!(bool; READ get_detect_only_fullscreen_apps WRITE set_detect_only_fullscreen_apps),
     use_steam_game_names: qt_property!(bool; READ get_use_steam_game_names WRITE set_use_steam_game_names),
     audio_applications: qt_property!(QStringList; READ get_audio_applications WRITE set_audio_applications),
     audio_devices: qt_property!(QStringList; READ get_audio_devices WRITE set_audio_devices),
@@ -106,6 +107,7 @@ impl Settings {
     property_impl!(clear_buffer, bool);
     property_impl!(record_replays, bool);
     property_impl!(file_name_pattern, QString, cloned);
+    property_impl!(detect_only_fullscreen_apps, bool);
     property_impl!(use_steam_game_names, bool);
     property_impl!(audio_applications, QStringList, cloned);
     property_impl!(audio_devices, QStringList, cloned);
@@ -183,6 +185,7 @@ impl Settings {
         config.file_name_pattern = self.file_name_pattern.to_string();
         config.screen = self.video_source_choice.to_string();
         config.use_steam_game_names = self.use_steam_game_names;
+        config.detect_only_fullscreen_apps = self.detect_only_fullscreen_apps;
         futures::executor::block_on(async { config.save().await });
         self.change();
     }
@@ -208,6 +211,7 @@ impl Settings {
             .collect();
         self.file_name_pattern = config.file_name_pattern.clone().into();
         self.use_steam_game_names = config.use_steam_game_names;
+        self.detect_only_fullscreen_apps = config.detect_only_fullscreen_apps;
         self.change();
     }
 
@@ -270,6 +274,7 @@ impl Settings {
                 .map(|track| QStringList::from(track.split("|").collect::<Vec<&str>>()))
                 .collect(),
             file_name_pattern: config_values.file_name_pattern.clone().into(),
+            detect_only_fullscreen_apps: config_values.detect_only_fullscreen_apps,
             use_steam_game_names: config_values.use_steam_game_names,
             apply_config: Default::default(),
             discard_changes: Default::default(),

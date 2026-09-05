@@ -46,43 +46,45 @@ pub async fn setup_active_window_manager(
 
         loop {
             if let Some((desktop_file, title, fullscreen, pid)) = app_name_rx.recv().await {
-                if config.read().await.use_steam_game_names
-                    && let Some(appid) = get_steam_appid(pid).await
-                    && let Some(appmanifest_path) = get_steam_appmanifest_path(appid)
-                    && let Some(steam_app_name) = get_steam_app_name(appmanifest_path).await
-                {
-                    info!("Current app is now {}", steam_app_name);
-                    *app_name.write().await = steam_app_name;
-                } else if fullscreen {
-                    let mut app_name_new =
-                        utils::get_app_name(&desktop_file).unwrap().unwrap_or(title);
-                    if app_name_new.len() > 100 {
-                        // app name too long - let's find executable name
-                        if let Ok(path) = fs::read_link(format!("/proc/{}/exe", pid)).await {
-                            app_name_new = path.file_name().unwrap().display().to_string();
-                            if app_name_new == "wine-preloader" {
-                                // try to find wine exe name
-                                if let Ok(cmdline) =
-                                    fs::read_to_string(format!("/proc/{}/cmdline", pid)).await
-                                {
-                                    app_name_new = cmdline
-                                        .split('\0')
-                                        .next()
-                                        .unwrap()
-                                        .split('\\')
-                                        .last()
-                                        .unwrap()
-                                        .replace(".exe", "");
-                                    // TODO: Structure this part better
+                if !config.read().await.detect_only_fullscreen_apps || fullscreen {
+                    if config.read().await.use_steam_game_names
+                        && let Some(appid) = get_steam_appid(pid).await
+                        && let Some(appmanifest_path) = get_steam_appmanifest_path(appid)
+                        && let Some(steam_app_name) = get_steam_app_name(appmanifest_path).await
+                    {
+                        info!("Current app is now {}", steam_app_name);
+                        *app_name.write().await = steam_app_name;
+                    } else {
+                        let mut app_name_new =
+                            utils::get_app_name(&desktop_file).unwrap().unwrap_or(title);
+                        if app_name_new.len() > 100 {
+                            // app name too long - let's find executable name
+                            if let Ok(path) = fs::read_link(format!("/proc/{}/exe", pid)).await {
+                                app_name_new = path.file_name().unwrap().display().to_string();
+                                if app_name_new == "wine-preloader" {
+                                    // try to find wine exe name
+                                    if let Ok(cmdline) =
+                                        fs::read_to_string(format!("/proc/{}/cmdline", pid)).await
+                                    {
+                                        app_name_new = cmdline
+                                            .split('\0')
+                                            .next()
+                                            .unwrap()
+                                            .split('\\')
+                                            .last()
+                                            .unwrap()
+                                            .replace(".exe", "");
+                                        // TODO: Structure this part better
+                                    }
                                 }
+                            } else {
+                                // process died?
+                                app_name_new = "unknown".to_string();
                             }
-                        } else {
-                            // process died?
-                            app_name_new = "unknown".to_string();
                         }
+                        info!("Current app is now {}", app_name_new);
+                        *app_name.write().await = app_name_new;
                     }
-                    info!("Current app is now {}", app_name_new);
-                    *app_name.write().await = app_name_new;
                 } else if *app_name.read().await != "unknown" {
                     info!("Current app is unknown");
                     *app_name.write().await = "unknown".to_string();

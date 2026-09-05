@@ -24,7 +24,7 @@ Kirigami.ApplicationWindow {
     }
 
     function applySettings() {
-        const page = app.pageStack.currentItem;
+        const page = app.currentConfigPage ?? app.pageStack.currentItem;
         if (page && typeof page.saveChanges === "function") {
             page.saveChanges();
         }

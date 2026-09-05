@@ -18,6 +18,20 @@ Kirigami.ScrollablePage {
         }
     }
 
+    function loadChanges() {
+        path.text = Settings.real_directory;
+        separateDirsRadio.checked = Settings.file_name_pattern == "%app%/%app%_replay_%year%-%month%-%day%_%hour%-%minute%-%second%";
+        rootDirRadio.checked = Settings.file_name_pattern == "%app%_replay_%year%-%month%-%day%_%hour%-%minute%-%second%";
+        customDirRadio.checked = !separateDirsRadio.checked && !rootDirRadio.checked;
+        customDirField.text = Settings.file_name_pattern;
+        duration.value = Settings.duration;
+        container.currentIndex = Settings.container;
+        clearBuffer.checked = Settings.clear_buffer;
+        recordReplays.checked = Settings.record_replays;
+        useSteamGameNames.checked = Settings.use_steam_game_names;
+        detectOnlyFullscreenApps.checked = Settings.detect_only_fullscreen_apps;
+    }
+
     function saveChanges() {
         if (separateDirsRadio.checked) {
             Settings.file_name_pattern = "%app%/%app%_replay_%year%-%month%-%day%_%hour%-%minute%-%second%";
@@ -35,6 +49,7 @@ Kirigami.ScrollablePage {
         Settings.clear_buffer = clearBuffer.checked;
         Settings.record_replays = recordReplays.checked;
         Settings.use_steam_game_names = useSteamGameNames.checked;
+        Settings.detect_only_fullscreen_apps = detectOnlyFullscreenApps.checked;
     }
 
     actions: [
@@ -47,9 +62,6 @@ Kirigami.ScrollablePage {
                 action: recordReplays
             }
 
-            Component.onCompleted: function () {
-                recordReplays.checked = Settings.record_replays;
-            }
             onTriggered: mainPage.markDirty()
         }
     ]
@@ -66,7 +78,6 @@ Kirigami.ScrollablePage {
                 id: path
                 Layout.fillWidth: true
                 readOnly: isFlatpak
-                text: Settings.real_directory
                 onTextEdited: mainPage.markDirty()
 
                 Controls.ToolTip.visible: isFlatpak && (hovered || activeFocus)
@@ -87,6 +98,7 @@ Kirigami.ScrollablePage {
                 onAccepted: {
                     Settings.directory = selectedFolder.toString().replace("file://", "");
                     Settings.update_real_path();
+                    path.text = Settings.real_directory;
                     mainPage.markDirty();
                 }
             }
@@ -100,7 +112,6 @@ Kirigami.ScrollablePage {
                 id: separateDirsRadio
                 Layout.fillWidth: true
                 text: i18n("In directories named after the current full-screen app")
-                checked: Settings.file_name_pattern == "%app%/%app%_replay_%year%-%month%-%day%_%hour%-%minute%-%second%"
                 onClicked: mainPage.markDirty()
             }
 
@@ -108,7 +119,6 @@ Kirigami.ScrollablePage {
                 id: rootDirRadio
                 Layout.fillWidth: true
                 text: i18n("Directly in the directory selected above")
-                checked: Settings.file_name_pattern == "%app%_replay_%year%-%month%-%day%_%hour%-%minute%-%second%"
                 onClicked: mainPage.markDirty()
             }
 
@@ -124,7 +134,6 @@ Kirigami.ScrollablePage {
 
                 Controls.TextField {
                     id: customDirField
-                    text: Settings.file_name_pattern
                     Layout.fillWidth: true
                     enabled: customDirRadio.checked
                     onTextEdited: mainPage.markDirty()
@@ -159,7 +168,6 @@ Kirigami.ScrollablePage {
                 from: 1
                 to: 10000
                 stepSize: 30
-                value: Settings.duration
                 onValueModified: mainPage.markDirty()
             }
 
@@ -173,33 +181,33 @@ Kirigami.ScrollablePage {
             Kirigami.FormData.label: i18n("Container:")
             Layout.fillWidth: true
             model: ["MKV", "MP4", "WEBM", "FLV"]
-            currentIndex: Settings.container
             onActivated: mainPage.markDirty()
         }
-
 
         Controls.Switch {
             id: clearBuffer
             Kirigami.FormData.label: i18n("Clear buffer when saving:")
-            checked: Settings.clear_buffer
             onToggled: mainPage.markDirty()
         }
 
-        Item {}
+        Controls.Switch {
+            id: detectOnlyFullscreenApps
+            Kirigami.FormData.label: i18n("Detect only fullscreen apps:")
+            onToggled: mainPage.markDirty()
+        }
 
         RowLayout {
             Kirigami.FormData.label: i18n("Use Steam game names:")
 
             Controls.Switch {
                 id: useSteamGameNames
-                checked: Settings.use_steam_game_names
                 onToggled: mainPage.markDirty()
             }
 
             Controls.ToolButton {
                 icon.name: "info"
-                Layout.preferredWidth: 24
-                Layout.preferredHeight: 24
+                Layout.preferredWidth: 18
+                Layout.preferredHeight: 18
 
                 Controls.ToolTip.visible: hovered
                 Controls.ToolTip.text: i18n("Uses app name from Steam instead of window title for file " +
@@ -208,4 +216,6 @@ Kirigami.ScrollablePage {
         }
 
     }
+
+    Component.onCompleted: loadChanges()
 }
