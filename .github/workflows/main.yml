@@ -136,13 +136,13 @@ jobs:
               run: |
                   sudo apt-get update
                   sudo apt-get install --yes flatpak flatpak-builder
-                  flatpak remote-add --if-not-exists flathub https://dl.flathub.org/repo/flathub.flatpakrepo
+                  flatpak remote-add --user --if-not-exists flathub https://dl.flathub.org/repo/flathub.flatpakrepo
 
             - name: Build Flatpak bundle
               run: |
                   VERSION="${RELEASE_TAG#v}"
 
-                  flatpak-builder --force-clean --repo=repo --install-deps-from=flathub build-dir packaging/ovh.kabus.TrayPlay.yml
+                  flatpak-builder --user --force-clean --repo=repo --install-deps-from=flathub build-dir packaging/ovh.kabus.TrayPlay.yml
                   flatpak build-bundle --runtime-repo=https://dl.flathub.org/repo repo "trayplay-${VERSION}.flatpak" ovh.kabus.TrayPlay
 
             - name: Upload Flatpak bundle
