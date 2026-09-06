@@ -49,7 +49,8 @@ modules:
           - meson configure --prefix=$FLATPAK_DEST --buildtype=release -Dcapabilities=false
             -Dsystemd=false -Dnvidia_suspend_fix=false -Dstrip=true build
           - ninja -C build install
-          - gcc kms/server/kms_server.c -o gsr-kms-server $FLATPAK_DEST/lib/libdrm.a -I$FLATPAK_DEST/include/libdrm
+          - libdrm_archive="$(find "$FLATPAK_DEST" -name libdrm.a -print -quit)"; test -n "$libdrm_archive" || exit 1;
+            gcc kms/server/kms_server.c -o gsr-kms-server "$libdrm_archive" -I$FLATPAK_DEST/include/libdrm
             $GSR_KMS_SERVER_OPTS
           - install -Dm755 gsr-kms-server "$FLATPAK_DEST/bin/gsr-kms-server"
           - strip "$FLATPAK_DEST/bin/gsr-kms-server"
@@ -83,7 +84,7 @@ modules:
                 - -Dman-pages=disabled
                 - -Dvalgrind=disabled
                 - -Dtests=false
-                - --default-library=static
+                - -Ddefault_library=static
                 - --buildtype=release
             sources:
                 - type: git
