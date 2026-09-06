@@ -33,7 +33,9 @@ package() {
 
     install -Dm0755 -t "$pkgdir/usr/bin/" "target/release/$pkgname"
     install -Dm0644 -t "$pkgdir/usr/share/trayplay" "dist/kwin_script.js"
-    install -Dm0644 -t "$pkgdir/usr/share/applications" "dist/ovh.kabus.trayplay.desktop"
+    install -Dm0644 -t "$pkgdir/usr/share/applications" "dist/ovh.kabus.TrayPlay.desktop"
+    install -Dm0644 -t "$pkgdir/usr/share/icons/hicolor/scalable/apps" "dist/ovh.kabus.TrayPlay.svg"
+    install -Dm0644 -t "$pkgdir/usr/share/metainfo" dist/ovh.kabus.TrayPlay.metainfo.xml
     find locale -type f -exec install -Dm644 "{}" "$pkgdir/usr/share/{}" \;
     install -Dm0644 LICENSE "$pkgdir/usr/share/licenses/${pkgname}/LICENSE"
 }
